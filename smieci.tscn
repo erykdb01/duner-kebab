@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c0ga1ibpuje8r"]
+
+[node name="Node3D" type="Node3D" unique_id=1164262290]
+
+[node name="floor" type="CSGBox3D" parent="." unique_id=914441280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0002746582)
+use_collision = true
+size = Vector3(1.5, 0.1, 3)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=714696405]
+transform = Transform3D(0.8210511, 0, -0.2385374, 0, 0.855, 0, 0.2385374, 0, 0.8210511, -0.403, 0.23285693, -0.5656117)
+size = Vector3(0.5, 0.4, 0.7)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D" unique_id=382789021]
+transform = Transform3D(0.82, 0, 0, 0, 0.82, 0, 0, 0, 0.82, 0, 0.036250144, 0)
+operation = 2
+size = Vector3(0.5, 0.42949218, 0.7)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=808074777]
+transform = Transform3D(0.89493436, 0.4461978, 0, -0.4461978, 0.89493436, 0, 0, 0, 1, -0.18394172, 0.32547277, 0)
+size = Vector3(0.045, 0.325, 0.62)

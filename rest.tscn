@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://bi10whxw2mbi3" path="res://krzeslo.tscn" id="5_bd308"]
 [ext_resource type="PackedScene" uid="uid://d1nannjt1605q" path="res://stol.tscn" id="6_du3pw"]
 [ext_resource type="PackedScene" uid="uid://civx42xh4eniu" path="res://blat.tscn" id="7_kqg6h"]
+[ext_resource type="PackedScene" uid="uid://63vhuoncna6h" path="res://zapl.tscn" id="8_r8tef"]
+[ext_resource type="PackedScene" uid="uid://c0ga1ibpuje8r" path="res://smieci.tscn" id="9_4ot61"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_247cf"]
 albedo_texture = ExtResource("1_q8ubf")
@@ -243,5 +245,11 @@ transform = Transform3D(-0.15418087, 0, -0.042758133, 0, 0.16, 0, 0.042758133, 0
 [node name="Node3D3" parent="stol2" unique_id=1523858628 instance=ExtResource("6_du3pw")]
 transform = Transform3D(0.08690791, 0, -0.13433918, 0, 0.16, 0, 0.13433918, 0, 0.08690791, -0.15952897, -0.06360716, -0.030575514)
 
-[node name="Node3D" parent="." unique_id=697891900 instance=ExtResource("7_kqg6h")]
+[node name="blyat" parent="." unique_id=697891900 instance=ExtResource("7_kqg6h")]
 transform = Transform3D(-1.1539806e-08, 0, 0.264, 0, 0.264, 0, -0.264, 0, -1.1539806e-08, -0.5398613, 0.23267782, 0.73399013)
+
+[node name="zapl" parent="." unique_id=1647861123 instance=ExtResource("8_r8tef")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.5)
+
+[node name="smieci" parent="." unique_id=1164262290 instance=ExtResource("9_4ot61")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -1.5, 0, 3.5)
