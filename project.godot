@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="DunerKebub"
+run/main_scene="uid://bv8ovn3w0cj1"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
 
 [display]
 
