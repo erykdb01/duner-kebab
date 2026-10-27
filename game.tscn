@@ -8,3 +8,7 @@
 [node name="Node3D" parent="." unique_id=1604944046 instance=ExtResource("1_e2o6t")]
 
 [node name="Node3D2" parent="." unique_id=678003766 instance=ExtResource("2_feb5d")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=77686969]
+transform = Transform3D(0.55787706, 0.82886744, -0.04185652, 0.32676947, -0.17301553, 0.9291326, 0.7628859, -0.5320192, -0.36736998, 3.9715073, 2.212291, 0)
+light_energy = 1.36
