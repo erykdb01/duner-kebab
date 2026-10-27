@@ -3,6 +3,7 @@
 [node name="Node3D" type="Node3D" unique_id=697891900]
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=1895728389]
+use_collision = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1548171647]
 transform = Transform3D(1.645, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

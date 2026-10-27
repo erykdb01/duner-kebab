@@ -80,56 +80,32 @@ use_collision = true
 size = Vector3(2.5, 0.15, 4.2)
 material = SubResource("StandardMaterial3D_bd308")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=176237943]
+[node name="wall2" type="CSGBox3D" parent="." unique_id=176237943]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0.54992676, 0)
 use_collision = true
 size = Vector3(0.1, 1, 4)
 material = SubResource("StandardMaterial3D_04vea")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=993505286]
+[node name="wall1" type="CSGBox3D" parent="." unique_id=993505286]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0.55, 0)
 use_collision = true
 size = Vector3(0.1, 1, 4)
 material = SubResource("StandardMaterial3D_tsmlk")
 
-[node name="okno" type="CSGBox3D" parent="CSGBox3D2" unique_id=159033625]
+[node name="okno" type="CSGBox3D" parent="wall1" unique_id=159033625]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, -1.2144207)
 operation = 2
 size = Vector3(0.2, 0.4, 1)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D2" unique_id=1035362757]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, -1.2144207)
-size = Vector3(0.2, 0.4, 1)
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D2/CSGBox3D" unique_id=900840817]
-operation = 2
-size = Vector3(0.3, 0.34, 0.938)
-
-[node name="okno2" type="CSGBox3D" parent="CSGBox3D2" unique_id=1472373472]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, -0.039996266)
+[node name="okno2" type="CSGBox3D" parent="wall1" unique_id=202568312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, -0.042185128)
 operation = 2
 size = Vector3(0.2, 0.4, 1)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D2" unique_id=1557459014]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, -0.039996266)
-size = Vector3(0.2, 0.4, 1)
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D2/CSGBox3D2" unique_id=1073327229]
-operation = 2
-size = Vector3(0.3, 0.34, 0.938)
-
-[node name="okno3" type="CSGBox3D" parent="CSGBox3D2" unique_id=971472766]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, 1.1070718)
+[node name="okno3" type="CSGBox3D" parent="wall1" unique_id=72312201]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, 1.1339395)
 operation = 2
 size = Vector3(0.2, 0.4, 1)
-
-[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D2" unique_id=1554125436]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08005524, 1.1070718)
-size = Vector3(0.2, 0.4, 1)
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D2/CSGBox3D3" unique_id=517734026]
-operation = 2
-size = Vector3(0.3, 0.34, 0.938)
 
 [node name="wallFront" type="CSGBox3D" parent="." unique_id=1272708589]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.55, -2)
