@@ -1,21 +1,23 @@
 [gd_scene format=3 uid="uid://c0ga1ibpuje8r"]
 
+[ext_resource type="PackedScene" uid="uid://cowwpxds0f5e2" path="res://trashcan_pixel.glb" id="1_62k3w"]
+[ext_resource type="Texture2D" uid="uid://coq2um4bp2lbi" path="res://asphalt_128.png" id="1_iy4xk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_723o8"]
+albedo_texture = ExtResource("1_iy4xk")
+uv1_triplanar = true
+texture_filter = 0
+
 [node name="Node3D" type="Node3D" unique_id=1164262290]
 
 [node name="floor" type="CSGBox3D" parent="." unique_id=914441280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0002746582)
 use_collision = true
 size = Vector3(1.5, 0.1, 3)
+material = SubResource("StandardMaterial3D_723o8")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=714696405]
-transform = Transform3D(0.8210511, 0, -0.2385374, 0, 0.855, 0, 0.2385374, 0, 0.8210511, -0.403, 0.23285693, -0.5656117)
-size = Vector3(0.5, 0.4, 0.7)
+[node name="trashcan_pixel" parent="." unique_id=1903050375 instance=ExtResource("1_62k3w")]
+transform = Transform3D(0.3754165, 0, 0.5551136, 0, 0.403, 0, -0.8014284, 0, 0.2600342, -0.3870808, 0.049999833, -0.8758304)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D" unique_id=382789021]
-transform = Transform3D(0.82, 0, 0, 0, 0.82, 0, 0, 0, 0.82, 0, 0.036250144, 0)
-operation = 2
-size = Vector3(0.5, 0.42949218, 0.7)
-
-[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D" unique_id=808074777]
-transform = Transform3D(0.89493436, 0.4461978, 0, -0.4461978, 0.89493436, 0, 0, 0, 1, -0.18394172, 0.32547277, 0)
-size = Vector3(0.045, 0.325, 0.62)
+[node name="trashcan_pixel2" parent="." unique_id=363782279 instance=ExtResource("1_62k3w")]
+transform = Transform3D(0.8846967, 0, -0.016046468, 0, 0.403, 0, 0.0231666, 0, 0.61278987, 0.30886745, 0.049999833, -1.0244341)

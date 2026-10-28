@@ -2,13 +2,17 @@
 
 [ext_resource type="PackedScene" uid="uid://bvauk0mk1q6ou" path="res://rest.tscn" id="1_e2o6t"]
 [ext_resource type="PackedScene" uid="uid://dfgpch1ffxc4m" path="res://player.tscn" id="2_feb5d"]
+[ext_resource type="PackedScene" uid="uid://cwy7ld1pv1r40" path="res://blokObok.tscn" id="3_feb5d"]
 
 [node name="Node3D" type="Node3D" unique_id=1248679954]
 
-[node name="Node3D" parent="." unique_id=1604944046 instance=ExtResource("1_e2o6t")]
-
-[node name="Node3D2" parent="." unique_id=678003766 instance=ExtResource("2_feb5d")]
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=77686969]
-transform = Transform3D(0.55787706, 0.82886744, -0.04185652, 0.32676947, -0.17301553, 0.9291326, 0.7628859, -0.5320192, -0.36736998, 3.9715073, 2.212291, 0)
+[node name="sun" type="DirectionalLight3D" parent="." unique_id=77686969]
+transform = Transform3D(0.55787706, 0.82886744, -0.041856516, 0.32676947, -0.17301552, 0.9291326, 0.7628859, -0.5320192, -0.36736995, 3.9715073, 2.212291, 0)
 light_energy = 1.36
+
+[node name="rest" parent="." unique_id=1604944046 instance=ExtResource("1_e2o6t")]
+
+[node name="player" parent="." unique_id=678003766 instance=ExtResource("2_feb5d")]
+
+[node name="blokObok" parent="." unique_id=969399257 instance=ExtResource("3_feb5d")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -3.3, 0, 0)
