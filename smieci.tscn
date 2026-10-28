@@ -2,6 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://cowwpxds0f5e2" path="res://trashcan_pixel.glb" id="1_62k3w"]
 [ext_resource type="Texture2D" uid="uid://coq2um4bp2lbi" path="res://asphalt_128.png" id="1_iy4xk"]
+[ext_resource type="PackedScene" uid="uid://csltr6iquf8gs" path="res://trash_pile_bags.glb" id="3_hh51h"]
+[ext_resource type="PackedScene" uid="uid://dn7erkap7wrkc" path="res://trash_pile_cardboard.glb" id="4_5dppy"]
+[ext_resource type="PackedScene" uid="uid://cj31qb00xehur" path="res://trash_pile_mixed.glb" id="5_ygfev"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_723o8"]
 albedo_texture = ExtResource("1_iy4xk")
@@ -21,3 +24,12 @@ transform = Transform3D(0.3754165, 0, 0.5551136, 0, 0.403, 0, -0.8014284, 0, 0.2
 
 [node name="trashcan_pixel2" parent="." unique_id=363782279 instance=ExtResource("1_62k3w")]
 transform = Transform3D(0.8846967, 0, -0.016046468, 0, 0.403, 0, 0.0231666, 0, 0.61278987, 0.30886745, 0.049999833, -1.0244341)
+
+[node name="trash_pile_bags" parent="." unique_id=1749139738 instance=ExtResource("3_hh51h")]
+transform = Transform3D(0.27434352, 0, -0.3046894, 0, 0.41, 0, 0.3046894, 0, 0.27434352, 0.38638467, 0.05, -0.47871834)
+
+[node name="trash_pile_cardboard" parent="." unique_id=1391618452 instance=ExtResource("4_5dppy")]
+transform = Transform3D(0.37935188, 0, 0.28586212, 0, 0.475, 0, -0.28586212, 0, 0.37935188, 0.3247468, 0.049999952, 1.1845951)
+
+[node name="trash_pile_mixed" parent="." unique_id=363181135 instance=ExtResource("5_ygfev")]
+transform = Transform3D(0.14678305, 0, 0.45175186, 0, 0.475, 0, -0.45175186, 0, 0.14678305, -0.31318635, 0.049999952, 1.0878091)
