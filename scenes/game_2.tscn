@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://d0y2pndosoqof"]
+
+[ext_resource type="PackedScene" uid="uid://dfgpch1ffxc4m" path="res://scenes/player.tscn" id="1_r11to"]
+[ext_resource type="PackedScene" uid="uid://uqly7evtvr46" path="res://scenes/restMesh.tscn" id="2_1oiof"]
+
+[node name="game2" type="Node3D" unique_id=649682888]
+
+[node name="player" parent="." unique_id=678003766 instance=ExtResource("1_r11to")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.5, 0)
+
+[node name="rest" parent="." unique_id=1094437040 instance=ExtResource("2_1oiof")]
