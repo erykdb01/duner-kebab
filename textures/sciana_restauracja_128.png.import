@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1lgll0co1eiv"
-path.s3tc="res://.godot/imported/podloga_restauracja_128.png-c57c8764719ac77403a3d18496b7aa62.s3tc.ctex"
+uid="uid://k0g8mpiho5r6"
+path.s3tc="res://.godot/imported/sciana_restauracja_128.png-342f5f005ced467a03693d3f7893d03b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://podloga_restauracja_128.png"
-dest_files=["res://.godot/imported/podloga_restauracja_128.png-c57c8764719ac77403a3d18496b7aa62.s3tc.ctex"]
+source_file="res://textures/sciana_restauracja_128.png"
+dest_files=["res://.godot/imported/sciana_restauracja_128.png-342f5f005ced467a03693d3f7893d03b.s3tc.ctex"]
 
 [params]
 

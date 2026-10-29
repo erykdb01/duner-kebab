@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://coq2um4bp2lbi"
-path.s3tc="res://.godot/imported/asphalt_128.png-136a0c88e0dbd574a8c6c3e223f30eec.s3tc.ctex"
+uid="uid://fxtqhywp3d67"
+path.s3tc="res://.godot/imported/napis.png-762585879b15ec912ca130b56675273a.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://asphalt_128.png"
-dest_files=["res://.godot/imported/asphalt_128.png-136a0c88e0dbd574a8c6c3e223f30eec.s3tc.ctex"]
+source_file="res://textures/napis.png"
+dest_files=["res://.godot/imported/napis.png-762585879b15ec912ca130b56675273a.s3tc.ctex"]
 
 [params]
 

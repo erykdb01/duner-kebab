@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://maeby6gptue"
-path.s3tc="res://.godot/imported/sufit_restauracja_128.png-2a8ff18c7cfabc7c22eba9dc4afc750a.s3tc.ctex"
+path.s3tc="res://.godot/imported/sufit_restauracja_128.png-4a27a502a321160a7069175263248254.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://sufit_restauracja_128.png"
-dest_files=["res://.godot/imported/sufit_restauracja_128.png-2a8ff18c7cfabc7c22eba9dc4afc750a.s3tc.ctex"]
+source_file="res://textures/sufit_restauracja_128.png"
+dest_files=["res://.godot/imported/sufit_restauracja_128.png-4a27a502a321160a7069175263248254.s3tc.ctex"]
 
 [params]
 

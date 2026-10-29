@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://dn7erkap7wrkc"
-path="res://.godot/imported/trash_pile_cardboard.glb-f82cd2785259ecc39a0205700188bfc9.scn"
+path="res://.godot/imported/trash_pile_cardboard.glb-8d0147186c306c814eb9df8d7f3600db.scn"
 
 [deps]
 
-source_file="res://trash_pile_cardboard.glb"
-dest_files=["res://.godot/imported/trash_pile_cardboard.glb-f82cd2785259ecc39a0205700188bfc9.scn"]
+source_file="res://models/trash_pile_cardboard.glb"
+dest_files=["res://.godot/imported/trash_pile_cardboard.glb-8d0147186c306c814eb9df8d7f3600db.scn"]
 
 [params]
 

@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwei70ixnjay"
-path.s3tc="res://.godot/imported/block_facade_128.png-a4b5182cc15bcdc5247b784658d12655.s3tc.ctex"
+uid="uid://ch1qesl464evv"
+path.s3tc="res://.godot/imported/trashcan_pixel_0.png-d3e039bf231ab95fcbf08eab0f5e52e8.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "218520b4ad0a577e53758dcacaf559c3"
+}
 
 [deps]
 
-source_file="res://block_facade_128.png"
-dest_files=["res://.godot/imported/block_facade_128.png-a4b5182cc15bcdc5247b784658d12655.s3tc.ctex"]
+source_file="res://textures/trashcan_pixel_0.png"
+dest_files=["res://.godot/imported/trashcan_pixel_0.png-d3e039bf231ab95fcbf08eab0f5e52e8.s3tc.ctex"]
 
 [params]
 

@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7h5mswj83hrr"
-path.s3tc="res://.godot/imported/trash_pile_mixed_0.png-91fb2335421315a23fa4c82d446c09b3.s3tc.ctex"
+path.s3tc="res://.godot/imported/trash_pile_mixed_0.png-7ad7f90bb2bc072430e6bcc5530ea2f5.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://trash_pile_mixed_0.png"
-dest_files=["res://.godot/imported/trash_pile_mixed_0.png-91fb2335421315a23fa4c82d446c09b3.s3tc.ctex"]
+source_file="res://textures/trash_pile_mixed_0.png"
+dest_files=["res://.godot/imported/trash_pile_mixed_0.png-7ad7f90bb2bc072430e6bcc5530ea2f5.s3tc.ctex"]
 
 [params]
 

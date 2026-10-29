@@ -1,15 +1,14 @@
 [gd_scene format=3 uid="uid://bvauk0mk1q6ou"]
 
-[ext_resource type="Texture2D" uid="uid://b1lgll0co1eiv" path="res://podloga_restauracja_128.png" id="1_q8ubf"]
-[ext_resource type="Texture2D" uid="uid://k0g8mpiho5r6" path="res://sciana_restauracja_128.png" id="2_8n0qn"]
-[ext_resource type="Texture2D" uid="uid://fxtqhywp3d67" path="res://napis.png" id="3_bd308"]
-[ext_resource type="Texture2D" uid="uid://maeby6gptue" path="res://sufit_restauracja_128.png" id="4_8n0qn"]
-[ext_resource type="PackedScene" uid="uid://l8cuunw5th5g" path="res://drzwi_zaplecze.tscn" id="4_130rr"]
-[ext_resource type="PackedScene" uid="uid://bi10whxw2mbi3" path="res://krzeslo.tscn" id="5_bd308"]
-[ext_resource type="PackedScene" uid="uid://d1nannjt1605q" path="res://stol.tscn" id="6_du3pw"]
-[ext_resource type="PackedScene" uid="uid://civx42xh4eniu" path="res://blat.tscn" id="7_kqg6h"]
-[ext_resource type="PackedScene" uid="uid://63vhuoncna6h" path="res://zapl.tscn" id="8_r8tef"]
-[ext_resource type="PackedScene" uid="uid://c0ga1ibpuje8r" path="res://smieci.tscn" id="9_4ot61"]
+[ext_resource type="Texture2D" uid="uid://b1lgll0co1eiv" path="res://textures/podloga_restauracja_128.png" id="1_q8ubf"]
+[ext_resource type="Texture2D" uid="uid://k0g8mpiho5r6" path="res://textures/sciana_restauracja_128.png" id="2_8n0qn"]
+[ext_resource type="Texture2D" uid="uid://fxtqhywp3d67" path="res://textures/napis.png" id="3_bd308"]
+[ext_resource type="Texture2D" uid="uid://maeby6gptue" path="res://textures/sufit_restauracja_128.png" id="4_8n0qn"]
+[ext_resource type="PackedScene" uid="uid://bi10whxw2mbi3" path="res://scenes/krzeslo.tscn" id="5_bd308"]
+[ext_resource type="PackedScene" uid="uid://d1nannjt1605q" path="res://scenes/stol.tscn" id="6_du3pw"]
+[ext_resource type="PackedScene" uid="uid://civx42xh4eniu" path="res://scenes/blat.tscn" id="7_kqg6h"]
+[ext_resource type="PackedScene" uid="uid://63vhuoncna6h" path="res://scenes/zapl.tscn" id="8_r8tef"]
+[ext_resource type="PackedScene" uid="uid://c0ga1ibpuje8r" path="res://scenes/smieci.tscn" id="9_4ot61"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_247cf"]
 albedo_texture = ExtResource("1_q8ubf")
@@ -163,9 +162,6 @@ size = Vector3(0.05, 1, 0.05)
 [node name="CSGBox3D5" type="CSGBox3D" parent="wallBack/framuga" unique_id=1090002353]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 0, 0.95025843, 0)
 size = Vector3(0.05, 1, 0.05)
-
-[node name="drzwiZaplecze" parent="wallBack" unique_id=1564461012 instance=ExtResource("4_130rr")]
-transform = Transform3D(0.9135454, 0, -0.40673664, 0, 1, 0, 0.40673664, 0, 0.9135454, 0.09693813, -0.49881694, 0.42035818)
 
 [node name="narozniki" type="Node3D" parent="." unique_id=187601941]
 

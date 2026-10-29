@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fxtqhywp3d67"
-path.s3tc="res://.godot/imported/napis.png-41e58308768d37672d89580bf9adf8a7.s3tc.ctex"
+uid="uid://dayym0hxwidun"
+path.s3tc="res://.godot/imported/trash_pile_mixed_0.png-269b93ca9af6e48cb441d6be01e802a2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "e9a0896f3401db1b6457ab40ecc304df"
+}
 
 [deps]
 
-source_file="res://napis.png"
-dest_files=["res://.godot/imported/napis.png-41e58308768d37672d89580bf9adf8a7.s3tc.ctex"]
+source_file="res://models/trash_pile_mixed_0.png"
+dest_files=["res://.godot/imported/trash_pile_mixed_0.png-269b93ca9af6e48cb441d6be01e802a2.s3tc.ctex"]
 
 [params]
 

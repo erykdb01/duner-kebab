@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://63vhuoncna6h"]
 
-[ext_resource type="Texture2D" uid="uid://b1lgll0co1eiv" path="res://podloga_restauracja_128.png" id="1_kk22g"]
-[ext_resource type="Texture2D" uid="uid://k0g8mpiho5r6" path="res://sciana_restauracja_128.png" id="2_08nd5"]
-[ext_resource type="Texture2D" uid="uid://maeby6gptue" path="res://sufit_restauracja_128.png" id="3_08nd5"]
+[ext_resource type="Texture2D" uid="uid://b1lgll0co1eiv" path="res://textures/podloga_restauracja_128.png" id="1_kk22g"]
+[ext_resource type="Texture2D" uid="uid://k0g8mpiho5r6" path="res://textures/sciana_restauracja_128.png" id="2_08nd5"]
+[ext_resource type="Texture2D" uid="uid://maeby6gptue" path="res://textures/sufit_restauracja_128.png" id="3_08nd5"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4rm4f"]
 albedo_texture = ExtResource("1_kk22g")
