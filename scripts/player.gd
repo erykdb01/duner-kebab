@@ -13,7 +13,7 @@ func _input(e):
 
 func _physics_process(delta):
 	var crouch = Input.is_key_pressed(KEY_CTRL)
-	var h = 1.2 if crouch else 2.0
+	var h = 1.2 if crouch else 1.6
 	col.shape.height = h
 	col.position.y = h / 2
 	cam.position.y = h - 0.3
