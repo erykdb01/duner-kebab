@@ -18,6 +18,7 @@ texture_filter = 0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bd308"]
 albedo_texture = ExtResource("4_8n0qn")
+uv1_scale = Vector3(0.3, 0.3, 0.3)
 uv1_triplanar = true
 texture_filter = 0
 
@@ -114,8 +115,7 @@ size = Vector3(0.25, 2, 1.5)
 material = SubResource("StandardMaterial3D_uu62a")
 
 [node name="szyld" type="Node3D" parent="." unique_id=208305509]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6841489, 0.7434114, -4.0965033)
-visible = false
+transform = Transform3D(4.375, 0, 0, 0, 4.375, 0, 0, 0, 4.375, -2.1439786, 2.1959271, -5.2297425)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="szyld" unique_id=416163891]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.018212795)
@@ -150,7 +150,7 @@ operation = 2
 size = Vector3(0.095, 0.145, 0.195)
 
 [node name="stol1" type="Node3D" parent="." unique_id=250297161]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 1.895367, 1.0694199, -2.7242622)
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 1.895367, 0.9168793, -2.7242622)
 
 [node name="Node3D" parent="stol1" unique_id=1739595812 instance=ExtResource("5_bd308")]
 transform = Transform3D(0.15926339, 0, 0.01533532, 0, 0.16, 0, -0.01533532, 0, 0.15926339, -0.01690346, -0.17614189, -0.21062994)
@@ -162,7 +162,7 @@ transform = Transform3D(-0.15866739, 0, 0.020607295, 0, 0.16, 0, -0.020607295, 0
 transform = Transform3D(0.0869079, 0, -0.13433918, 0, 0.16, 0, 0.13433918, 0, 0.0869079, -0.15952897, -0.06360716, -0.030575514)
 
 [node name="stol2" type="Node3D" parent="." unique_id=1442546219]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 1.7157015, 1.0698931, 2.1349397)
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 1.7157015, 0.9074006, 2.1349397)
 
 [node name="Node3D" parent="stol2" unique_id=448180640 instance=ExtResource("5_bd308")]
 transform = Transform3D(0.15915245, 0, -0.016446805, 0, 0.16, 0, 0.016446805, 0, 0.15915245, -0.01690346, -0.17614189, -0.21062994)
@@ -174,7 +174,7 @@ transform = Transform3D(-0.15418087, 0, -0.04275815, 0, 0.16, 0, 0.04275815, 0, 
 transform = Transform3D(0.0869079, 0, -0.13433918, 0, 0.16, 0, 0.13433918, 0, 0.0869079, -0.15952897, -0.06360716, -0.030575514)
 
 [node name="blyat" parent="." unique_id=697891900 instance=ExtResource("7_kqg6h")]
-transform = Transform3D(-3.081653e-08, 0, 0.705, 0, 0.705, 0, -0.705, 0, -3.081653e-08, -2.2273784, 0.5, 1.7320852)
+transform = Transform3D(-3.4969112e-08, 0, 0.8, 0, 0.8, 0, -0.8, 0, -3.4969112e-08, -1.3491112, 0.5, 1.098073)
 
 [node name="zapl" parent="." unique_id=1647861123 instance=ExtResource("8_r8tef")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0297008, -4.7683716e-07, 12.349561)
@@ -183,3 +183,8 @@ visible = false
 [node name="smieci" parent="." unique_id=1164262290 instance=ExtResource("9_4ot61")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -5.072829, -4.7683716e-07, 10.776672)
 visible = false
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1000363283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1530013, 0)
+omni_range = 7.937
+omni_attenuation = 0.69

@@ -27,7 +27,7 @@ func _physics_process(delta):
 	var x = int(Input.is_key_pressed(KEY_D)) - int(Input.is_key_pressed(KEY_A))
 	var z = int(Input.is_key_pressed(KEY_S)) - int(Input.is_key_pressed(KEY_W))
 	var dir = (transform.basis * Vector3(x, 0, z)).normalized()
-	var speed = 0.5 if crouch else 2.0
+	var speed = 1.5 if crouch else 5.0
 	velocity.x = dir.x * speed
 	velocity.z = dir.z * speed
 	move_and_slide()
