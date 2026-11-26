@@ -13,6 +13,12 @@ func show_prompt(text: String) -> void:
 func show_money(amount: int) -> void:
 	money.text = "Kasa: %d zł" % amount
 
+func show_clock(text: String) -> void:
+	$Clock.text = text
+
+func show_warning(text: String) -> void:
+	$Warning.text = text
+
 func show_orders(lines: Array[String]) -> void:
 	order.text = "Zamówienia:\n" + "\n".join(lines) if lines else ""
 

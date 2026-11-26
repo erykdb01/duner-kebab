@@ -123,6 +123,12 @@ operation = 2
 size = Vector3(0.25, 2, 1.5)
 material = SubResource("StandardMaterial3D_uu62a")
 
+[node name="doorKitchen" type="CSGBox3D" parent="wallBack"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, -3.1)
+operation = 2
+size = Vector3(0.25, 2, 1.2)
+material = SubResource("StandardMaterial3D_uu62a")
+
 [node name="szyld" type="Node3D" parent="." unique_id=208305509]
 transform = Transform3D(4.375, 0, 0, 0, 4.375, 0, 0, 0, 4.375, -2.1439786, 2.1959271, -5.2297425)
 

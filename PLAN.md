@@ -10,15 +10,11 @@ Po każdym etapie zaktualizuj ten plik (krótko).
 - [x] 4: szczur i maszynka (do sprawdzenia w grze)
 - [x] 5: kolejka klientów (pary, kolejni mimo nieobsłużonych), krzesła (max 4), jedzenie, opinia, wyjście;
   dowolne warstwy w kebabie, zamówienia z ilością i kolejnością, swoboda ze szczurem (do sprawdzenia w grze)
-- [ ] 5b: zaplecze (patrz niżej)
-- [ ] 6: noc, tabliczka „OTWARTE”, podsumowanie, restart, menu i pauza
+- [x] 5b: śmietnik za kuchnią, szczury zakradające się na salę, maszynka pod blatem, czas zamówień w HUD
+  (do sprawdzenia w grze)
+- [x] 6: noc, tabliczka „OTWARTE”, podsumowanie, restart, menu i pauza; długi kontener na podwórku
+  ze szczurami i słabym światłem pod spodem (do sprawdzenia w grze)
 - [ ] 7: dźwięk, sprite'y, klienci specjalni, 3 noce, finał
-
-## Etap 5b: zaplecze (zgłoszone po etapie 4)
-- Śmieci z tyłu (jest `Scenes/smieci.tscn`, tylne drzwi zablokowane): stamtąd gracz bierze szczury.
-- Czasem szczur wchodzi na salę; trzeba go złapać, zanim zobaczą klienci (reakcja klientów).
-- Maszynka w miejscu niewidocznym dla klientów (ścianka lub zaplecze).
-- Reakcja klientów także na szczura wypuszczonego na sali.
 
 ## Uwagi po teście etapu 3
 - Sos w kebabie: poprawiony (do sprawdzenia).
@@ -31,12 +27,19 @@ Po każdym etapie zaktualizuj ten plik (krótko).
 - Interakcja: warstwa kolizji 2; obiekt ma `get_prompt(player)` i `interact(player)`.
 - Gracz: `held`, `hold(item)`, `discard()`; podnoszone przedmioty używają `Scripts/item.gd`.
 - Kebab: `contents` = warstwy od dołu (`meat`, `salad`, `sauce`, `tortilla`, `rat`; max 10); grupa `trashable`.
-- `game.gd`: `money`, grupy klientów co 15-28 s (max 5 w środku), przydział `counter_slots` (3) i `seats` (4),
-  respawn szczura 20 s po zniknięciu; trasa: `customer_route` (street, door).
+- `game.gd`: `money`, noc = 9 klientów (grupy co 22-38 s, max 5 w środku), przydział `counter_slots` (3)
+  i `seats` (4); trasa klientów: `customer_route` (street, door); lista zamówień z czasem w HUD.
+  Noc startuje z `open_sign` (przy drzwiach frontowych); inwazje szczurów dopiero po otwarciu.
+- Start gry: `Scenes/menu.tscn`. `Scenes/overlay.tscn` (w `game.tscn`): pauza (Esc) i podsumowanie nocy.
+- Kontener: `Objects/dumpster.tscn` (prześwit ok. 0,5 m; szczura głębiej pod spodem łatwiej złapać w kucki).
+- Szczury: max 2, nowy po 20 s; co 45-90 s jeden idzie `invasion_route` na salę (12 s na złapanie,
+  wypuszczony na sali: 2 s), potem klienci wychodzą.
+- Podwórko: `Objects/backyard.tscn` (płot, worki, światła), drzwi z kuchni `wallBack/doorKitchen` (x ≈ -3.1);
+  stare tylne drzwi na sali nadal zablokowane.
 - Klient: `Objects/customer.tscn` (`ENTERING → WAITING → TO_SEAT → EATING → REVIEWING → LEAVING`,
   `patience` 75 s), sprite tymczasowy (losowy odcień). `CustomerType` dopiero w etapie 7.
-- Szczur: `Objects/rat.tscn` (grupy `rat`, `trashable`; `release(point)`), markery `rat_points`;
-  maszynka: `Objects/grinder.tscn`.
+- Szczur: `Objects/rat.tscn` (grupy `rat`, `trashable`; strefy `yard`/`kitchen`/`sala`, markery `rat_areas`);
+  maszynka: `Objects/grinder.tscn` na dolnej półce blatu.
 - Mięso: `stock` na `prep_station/source_meat` (start 3), uzupełnia `game.gd` po zmieleniu.
 - Materiały w `Materials/`, tekstury jedzenia 16×16 (ok. 64 px/m, filtr nearest).
 
@@ -61,3 +64,6 @@ migocząca świetlówka, zaplecze `zapl` jako kryjówka szczura (kucanie ok. 0,9
 
 **Pomysły:** Sanepid, podanie żywego szczura, absurdalni klienci, plakat „Zaginął szczur”, radio.
 **Nie robić:** ekwipunek, ekonomia, psucie składników, drzewka dialogowe, zapis w środku nocy.
+
+## Do poprawy później
+- Śmietnik (`Objects/dumpster.tscn`): po teście dalej bardzo zły. Przed poprawką ustalić z użytkownikiem, co dokładnie.

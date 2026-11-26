@@ -1,48 +1,59 @@
 extends Area3D
-# Szczur: łazi po kuchni, ucieka przed graczem i daje się złapać w przerwach.
-# Wypuszczony w kuchni zostaje w niej, wypuszczony na sali ucieka frontowymi drzwiami.
+# Szczur: żyje przy śmietniku, czasem zakrada się na salę. Ucieka przed graczem
+# i daje się złapać w przerwach. Wypuszczony zostaje tam, gdzie wylądował.
 
-enum State { WANDER, FLEE, HELD, ESCAPE }
+enum State { WANDER, FLEE, HELD, TRAVEL }
 
 const WANDER_SPEED := 1.2
 const FLEE_SPEED := 3.0
+const SNEAK_SPEED := 1.6
 const FEAR_DISTANCE := 2.0
 const CATCH_WINDOW := 0.9 # postój po ucieczce
 const HELD_SCALE := 0.6
+const SNEAK_NOTICE_TIME := 12.0 # tyle masz na złapanie, zanim klienci zauważą
+const DROPPED_NOTICE_TIME := 2.0
 const COUNTER_X := -1.35 # na lewo od tej linii jest kuchnia
-const KITCHEN_EDGE_X := -2.6
-const SALA_EDGE_X := -0.6
-const MAX_Z := 4.7
+const BACK_WALL_Z := 5.0 # dalej jest podwórko
 const FLOOR_Y := 0.05
+# Gdzie może wylądować wypuszczony szczur (x, z).
+const BOUNDS := {
+	&"yard": Rect2(-6.8, 5.4, 5.4, 7.4),
+	&"kitchen": Rect2(-3.8, -4.7, 1.2, 9.4),
+	&"sala": Rect2(-0.6, -4.7, 4.4, 9.4),
+}
 
 var state := State.WANDER
-var _points: Array[Vector3] = []
-var _exit: Array[Vector3] = []
-var _escape: Array[Vector3] = []
+var zone := &"yard" # pusta w ręce i w drodze
+var notice_left := 0.0
+var _areas := {} # strefa -> punkty, po których szczur biega
+var _path: Array[Vector3] = []
+var _destination := &"" # strefa po dojściu; pusta = szczur znika
 var _player: Node3D
 var _target := Vector3.ZERO
 var _pause := 1.0
 
 @onready var sprite: Sprite3D = $Sprite3D
 
-# Wywołać po dodaniu do sceny. Szczur pojawia się z dala od gracza.
-func start(points: Array[Vector3], exit: Array[Vector3], player: Node3D) -> void:
-	_points = points
-	_exit = exit
+# Wywołać po dodaniu do sceny.
+func start(areas: Dictionary, player: Node3D) -> void:
+	_areas = areas
 	_player = player
-	global_position = _farthest_point()
+	global_position = _areas[zone].pick_random()
 	_target = global_position
+
+# Idzie podaną trasą na salę.
+func invade(path: Array[Vector3]) -> void:
+	_travel(path, &"sala")
+
+# Idzie podaną trasą i znika.
+func escape(path: Array[Vector3]) -> void:
+	_travel(path, &"")
 
 func _process(delta: float) -> void:
 	if state == State.HELD:
 		return
-	if state == State.ESCAPE:
-		global_position = global_position.move_toward(_target, FLEE_SPEED * delta)
-		if global_position.is_equal_approx(_target):
-			if _escape.is_empty():
-				queue_free()
-			else:
-				_run_to(_escape.pop_front())
+	if state == State.TRAVEL:
+		_follow_path(delta)
 		return
 	var scared := global_position.distance_to(_player.global_position) < FEAR_DISTANCE
 	if state == State.WANDER and scared:
@@ -60,7 +71,7 @@ func _process(delta: float) -> void:
 			_flee()
 		else:
 			state = State.WANDER
-			_run_to(_points.pick_random())
+			_run_to(_areas[zone].pick_random())
 
 func get_prompt(player) -> String:
 	return "Masz zajęte ręce" if player.held else "[E] Złap szczura"
@@ -69,21 +80,47 @@ func interact(player) -> void:
 	if player.held:
 		return
 	state = State.HELD
+	zone = &""
 	sprite.scale = Vector3.ONE * HELD_SCALE
 	player.hold(self)
 
 # Wywoływane przez gracza po "odłożeniu" szczura.
 func release(point: Vector3) -> void:
 	sprite.scale = Vector3.ONE
-	var in_kitchen := point.x < COUNTER_X
-	var x := minf(point.x, KITCHEN_EDGE_X) if in_kitchen else maxf(point.x, SALA_EDGE_X)
-	global_position = Vector3(x, FLOOR_Y, clampf(point.z, -MAX_Z, MAX_Z))
-	if in_kitchen:
-		_flee()
+	if point.z > BACK_WALL_Z:
+		zone = &"yard"
+	elif point.x < COUNTER_X:
+		zone = &"kitchen"
 	else:
-		state = State.ESCAPE
-		_escape = _exit.duplicate()
-		_run_to(_escape.pop_front())
+		zone = &"sala"
+		notice_left = DROPPED_NOTICE_TIME
+	var bounds: Rect2 = BOUNDS[zone]
+	global_position = Vector3(
+		clampf(point.x, bounds.position.x, bounds.end.x), FLOOR_Y,
+		clampf(point.z, bounds.position.y, bounds.end.y))
+	_flee()
+
+func _travel(path: Array[Vector3], destination: StringName) -> void:
+	state = State.TRAVEL
+	zone = &""
+	_destination = destination
+	_path = path.duplicate()
+	_run_to(_path.pop_front())
+
+func _follow_path(delta: float) -> void:
+	var speed := SNEAK_SPEED if _destination else FLEE_SPEED
+	global_position = global_position.move_toward(_target, speed * delta)
+	if not global_position.is_equal_approx(_target):
+		return
+	if not _path.is_empty():
+		_run_to(_path.pop_front())
+	elif _destination:
+		zone = _destination
+		notice_left = SNEAK_NOTICE_TIME
+		state = State.WANDER
+		_pause = 1.0
+	else:
+		queue_free()
 
 func _flee() -> void:
 	state = State.FLEE
@@ -97,8 +134,9 @@ func _run_to(point: Vector3) -> void:
 		sprite.flip_h = (point - global_position).dot(camera.global_basis.x) < 0.0
 
 func _farthest_point() -> Vector3:
-	var best := _points[0]
-	for point in _points:
+	var points: Array[Vector3] = _areas[zone]
+	var best := points[0]
+	for point in points:
 		if point.distance_to(_player.global_position) > best.distance_to(_player.global_position):
 			best = point
 	return best

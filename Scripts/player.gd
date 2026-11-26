@@ -16,9 +16,7 @@ func _ready():
 	ray.add_exception(self)
 
 func _unhandled_input(e):
-	if e.is_action_pressed("ui_cancel"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		if e is InputEventMouseButton and e.pressed:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif e.is_action_pressed("interact"):

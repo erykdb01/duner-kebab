@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" path="res://Objects/trash_bin.tscn" id="5_trash"]
 [ext_resource type="Script" path="res://Scripts/game.gd" id="6_game"]
 [ext_resource type="PackedScene" path="res://Objects/grinder.tscn" id="7_grinder"]
+[ext_resource type="PackedScene" path="res://Objects/backyard.tscn" id="8_yard"]
+[ext_resource type="PackedScene" path="res://Objects/open_sign.tscn" id="9_sign"]
+[ext_resource type="PackedScene" path="res://Scenes/overlay.tscn" id="10_overlay"]
 
 [sub_resource type="Environment" id="Environment_night"]
 background_mode = 1
@@ -41,27 +44,93 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.095, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.05, -0.4)
 
 [node name="grinder" parent="." instance=ExtResource("7_grinder")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.095, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.06, 0.827, 0.7)
 
-[node name="rat_points" type="Node3D" parent="."]
+[node name="backyard" parent="." instance=ExtResource("8_yard")]
 
-[node name="p0" type="Marker3D" parent="rat_points"]
+[node name="open_sign" parent="." instance=ExtResource("9_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -4.91)
+
+[node name="overlay" parent="." instance=ExtResource("10_overlay")]
+
+[node name="rat_areas" type="Node3D" parent="."]
+
+[node name="yard" type="Node3D" parent="rat_areas"]
+
+[node name="p0" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7, 0.05, 11.55)
+
+[node name="p1" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0.05, 11.9)
+
+[node name="p2" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.05, 11.4)
+
+[node name="p3" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0.05, 11.8)
+
+[node name="p4" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.05, 9.4)
+
+[node name="p5" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4, 0.05, 9.0)
+
+[node name="p6" type="Marker3D" parent="rat_areas/yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.05, 11.0)
+
+[node name="kitchen" type="Node3D" parent="rat_areas"]
+
+[node name="p0" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35, 0.05, -4.4)
 
-[node name="p1" type="Marker3D" parent="rat_points"]
+[node name="p1" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0.05, -2.6)
 
-[node name="p2" type="Marker3D" parent="rat_points"]
+[node name="p2" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0.05, -1.2)
 
-[node name="p3" type="Marker3D" parent="rat_points"]
+[node name="p3" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 0.05, 0.8)
 
-[node name="p4" type="Marker3D" parent="rat_points"]
+[node name="p4" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35, 0.05, 2.4)
 
-[node name="p5" type="Marker3D" parent="rat_points"]
+[node name="p5" type="Marker3D" parent="rat_areas/kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.05, 4.4)
+
+[node name="sala" type="Node3D" parent="rat_areas"]
+
+[node name="p0" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.05, -3.6)
+
+[node name="p1" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0.05, -4.2)
+
+[node name="p2" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.05, -0.5)
+
+[node name="p3" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.05, -0.4)
+
+[node name="p4" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.05, 4.4)
+
+[node name="p5" type="Marker3D" parent="rat_areas/sala"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0.05, 4.2)
+
+[node name="invasion_route" type="Node3D" parent="."]
+
+[node name="back_outside" type="Marker3D" parent="invasion_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.05, 5.8)
+
+[node name="back_inside" type="Marker3D" parent="invasion_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.05, 4.4)
+
+[node name="kitchen_end" type="Marker3D" parent="invasion_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0, 0.05, -3.6)
+
+[node name="sala_entry" type="Marker3D" parent="invasion_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.05, -3.6)
 
 [node name="hud" parent="." instance=ExtResource("3_hud")]
 

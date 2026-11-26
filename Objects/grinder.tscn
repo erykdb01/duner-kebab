@@ -49,7 +49,7 @@ material = SubResource("mat_red")
 size = Vector3(0.08, 0.04, 0.04)
 
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(0.3, 0.4, 0.34)
+size = Vector3(0.24, 0.28, 0.26)
 
 [node name="grinder" type="StaticBody3D"]
 collision_layer = 3
@@ -57,6 +57,7 @@ collision_mask = 0
 script = ExtResource("1_grinder")
 
 [node name="model" type="Node3D" parent="."]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0, 0, 0)
 
 [node name="base" type="MeshInstance3D" parent="model"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
@@ -83,12 +84,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 0.3, 0.12)
 mesh = SubResource("mesh_knob")
 
 [node name="Bubble" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
-pixel_size = 0.0025
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.32, 0)
+pixel_size = 0.0016
 billboard = 1
 font_size = 40
 outline_size = 12
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
 shape = SubResource("shape")

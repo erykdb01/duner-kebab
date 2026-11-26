@@ -2,7 +2,6 @@ extends Area3D
 # Klient: wchodzi, zamawia przy ladzie, płaci, czasem je przy stoliku i wychodzi.
 
 signal served(customer: Node, payment: int, may_sit: bool)
-signal queue_changed
 
 enum State { ENTERING, WAITING, TO_SEAT, EATING, REVIEWING, LEAVING }
 
@@ -17,6 +16,7 @@ const COUNTED: Array[StringName] = [&"meat", &"salad", &"sauce", &"tortilla"]
 const SPRITE_Y := 0.88
 const SEATED_SPRITE_Y := 0.68
 const REVIEW_TIME := 3.5
+const FRONT_WALL_Z := -5.0
 const TINTS: Array[Color] = [
 	Color(0.85, 0.85, 0.9), Color(0.9, 0.65, 0.6), Color(0.6, 0.85, 0.6),
 	Color(0.9, 0.85, 0.5), Color(0.75, 0.65, 0.9),
@@ -108,7 +108,13 @@ func sit(new_seat: int, position_at_table: Vector3) -> void:
 	slot = -1
 	collision_layer = 0
 	_path = [_aisle(global_position), _aisle(position_at_table), position_at_table]
-	queue_changed.emit()
+
+# Czy klient jest w lokalu i może zauważyć szczura.
+func can_see_rat() -> bool:
+	return state != State.LEAVING and global_position.z > FRONT_WALL_Z
+
+func see_rat() -> void:
+	_leave("SZCZUR! Wychodzę stąd!")
 
 func _make_order() -> void:
 	order = [&"meat"]
@@ -176,8 +182,7 @@ func _arrive() -> void:
 			state = State.WAITING
 			time_left = patience
 			collision_layer = _layer
-			_show_order("Nr %d" % number)
-			queue_changed.emit()
+			_show_order("Poproszę kebab:")
 		State.TO_SEAT:
 			state = State.EATING
 			_timer = randf_range(12.0, 20.0)
@@ -192,7 +197,7 @@ func _wait(delta: float) -> void:
 		_leave("Mam dość, idę gdzie indziej!")
 	elif not _complained and time_left <= patience * 0.5:
 		_complained = true
-		_show_order("Nr %d - ile można czekać?!" % number)
+		_show_order("Ile można czekać?!")
 
 func _leave(text: String) -> void:
 	# Od stolika najpierw w bok do przejścia, od lady tak samo.
@@ -203,7 +208,6 @@ func _leave(text: String) -> void:
 	collision_layer = 0
 	sprite.position.y = SPRITE_Y
 	bubble.text = text
-	queue_changed.emit()
 
 func _show_order(title: String) -> void:
 	var lines := _counted_lines()
