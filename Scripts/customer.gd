@@ -1,7 +1,7 @@
 extends Area3D
 # Klient: wchodzi, rozmawia i zamawia przy ladzie, czeka (zwykle przy stoliku), dostaje kebaba
 # do ręki albo podchodzi zawołany po imieniu, płaci, czasem je i wychodzi.
-# Zachowanie zależy od rodzaju (CustomerType), teksty od postaci z Data/dialogi.json.
+# Zachowanie zależy od rodzaju (TYPES), teksty od postaci z Data/dialogi.json.
 
 signal served(customer: Node, payment: int, may_sit: bool)
 signal talk_requested(customer: Node)
@@ -13,7 +13,6 @@ signal pimpek_returned(customer: Node)
 enum State { ENTERING, WAITING, WALKING, EATING, FAREWELL, LEAVING }
 
 const Kebab = preload("res://Scripts/kebab.gd")
-const CustomerType = preload("res://Scripts/customer_type.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Night = preload("res://Scripts/night.gd")
@@ -31,8 +30,20 @@ const FOOD_PATIENCE := 1.8 # po przyjęciu zamówienia czeka dłużej
 const REPEAT_COST := 8.0 # sekundy cierpliwości za prośbę o powtórzenie
 const MAX_CHATS := 2
 const FRONT_WALL_Z := -5.0
+# "typ" postaci -> [zachowanie, cierpliwość w sekundach, napiwek w zł]
+const TYPES := {
+	&"regular": [&"regular", 75.0, 5],
+	&"klientka": [&"regular", 75.0, 5],
+	&"student": [&"regular", 55.0, 8],
+	&"babcia": [&"regular", 110.0, 2],
+	&"sanepid": [&"sanepid", 75.0, 5],
+	&"smakosz": [&"gourmet", 90.0, 10],
+	&"wlasciciel": [&"owner", 110.0, 0],
+}
 
-var type: CustomerType
+var kind := &"regular" # regular, sanepid, gourmet, owner
+var patience := 75.0
+var tip := 5
 var character := "" # klucz w "postacie"
 var first_name := ""
 var name_known := false
@@ -72,9 +83,12 @@ func _ready() -> void:
 	add_child(speech)
 
 # Wywołać po dodaniu do sceny.
-func start(new_type: CustomerType, new_character: String, new_name: String, new_slot: int,
+func start(type_id: StringName, new_character: String, new_name: String, new_slot: int,
 		street: Vector3, door: Vector3, counter: Vector3) -> void:
-	type = new_type
+	var stats: Array = TYPES[type_id]
+	kind = stats[0]
+	patience = stats[1]
+	tip = stats[2]
 	character = new_character
 	first_name = new_name
 	# Wygląd: pole "wyglad" w pliku dialogów albo obrazek o nazwie postaci.
@@ -85,7 +99,7 @@ func start(new_type: CustomerType, new_character: String, new_name: String, new_
 	_door = door
 	global_position = street
 	_path = [door, _aisle(counter), counter]
-	_conversations = Dialogs.conversations(character, type.kind != &"owner")
+	_conversations = Dialogs.conversations(character, kind != &"owner")
 	_greeting = Dialogs.greeting(character)
 	_make_order()
 
@@ -115,7 +129,7 @@ func get_prompt(player) -> String:
 		return "[E] Porozmawiaj"
 	if player.held is Kebab:
 		return "[E] Podaj kebaba"
-	if type.kind == &"owner" and player.held.is_in_group("pimpek"):
+	if kind == &"owner" and player.held.is_in_group("pimpek"):
 		return "[E] Oddaj Pimpka"
 	return "[E] Daj szczura" if player.held.is_in_group("rat") else "Klient tego nie chce"
 
@@ -126,14 +140,14 @@ func interact(player) -> void:
 		return
 	if state != State.WAITING:
 		return
-	if type.kind == &"owner":
+	if kind == &"owner":
 		_owner_takes(player)
 	elif player.held.is_in_group("rat"):
 		player.discard()
 		served.emit(self, 0, false)
-		if type.kind == &"gourmet":
+		if kind == &"gourmet":
 			_leave(_line("surowy_szczur"), 2, _line("opinia_surowy_szczur"))
-		elif type.kind == &"sanepid":
+		elif kind == &"sanepid":
 			_fine()
 		else:
 			_leave(_line("szczur_do_reki"), 1, _line("opinia_szczur"))
@@ -173,12 +187,12 @@ func throw_out() -> void:
 	_leave(_line("wyproszony"), 1, _line("opinia_wyproszony"))
 
 func can_take_order() -> bool:
-	return type.kind != &"owner" and state == State.WAITING
+	return kind != &"owner" and state == State.WAITING
 
 func ask_order() -> String:
 	if not ordered:
 		ordered = true
-		_max_time = type.patience * FOOD_PATIENCE
+		_max_time = patience * FOOD_PATIENCE
 		time_left = _max_time
 		_complained = false
 		return _order_text()
@@ -242,12 +256,12 @@ func is_hungry() -> bool:
 
 # Czy klient jest w lokalu i może się przejąć szczurem.
 func can_see_rat() -> bool:
-	if type.kind == &"gourmet" or type.kind == &"owner":
+	if kind == &"gourmet" or kind == &"owner":
 		return false
 	return state != State.FAREWELL and state != State.LEAVING and global_position.z > FRONT_WALL_Z
 
 func see_rat() -> void:
-	if type.kind == &"sanepid":
+	if kind == &"sanepid":
 		_fine()
 	else:
 		_leave(_line("widzi_szczura"), 1, _line("opinia_widzial_szczura"))
@@ -278,10 +292,10 @@ func _owner_takes(player) -> void:
 		_leave(_line("pimpek_w_kebabie"), 1, _line("opinia_szczur"))
 
 func _make_order() -> void:
-	if type.kind == &"owner":
+	if kind == &"owner":
 		return
 	order = [&"meat"]
-	if type.kind == &"gourmet":
+	if kind == &"gourmet":
 		order.append(&"rat")
 	if randf() < 0.3:
 		order.append(&"meat")
@@ -291,7 +305,7 @@ func _make_order() -> void:
 		order.append(&"sauce")
 	if randf() < 0.15:
 		order.append(&"tortilla")
-	strict = type.kind != &"gourmet" and order.size() > 1 and randf() < 0.3
+	strict = kind != &"gourmet" and order.size() > 1 and randf() < 0.3
 	if strict:
 		order.shuffle()
 
@@ -313,11 +327,11 @@ func _order_text() -> String:
 	return _line("zamowienie", {"lista": ", ".join(words)})
 
 func _rate(contents: Array[StringName]) -> void:
-	var gourmet := type.kind == &"gourmet"
+	var gourmet := kind == &"gourmet"
 	if &"rat" in contents and not gourmet:
 		rat_served.emit()
 		served.emit(self, 0, false)
-		if type.kind == &"sanepid":
+		if kind == &"sanepid":
 			_fine()
 		else:
 			_leave(_line("szczur_w_kebabie"), 1, _line("opinia_szczur"))
@@ -355,7 +369,7 @@ func _rate(contents: Array[StringName]) -> void:
 		_opinion = _line("opinie_super")
 		_stars = 4
 		if time_left > _max_time * 0.5:
-			payment += type.tip
+			payment += tip
 			reaction += "\n" + _line("napiwek")
 			_stars = 5
 	if payment > 0:
@@ -395,7 +409,7 @@ func _arrive() -> void:
 		queue_free()
 		return
 	if state == State.ENTERING:
-		_max_time = type.patience
+		_max_time = patience
 		time_left = _max_time
 		say(str(_greeting.get("klient", "...")))
 	collision_layer = _layer
@@ -414,7 +428,7 @@ func _start_eating() -> void:
 func _wait(delta: float) -> void:
 	time_left -= delta * drain
 	if time_left <= 0.0:
-		_leave(_line("rezygnacja"), 2 if type.kind == &"owner" else 1, _line("opinia_rezygnacja"))
+		_leave(_line("rezygnacja"), 2 if kind == &"owner" else 1, _line("opinia_rezygnacja"))
 	elif not _complained and time_left <= _max_time * 0.4:
 		_complained = true
 		say(_line("ponaglenia"))

@@ -4,8 +4,8 @@
 
 [sub_resource type="ShaderMaterial" id="material"]
 shader = ExtResource("1_pixel")
-shader_parameter/pixel_size = 2.0
-shader_parameter/levels = 64.0
+shader_parameter/pixel_size = 2.5
+shader_parameter/levels = 48.0
 
 [node name="pixel_filter" type="CanvasLayer"]
 layer = -1

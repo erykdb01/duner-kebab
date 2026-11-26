@@ -14,6 +14,9 @@ func _ready() -> void:
 	_west()
 	_distant()
 	_restaurant_outside()
+	# Na zewnątrz cienie nic nie wnoszą, a kosztują.
+	for mesh in find_children("*", "MeshInstance3D", true, false):
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 # Ulica przed wejściem (stąd przychodzą klienci).
 func _front() -> void:

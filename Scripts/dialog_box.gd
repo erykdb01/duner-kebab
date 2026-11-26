@@ -71,7 +71,7 @@ func _show_main() -> void:
 	var name_key := "imie_znowu" if customer.name_known else "imie"
 	list.append(_option(name_key, _ask_name))
 	list.append(_option("pogadaj", _chat))
-	if customer.type.kind == &"owner" and customer.state == customer.State.WAITING:
+	if customer.kind == &"owner" and customer.state == customer.State.WAITING:
 		list.append(_option("nie_widzialem", func(): customer.dismiss()))
 	list.append(_option("wypros", func(): customer.throw_out()))
 	var end_key := "koniec_po" if customer.ordered else "koniec_przed"

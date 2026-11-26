@@ -7,15 +7,6 @@ const Rat = preload("res://Objects/rat.tscn")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
 const Night = preload("res://Scripts/night.gd")
-const TYPES := {
-	&"regular": preload("res://Customers/regular.tres"),
-	&"klientka": preload("res://Customers/klientka.tres"),
-	&"student": preload("res://Customers/student.tres"),
-	&"babcia": preload("res://Customers/babcia.tres"),
-	&"sanepid": preload("res://Customers/sanepid.tres"),
-	&"smakosz": preload("res://Customers/smakosz.tres"),
-	&"wlasciciel": preload("res://Customers/wlasciciel.tres"),
-}
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
 	[&"regular", &"regular", &"klientka", &"klientka", &"student", &"babcia", &"smakosz"],
@@ -339,7 +330,7 @@ func _watch_held_rat() -> void:
 	if at.x < SALA_X or absf(at.z) > 5.0:
 		return
 	for customer in get_tree().get_nodes_in_group("customers"):
-		if customer.type.kind == &"sanepid" and customer.can_see_rat():
+		if customer.kind == &"sanepid" and customer.can_see_rat():
 			customer.see_rat()
 
 # Klienci zauważają szczura na sali po chwili i wychodzą. Po ciemku nic nie widzą.
@@ -451,11 +442,11 @@ func _spawn_customer(place_in_group: int) -> void:
 	# Druga osoba z pary idzie krok za pierwszą.
 	var street: Vector3 = $customer_route/street.global_position + Vector3(0, 0, -0.9 * place_in_group)
 	customer.talk_requested.connect($dialog_box.open)
-	var kind: StringName = _queue.pop_front()
-	var character: String = _pick_unused(Dialogs.characters_of(kind), _used_characters, kind)
+	var type_id: StringName = _queue.pop_front()
+	var character: String = _pick_unused(Dialogs.characters_of(type_id), _used_characters, type_id)
 	var gender: String = Dialogs.character(character).get("plec", "m")
 	var first_name: String = _pick_unused(Dialogs.names(gender), _used_names, "Alex")
-	customer.start(TYPES[kind], character, first_name, slot, street,
+	customer.start(type_id, character, first_name, slot, street,
 		$customer_route/door.global_position, $counter_slots.get_child(slot).global_position)
 	Sfx.play_at($open_sign, "bell")
 

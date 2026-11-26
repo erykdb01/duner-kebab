@@ -5,7 +5,8 @@ extends RefCounted
 
 const TEXTURE := "res://Textures/swiat/%s.png"
 
-static var _cache := {}
+static var _cache := {} # materiały
+static var _meshes := {} # wspólne siatki: te same bryły karta rysuje za jednym razem
 
 static func texture(name: String) -> Texture2D:
 	return load(TEXTURE % name)
@@ -74,47 +75,64 @@ static func _mesh(parent: Node, mesh: Mesh, pos: Vector3, rot: Vector3) -> MeshI
 
 static func box(parent: Node, pos: Vector3, size: Vector3, material: Material,
 		rot := Vector3.ZERO) -> MeshInstance3D:
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	mesh.material = material
-	return _mesh(parent, mesh, pos, rot)
+	var key := "box %s %d" % [size, material.get_instance_id()]
+	if not _meshes.has(key):
+		var mesh := BoxMesh.new()
+		mesh.size = size
+		mesh.material = material
+		_meshes[key] = mesh
+	return _mesh(parent, _meshes[key], pos, rot)
 
 static func cyl(parent: Node, pos: Vector3, radius: float, height: float, material: Material,
 		rot := Vector3.ZERO, top := -1.0, sides := 7) -> MeshInstance3D:
-	var mesh := CylinderMesh.new()
-	mesh.bottom_radius = radius
-	mesh.top_radius = radius if top < 0.0 else top
-	mesh.height = height
-	mesh.radial_segments = sides
-	mesh.rings = 0
-	mesh.material = material
-	return _mesh(parent, mesh, pos, rot)
+	var key := "cyl %s %s %s %d %d" % [radius, height, top, sides, material.get_instance_id()]
+	if not _meshes.has(key):
+		var mesh := CylinderMesh.new()
+		mesh.bottom_radius = radius
+		mesh.top_radius = radius if top < 0.0 else top
+		mesh.height = height
+		mesh.radial_segments = sides
+		mesh.rings = 0
+		mesh.material = material
+		_meshes[key] = mesh
+	return _mesh(parent, _meshes[key], pos, rot)
 
 static func ball(parent: Node, pos: Vector3, size: Vector3, material: Material) -> MeshInstance3D:
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.5
-	mesh.height = 1.0
-	mesh.radial_segments = 7
-	mesh.rings = 3
-	mesh.material = material
-	var instance := _mesh(parent, mesh, pos, Vector3.ZERO)
+	var key := "ball %d" % material.get_instance_id()
+	if not _meshes.has(key):
+		var mesh := SphereMesh.new()
+		mesh.radius = 0.5
+		mesh.height = 1.0
+		mesh.radial_segments = 7
+		mesh.rings = 3
+		mesh.material = material
+		_meshes[key] = mesh
+	var instance := _mesh(parent, _meshes[key], pos, Vector3.ZERO)
 	instance.scale = size
 	return instance
 
 static func quad(parent: Node, pos: Vector3, size: Vector2, material: Material,
 		rot := Vector3.ZERO) -> MeshInstance3D:
-	var mesh := QuadMesh.new()
-	mesh.size = size
-	mesh.material = material
-	return _mesh(parent, mesh, pos, rot)
+	var key := "quad %s %d" % [size, material.get_instance_id()]
+	if not _meshes.has(key):
+		var mesh := QuadMesh.new()
+		mesh.size = size
+		mesh.material = material
+		_meshes[key] = mesh
+	return _mesh(parent, _meshes[key], pos, rot)
 
 # Plama na podłodze.
 static func on_floor(parent: Node, name: String, pos: Vector3, size: float, yaw := 0.0) -> MeshInstance3D:
-	return quad(parent, pos, Vector2(size, size), picture(name), Vector3(-90, yaw, 0))
+	return _flat(quad(parent, pos, Vector2(size, size), picture(name), Vector3(-90, yaw, 0)))
 
 # Plama na ścianie. yaw: 0 = przodem do +z, 90 = do +x, -90 = do -x, 180 = do -z.
 static func on_wall(parent: Node, name: String, pos: Vector3, size: Vector2, yaw: float) -> MeshInstance3D:
-	return quad(parent, pos, size, picture(name), Vector3(0, yaw, 0))
+	return _flat(quad(parent, pos, size, picture(name), Vector3(0, yaw, 0)))
+
+# Płaska naklejka nie rzuca cienia.
+static func _flat(instance: MeshInstance3D) -> MeshInstance3D:
+	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return instance
 
 static func label(parent: Node, pos: Vector3, text: String, font_size: int, color: Color,
 		yaw := 0.0, pixel := 0.002) -> Label3D:

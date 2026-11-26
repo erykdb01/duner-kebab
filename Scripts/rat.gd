@@ -7,10 +7,9 @@ signal consumed # zmielony, wyrzucony, zawinięty...
 enum State { WANDER, FLEE, HELD, TRAVEL }
 
 const Sfx = preload("res://Scripts/sfx.gd")
+const Night = preload("res://Scripts/night.gd")
 const FRAME_TIME := 0.12
 const GOLD_SPEED := 1.35 # złoty szczur jest szybszy
-const Night = preload("res://Scripts/night.gd")
-
 const WANDER_SPEED := 1.2
 const FLEE_SPEED := 3.0
 const SNEAK_SPEED := 1.6
