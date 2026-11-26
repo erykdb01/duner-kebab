@@ -3,12 +3,99 @@
 [ext_resource type="PackedScene" uid="uid://bvauk0mk1q6ou" path="res://Scenes/rest.tscn" id="1_e2o6t"]
 [ext_resource type="PackedScene" uid="uid://dfgpch1ffxc4m" path="res://Objects/player.tscn" id="2_feb5d"]
 
+[ext_resource type="PackedScene" path="res://Scenes/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://Objects/prep_station.tscn" id="4_station"]
+[ext_resource type="PackedScene" path="res://Objects/trash_bin.tscn" id="5_trash"]
+[ext_resource type="Script" path="res://Scripts/game.gd" id="6_game"]
+[ext_resource type="PackedScene" path="res://Objects/grinder.tscn" id="7_grinder"]
+
+[sub_resource type="Environment" id="Environment_night"]
+background_mode = 1
+background_color = Color(0.012, 0.016, 0.035, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.24, 0.29, 0.45, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
+glow_enabled = true
+
 [node name="game" type="Node3D" unique_id=1248679954]
+script = ExtResource("6_game")
 
 [node name="rest" parent="." unique_id=1604944046 instance=ExtResource("1_e2o6t")]
 
 [node name="player" parent="." unique_id=678003766 instance=ExtResource("2_feb5d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=77686969]
 transform = Transform3D(0.55787706, 0.82886744, -0.04185652, 0.32676947, -0.17301553, 0.9291326, 0.7628859, -0.5320192, -0.36736998, 3.9715073, 2.212291, 0)
+visible = false
 light_energy = 1.36
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_night")
+
+[node name="prep_station" parent="." instance=ExtResource("4_station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.095, 0)
+
+[node name="trash_bin" parent="." instance=ExtResource("5_trash")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.05, -0.4)
+
+[node name="grinder" parent="." instance=ExtResource("7_grinder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.095, 0.5)
+
+[node name="rat_points" type="Node3D" parent="."]
+
+[node name="p0" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35, 0.05, -4.4)
+
+[node name="p1" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0.05, -2.6)
+
+[node name="p2" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 0.05, -1.2)
+
+[node name="p3" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 0.05, 0.8)
+
+[node name="p4" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35, 0.05, 2.4)
+
+[node name="p5" type="Marker3D" parent="rat_points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.05, 4.4)
+
+[node name="hud" parent="." instance=ExtResource("3_hud")]
+
+[node name="customer_route" type="Node3D" parent="."]
+
+[node name="street" type="Marker3D" parent="customer_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -7.5)
+
+[node name="door" type="Marker3D" parent="customer_route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -4.3)
+
+[node name="counter_slots" type="Node3D" parent="."]
+
+[node name="c0" type="Marker3D" parent="counter_slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, 1.3)
+
+[node name="c1" type="Marker3D" parent="counter_slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, 2.45)
+
+[node name="c2" type="Marker3D" parent="counter_slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, 3.6)
+
+[node name="seats" type="Node3D" parent="."]
+
+[node name="s0" type="Marker3D" parent="seats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.84, 0.05, -3.46)
+
+[node name="s1" type="Marker3D" parent="seats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.19, 0.05, -1.95)
+
+[node name="s2" type="Marker3D" parent="seats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.66, 0.05, 1.4)
+
+[node name="s3" type="Marker3D" parent="seats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.33, 0.05, 2.75)
+
+[connection signal="prompt_changed" from="player" to="hud" method="show_prompt"]

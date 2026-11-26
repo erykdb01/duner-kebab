@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/rat.gd" id="1_rat"]
+[ext_resource type="Texture2D" path="res://Textures/rat.png" id="2_tex"]
+
+[sub_resource type="SphereShape3D" id="shape"]
+radius = 0.3
+
+[node name="rat" type="Area3D" groups=["rat", "trashable"]]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_rat")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
+pixel_size = 0.02
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("2_tex")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("shape")

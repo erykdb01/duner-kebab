@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://Materials/sauce.tres" id="1"]
+
+[sub_resource type="BoxMesh" id="piece"]
+material = ExtResource("1")
+size = Vector3(0.2, 0.012, 0.028)
+
+[node name="food_sauce" type="Node3D"]
+
+[node name="p0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, -0.0000, -0.4078, 0.0000, 1.0000, -0.0000, 0.4078, 0.0000, 0.9131, 0.0000, 0.0080, -0.1050)
+mesh = SubResource("piece")
+
+[node name="p1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, 0.0000, 0.4078, 0.0000, 1.0000, -0.0000, -0.4078, 0.0000, 0.9131, 0.0000, 0.0080, -0.0630)
+mesh = SubResource("piece")
+
+[node name="p2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, -0.0000, -0.4078, 0.0000, 1.0000, -0.0000, 0.4078, 0.0000, 0.9131, 0.0000, 0.0080, -0.0210)
+mesh = SubResource("piece")
+
+[node name="p3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, 0.0000, 0.4078, 0.0000, 1.0000, -0.0000, -0.4078, 0.0000, 0.9131, 0.0000, 0.0080, 0.0210)
+mesh = SubResource("piece")
+
+[node name="p4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, -0.0000, -0.4078, 0.0000, 1.0000, -0.0000, 0.4078, 0.0000, 0.9131, 0.0000, 0.0080, 0.0630)
+mesh = SubResource("piece")
+
+[node name="p5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9131, 0.0000, 0.4078, 0.0000, 1.0000, -0.0000, -0.4078, 0.0000, 0.9131, 0.0000, 0.0080, 0.1050)
+mesh = SubResource("piece")

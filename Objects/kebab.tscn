@@ -1,0 +1,116 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/kebab.gd" id="1_kebab"]
+[ext_resource type="Material" path="res://Materials/tortilla.tres" id="2_tortilla"]
+[ext_resource type="PackedScene" path="res://Objects/food_meat.tscn" id="3_meat"]
+[ext_resource type="PackedScene" path="res://Objects/food_salad.tscn" id="4_salad"]
+[ext_resource type="Material" path="res://Materials/sauce.tres" id="5_sauce"]
+
+[ext_resource type="Texture2D" path="res://Textures/rat.png" id="6_rat"]
+
+[sub_resource type="CylinderMesh" id="mesh_drip"]
+material = ExtResource("5_sauce")
+top_radius = 0.011
+bottom_radius = 0.008
+height = 0.1
+radial_segments = 6
+rings = 0
+
+[sub_resource type="SphereMesh" id="mesh_drop"]
+material = ExtResource("5_sauce")
+radius = 0.011
+height = 0.022
+radial_segments = 6
+rings = 3
+
+[sub_resource type="CylinderMesh" id="mesh_wrap"]
+material = ExtResource("2_tortilla")
+top_radius = 0.065
+bottom_radius = 0.035
+height = 0.2
+radial_segments = 7
+rings = 0
+
+[sub_resource type="CylinderShape3D" id="shape"]
+height = 0.28
+radius = 0.09
+
+[node name="kebab" type="Area3D" groups=["trashable"]]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_kebab")
+item_name = "Kebab"
+
+[node name="wrap" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("mesh_wrap")
+
+[node name="meat" parent="." instance=ExtResource("3_meat")]
+transform = Transform3D(0.36, 0, 0, 0, 0.55, 0, 0, 0, 0.36, -0.012, 0.19, -0.01)
+
+[node name="salad" parent="." instance=ExtResource("4_salad")]
+transform = Transform3D(0.34, 0, 0, 0, 0.7, 0, 0, 0, 0.34, 0.016, 0.197, 0.012)
+
+[node name="rat" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0)
+visible = false
+pixel_size = 0.008
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("6_rat")
+
+[node name="sauce" type="Node3D" parent="."]
+
+[node name="pool0" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(4.2, 0, 0, 0, 0.6, 0, 0, 0, 4.2, 0, 0.199, 0)
+mesh = SubResource("mesh_drop")
+
+[node name="pool1" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(2, 0, 0, 0, 0.9, 0, 0, 0, 1.5, -0.022, 0.212, 0.022)
+mesh = SubResource("mesh_drop")
+
+[node name="pool2" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(1.4, 0, 0, 0, 0.8, 0, 0, 0, 1.9, 0.026, 0.214, -0.012)
+mesh = SubResource("mesh_drop")
+
+[node name="lip" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(1.8, 0, 0, 0, 0.7, 0, 0, 0, 1, 0, 0.201, 0.058)
+mesh = SubResource("mesh_drop")
+
+[node name="drip0" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(1.0000, 0.0000, 0.0000, 0.0000, 0.8406, -0.0816, 0.0000, 0.1261, 0.5439, 0.0000, 0.1575, 0.0596)
+mesh = SubResource("mesh_drip")
+
+[node name="drop0" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(1.0000, 0.0000, 0.0000, 0.0000, 0.9889, -0.0964, 0.0000, 0.1483, 0.6428, 0.0000, 0.1150, 0.0543)
+mesh = SubResource("mesh_drop")
+
+[node name="drip1" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(0.6235, 0.0580, 0.4253, 0.0000, 0.4945, -0.0816, -0.7818, 0.0462, 0.3391, 0.0487, 0.1750, 0.0388)
+mesh = SubResource("mesh_drip")
+
+[node name="drop1" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(0.6235, 0.1160, 0.5026, 0.0000, 0.9889, -0.0964, -0.7818, 0.0925, 0.4008, 0.0465, 0.1500, 0.0371)
+mesh = SubResource("mesh_drop")
+
+[node name="drip2" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(-0.2226, -0.0940, -0.5303, 0.0000, 0.6428, -0.0816, 0.9749, -0.0215, -0.1211, -0.0596, 0.1675, -0.0136)
+mesh = SubResource("mesh_drip")
+
+[node name="drop2" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(-0.2226, -0.1446, -0.6267, 0.0000, 0.9889, -0.0964, 0.9749, -0.0330, -0.1431, -0.0558, 0.1350, -0.0127)
+mesh = SubResource("mesh_drop")
+
+[node name="drip3" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(-0.9010, 0.0290, 0.2360, 0.0000, 0.4450, -0.0816, -0.4338, -0.0601, -0.4901, 0.0272, 0.1775, -0.0564)
+mesh = SubResource("mesh_drip")
+
+[node name="drop3" type="MeshInstance3D" parent="sauce"]
+transform = Transform3D(-0.9010, 0.0644, 0.2789, 0.0000, 0.9889, -0.0964, -0.4338, -0.1337, -0.5792, 0.0261, 0.1550, -0.0543)
+mesh = SubResource("mesh_drop")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+shape = SubResource("shape")

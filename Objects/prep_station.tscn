@@ -1,0 +1,160 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/prep_board.gd" id="1_board"]
+[ext_resource type="Script" path="res://Scripts/ingredient_source.gd" id="2_source"]
+[ext_resource type="Material" path="res://Materials/board.tres" id="3_mboard"]
+[ext_resource type="Material" path="res://Materials/tortilla.tres" id="4_mtortilla"]
+[ext_resource type="Material" path="res://Materials/meat.tres" id="5_mmeat"]
+[ext_resource type="Material" path="res://Materials/salad.tres" id="6_msalad"]
+[ext_resource type="PackedScene" path="res://Objects/food_meat.tscn" id="7_meat"]
+[ext_resource type="PackedScene" path="res://Objects/food_salad.tscn" id="8_salad"]
+[ext_resource type="PackedScene" path="res://Objects/food_sauce.tscn" id="9_sauce"]
+[ext_resource type="PackedScene" path="res://Objects/sauce_bottle.tscn" id="10_bottle"]
+
+[ext_resource type="Texture2D" path="res://Textures/rat.png" id="11_rat"]
+
+[sub_resource type="BoxMesh" id="mesh_board"]
+material = ExtResource("3_mboard")
+size = Vector3(0.46, 0.025, 0.46)
+
+[sub_resource type="CylinderMesh" id="mesh_flat"]
+material = ExtResource("4_mtortilla")
+top_radius = 0.19
+bottom_radius = 0.19
+height = 0.012
+radial_segments = 10
+rings = 0
+
+[sub_resource type="BoxMesh" id="mesh_fill_meat"]
+material = ExtResource("5_mmeat")
+size = Vector3(0.54, 0.08, 0.36)
+
+[sub_resource type="BoxMesh" id="mesh_fill_salad"]
+material = ExtResource("6_msalad")
+size = Vector3(0.54, 0.08, 0.36)
+
+[sub_resource type="BoxShape3D" id="shape_board"]
+size = Vector3(0.46, 0.16, 0.46)
+
+[sub_resource type="BoxShape3D" id="shape_well"]
+size = Vector3(0.55, 0.28, 0.42)
+
+[node name="prep_station" type="Node3D"]
+
+[node name="board" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, -0.08)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_board")
+
+[node name="wood" type="MeshInstance3D" parent="board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0125, 0)
+mesh = SubResource("mesh_board")
+
+[node name="tortilla" type="MeshInstance3D" parent="board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.032, 0)
+mesh = SubResource("mesh_flat")
+
+[node name="meat" parent="board" instance=ExtResource("7_meat")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.037, 0)
+visible = false
+
+[node name="salad" parent="board" instance=ExtResource("8_salad")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.037, 0)
+visible = false
+
+[node name="sauce" parent="board" instance=ExtResource("9_sauce")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.037, 0)
+visible = false
+
+[node name="rat" type="Sprite3D" parent="board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+visible = false
+pixel_size = 0.014
+billboard = 1
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("11_rat")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+shape = SubResource("shape_board")
+
+[node name="source_tortilla" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, -2.07)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_source")
+ingredient = &"tortilla"
+board_path = NodePath("../board")
+
+[node name="t0" type="MeshInstance3D" parent="source_tortilla"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+mesh = SubResource("mesh_flat")
+
+[node name="t1" type="MeshInstance3D" parent="source_tortilla"]
+transform = Transform3D(0.955, 0, 0.296, 0, 1, 0, -0.296, 0, 0.955, 0.008, 0.055, -0.004)
+mesh = SubResource("mesh_flat")
+
+[node name="t2" type="MeshInstance3D" parent="source_tortilla"]
+transform = Transform3D(0.825, 0, -0.565, 0, 1, 0, 0.565, 0, 0.825, -0.007, 0.08, 0.005)
+mesh = SubResource("mesh_flat")
+
+[node name="t3" type="MeshInstance3D" parent="source_tortilla"]
+transform = Transform3D(0.995, 0, -0.1, 0, 1, 0, 0.1, 0, 0.995, 0.006, 0.105, 0.003)
+mesh = SubResource("mesh_flat")
+
+[node name="t4" type="MeshInstance3D" parent="source_tortilla"]
+transform = Transform3D(0.878, 0, 0.479, 0, 1, 0, -0.479, 0, 0.878, -0.003, 0.13, -0.006)
+mesh = SubResource("mesh_flat")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="source_tortilla"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("shape_well")
+
+[node name="source_meat" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, -1.59)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_source")
+ingredient = &"meat"
+board_path = NodePath("../board")
+stock = 3
+
+[node name="fill" type="MeshInstance3D" parent="source_meat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+mesh = SubResource("mesh_fill_meat")
+
+[node name="heap" parent="source_meat" instance=ExtResource("7_meat")]
+transform = Transform3D(1.5, 0, 0, 0, 1.3, 0, 0, 0, 1.05, 0, 0.075, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="source_meat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("shape_well")
+
+[node name="source_salad" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, -1.12)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_source")
+ingredient = &"salad"
+board_path = NodePath("../board")
+
+[node name="fill" type="MeshInstance3D" parent="source_salad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+mesh = SubResource("mesh_fill_salad")
+
+[node name="heap" parent="source_salad" instance=ExtResource("8_salad")]
+transform = Transform3D(1.5, 0, 0, 0, 1.3, 0, 0, 0, 1.05, 0, 0.075, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="source_salad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("shape_well")
+
+[node name="source_sauce" parent="." instance=ExtResource("10_bottle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, -0.62)
+board_path = NodePath("../board")

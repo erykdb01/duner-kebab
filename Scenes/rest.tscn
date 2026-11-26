@@ -43,6 +43,15 @@ texture_filter = 0
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2m8it"]
 albedo_color = Color(0, 0, 0, 1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.13, 0.13, 0.14, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_doorfront"]
+size = Vector3(2.25, 2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_doorback"]
+size = Vector3(1.5, 2, 0.1)
+
 [node name="Node3D" type="Node3D" unique_id=1604944046]
 
 [node name="floor" type="CSGBox3D" parent="." unique_id=941135840]
@@ -184,7 +193,44 @@ visible = false
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -5.072829, -4.7683716e-07, 10.776672)
 visible = false
 
+[node name="ground" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0)
+use_collision = true
+size = Vector3(30, 0.1, 30)
+material = SubResource("StandardMaterial3D_ground")
+
+[node name="doorBlockers" type="StaticBody3D" parent="."]
+
+[node name="front" type="CollisionShape3D" parent="doorBlockers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5)
+shape = SubResource("BoxShape3D_doorfront")
+
+[node name="back" type="CollisionShape3D" parent="doorBlockers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1, 5)
+shape = SubResource("BoxShape3D_doorback")
+
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1000363283]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1530013, 0)
-omni_range = 7.937
-omni_attenuation = 0.69
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 3.2, -0.3)
+light_color = Color(1, 0.76, 0.47, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="lightCounter" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 2.7, 1.1)
+light_color = Color(1, 0.62, 0.3, 1)
+light_energy = 0.9
+shadow_enabled = true
+omni_range = 4.5
+
+[node name="lightKitchen" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 3.2, -0.5)
+light_color = Color(0.7, 1, 0.78, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="lightStreet" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 3.5, -3)
+light_color = Color(1, 0.5, 0.12, 1)
+light_energy = 2.0
+omni_range = 4.5

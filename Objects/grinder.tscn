@@ -1,0 +1,94 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/grinder.gd" id="1_grinder"]
+[ext_resource type="Texture2D" path="res://Textures/restaurant_metal_128.png" id="2_metal"]
+
+[sub_resource type="StandardMaterial3D" id="mat_metal"]
+albedo_color = Color(0.75, 0.72, 0.7, 1)
+albedo_texture = ExtResource("2_metal")
+metallic = 0.5
+roughness = 0.5
+uv1_scale = Vector3(1.5, 1.5, 1.5)
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="StandardMaterial3D" id="mat_red"]
+albedo_color = Color(0.55, 0.08, 0.06, 1)
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="mesh_base"]
+material = SubResource("mat_red")
+size = Vector3(0.22, 0.1, 0.24)
+
+[sub_resource type="BoxMesh" id="mesh_body"]
+material = SubResource("mat_metal")
+size = Vector3(0.16, 0.14, 0.18)
+
+[sub_resource type="CylinderMesh" id="mesh_funnel"]
+material = SubResource("mat_metal")
+top_radius = 0.12
+bottom_radius = 0.045
+height = 0.15
+radial_segments = 8
+rings = 0
+
+[sub_resource type="CylinderMesh" id="mesh_spout"]
+material = SubResource("mat_metal")
+top_radius = 0.055
+bottom_radius = 0.055
+height = 0.09
+radial_segments = 8
+rings = 0
+
+[sub_resource type="BoxMesh" id="mesh_arm"]
+material = SubResource("mat_metal")
+size = Vector3(0.025, 0.16, 0.025)
+
+[sub_resource type="BoxMesh" id="mesh_knob"]
+material = SubResource("mat_red")
+size = Vector3(0.08, 0.04, 0.04)
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.3, 0.4, 0.34)
+
+[node name="grinder" type="StaticBody3D"]
+collision_layer = 3
+collision_mask = 0
+script = ExtResource("1_grinder")
+
+[node name="model" type="Node3D" parent="."]
+
+[node name="base" type="MeshInstance3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("mesh_base")
+
+[node name="body" type="MeshInstance3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
+mesh = SubResource("mesh_body")
+
+[node name="funnel" type="MeshInstance3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.315, 0)
+mesh = SubResource("mesh_funnel")
+
+[node name="spout" type="MeshInstance3D" parent="model"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.12, 0.17, 0)
+mesh = SubResource("mesh_spout")
+
+[node name="arm" type="MeshInstance3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0.105)
+mesh = SubResource("mesh_arm")
+
+[node name="knob" type="MeshInstance3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 0.3, 0.12)
+mesh = SubResource("mesh_knob")
+
+[node name="Bubble" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+pixel_size = 0.0025
+billboard = 1
+font_size = 40
+outline_size = 12
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("shape")

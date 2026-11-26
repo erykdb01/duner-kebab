@@ -3,16 +3,23 @@
 [ext_resource type="Script" uid="uid://cl5qf6tuixau2" path="res://Scripts/player.gd" id="1_4flbx"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2m8it"]
-height = 1.6
+radius = 0.3
+height = 1.75
 
-[node name="Node3D" type="Node3D" unique_id=678003766]
-
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1657059975]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+[node name="player" type="CharacterBody3D" unique_id=678003766]
 script = ExtResource("1_4flbx")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=831092120]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=831092120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
 shape = SubResource("CapsuleShape3D_2m8it")
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=2077460556]
-transform = Transform3D(3.333333, 0, 0, 0, 3.333333, 0, 0, 0, 3.333333, 0, 0, 0)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2077460556]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="InteractRay" type="RayCast3D" parent="Camera3D"]
+target_position = Vector3(0, 0, -2.2)
+collision_mask = 3
+collide_with_areas = true
+
+[node name="Hand" type="Marker3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.32, -0.55)
