@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://Materials/pixel.gdshader" id="1_pixel"]
+
+[sub_resource type="ShaderMaterial" id="material"]
+shader = ExtResource("1_pixel")
+shader_parameter/pixel_size = 3.0
+shader_parameter/levels = 32.0
+
+[node name="pixel_filter" type="CanvasLayer"]
+layer = -1
+
+[node name="Screen" type="ColorRect" parent="."]
+material = SubResource("material")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

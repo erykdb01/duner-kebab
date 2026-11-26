@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/fuse_shelf.gd" id="1_shelf"]
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.26, 0.28, 0.48)
+
+[node name="fuse_shelf" type="Area3D"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_shelf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape")

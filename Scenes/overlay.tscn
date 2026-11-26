@@ -21,7 +21,7 @@ anchor_bottom = 1.0
 [node name="Box" type="VBoxContainer" parent="Center"]
 custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Center/Box"]
 unique_name_in_owner = true
@@ -32,8 +32,14 @@ horizontal_alignment = 1
 [node name="Details" type="Label" parent="Center/Box"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
+
+[node name="Next" type="Button" parent="Center/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Dalej"
 
 [node name="Resume" type="Button" parent="Center/Box"]
 unique_name_in_owner = true

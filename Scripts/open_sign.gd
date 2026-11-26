@@ -3,6 +3,8 @@ extends Area3D
 
 signal opened
 
+const Sfx = preload("res://Scripts/sfx.gd")
+
 var is_open := false
 
 @onready var label: Label3D = $Label
@@ -16,4 +18,5 @@ func interact(_player) -> void:
 	is_open = true
 	label.text = "OTWARTE"
 	label.modulate = Color(0.45, 1, 0.5)
+	Sfx.play_at(self, "switch")
 	opened.emit()

@@ -1,156 +1,16 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://Textures/restaurant_metal_128.png" id="1_metal"]
-
-[sub_resource type="StandardMaterial3D" id="mat_body"]
-albedo_color = Color(0.2, 0.38, 0.25, 1)
-albedo_texture = ExtResource("1_metal")
-metallic = 0.3
-roughness = 0.6
-uv1_triplanar = true
-texture_filter = 0
-
-[sub_resource type="StandardMaterial3D" id="mat_trim"]
-albedo_color = Color(0.11, 0.22, 0.15, 1)
-albedo_texture = ExtResource("1_metal")
-uv1_triplanar = true
-texture_filter = 0
-
-[sub_resource type="StandardMaterial3D" id="mat_black"]
-albedo_color = Color(0.05, 0.055, 0.06, 1)
-roughness = 0.5
-
-[sub_resource type="BoxMesh" id="mesh_body"]
-material = SubResource("mat_body")
-size = Vector3(2.9, 0.75, 0.9)
-
-[sub_resource type="BoxMesh" id="mesh_rim"]
-material = SubResource("mat_trim")
-size = Vector3(3, 0.07, 1)
-
-[sub_resource type="BoxMesh" id="mesh_rail"]
-material = SubResource("mat_trim")
-size = Vector3(2.94, 0.06, 0.94)
-
-[sub_resource type="BoxMesh" id="mesh_rib"]
-material = SubResource("mat_trim")
-size = Vector3(0.08, 0.7, 0.95)
-
-[sub_resource type="BoxMesh" id="mesh_lid"]
-material = SubResource("mat_black")
-size = Vector3(1.45, 0.05, 0.98)
-
-[sub_resource type="BoxMesh" id="mesh_handle"]
-material = SubResource("mat_black")
-size = Vector3(0.1, 0.06, 0.6)
-
-[sub_resource type="BoxMesh" id="mesh_leg"]
-material = SubResource("mat_black")
-size = Vector3(0.08, 0.4, 0.1)
-
-[sub_resource type="CylinderMesh" id="mesh_wheel"]
-material = SubResource("mat_black")
-top_radius = 0.09
-bottom_radius = 0.09
-height = 0.07
-radial_segments = 8
-rings = 0
-
-[sub_resource type="SphereMesh" id="mesh_bag"]
-material = SubResource("mat_black")
-radius = 0.3
-height = 0.45
-radial_segments = 7
-rings = 4
+[ext_resource type="Script" path="res://Scripts/dumpster.gd" id="1_dumpster"]
 
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(3, 0.85, 1)
 
 [node name="dumpster" type="StaticBody3D"]
+script = ExtResource("1_dumpster")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("shape")
-
-[node name="body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("mesh_body")
-
-[node name="rim" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
-mesh = SubResource("mesh_rim")
-
-[node name="rail" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
-mesh = SubResource("mesh_rail")
-
-[node name="rib0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.38, 0.92, 0)
-mesh = SubResource("mesh_rib")
-
-[node name="rib1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.92, 0)
-mesh = SubResource("mesh_rib")
-
-[node name="rib2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.92, 0)
-mesh = SubResource("mesh_rib")
-
-[node name="rib3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.38, 0.92, 0)
-mesh = SubResource("mesh_rib")
-
-[node name="lid_closed" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9988, -0.05, 0, 0.05, 0.9988, -0.74, 1.385, 0)
-mesh = SubResource("mesh_lid")
-
-[node name="lid_open" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9, -0.435, 0, 0.435, 0.9, 0.74, 1.575, 0.05)
-mesh = SubResource("mesh_lid")
-
-[node name="overflow" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 1.34, -0.05)
-mesh = SubResource("mesh_bag")
-
-[node name="handle_left" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.1, 0)
-mesh = SubResource("mesh_handle")
-
-[node name="handle_right" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, 0)
-mesh = SubResource("mesh_handle")
-
-[node name="leg0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 0.33, -0.37)
-mesh = SubResource("mesh_leg")
-
-[node name="leg1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 0.33, -0.37)
-mesh = SubResource("mesh_leg")
-
-[node name="leg2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 0.33, 0.37)
-mesh = SubResource("mesh_leg")
-
-[node name="leg3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 0.33, 0.37)
-mesh = SubResource("mesh_leg")
-
-[node name="wheel0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.35, 0.14, -0.37)
-mesh = SubResource("mesh_wheel")
-
-[node name="wheel1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.35, 0.14, -0.37)
-mesh = SubResource("mesh_wheel")
-
-[node name="wheel2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.35, 0.14, 0.37)
-mesh = SubResource("mesh_wheel")
-
-[node name="wheel3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.35, 0.14, 0.37)
-mesh = SubResource("mesh_wheel")
 
 [node name="light_under_left" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0.45, 0)

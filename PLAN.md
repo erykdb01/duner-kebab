@@ -14,7 +14,23 @@ Po każdym etapie zaktualizuj ten plik (krótko).
   (do sprawdzenia w grze)
 - [x] 6: noc, tabliczka „OTWARTE”, podsumowanie, restart, menu i pauza; długi kontener na podwórku
   ze szczurami i słabym światłem pod spodem (do sprawdzenia w grze)
-- [ ] 7: dźwięk, sprite'y, klienci specjalni, 3 noce, finał
+- [x] 7a: klienci specjalni (sanepid, smakosz, właścicielka Pimpka, student, babcia), opinie w podsumowaniu,
+  czynsz, awaria prądu, 3 noce i finał (do sprawdzenia w grze)
+- [x] 7b: dźwięk, wygenerowane efekty w `Sounds/` (do sprawdzenia w grze)
+- [x] 7c: nowe sprite'y klientów i szczurów (do sprawdzenia w grze)
+- [x] niespodzianki (3) – opis w sekcji „Spoilery” na końcu pliku
+
+## Etap 8 (lista użytkownika po teście etapu 7)
+- [x] 8a: przyjmowanie zamówień w rozmowie, imiona, notatnik (Tab), wołanie po imieniu (Q), wybór odpowiedzi,
+  różni klienci, dużo dialogów w `Data/dialogi.json`, pauza przed wyjściem (do sprawdzenia w grze)
+- [x] 8b: awaria prądu: ciemno (latarka F), grill i maszynka stoją, mięso się psuje, cierpliwość x2;
+  naprawa: bezpiecznik z kuchni do skrzynki na podwórku. Przyczyny: kabel (noce 2-3) albo radio + maszynka.
+  Radio uspokaja klientów (x0,7). (do sprawdzenia w grze)
+- [x] 8c: nowe tekstury 128 px, 18 wyglądów klientów, nowe szczury, sos, filtr pikselowy (do sprawdzenia)
+- [x] 8d: detale restauracji, wyposażony blat, ekrany z menu, okna; kosz w kuchni i kontener w kątach
+  (do sprawdzenia)
+- [x] 8e: altana i podwórko od nowa, brama z widokiem na ulicę, otoczenie lokalu, niebo (do sprawdzenia)
+- [x] 8f: nowe menu z widokiem na lokal (do sprawdzenia)
 
 ## Uwagi po teście etapu 3
 - Sos w kebabie: poprawiony (do sprawdzenia).
@@ -36,8 +52,22 @@ Po każdym etapie zaktualizuj ten plik (krótko).
   wypuszczony na sali: 2 s), potem klienci wychodzą.
 - Podwórko: `Objects/backyard.tscn` (płot, worki, światła), drzwi z kuchni `wallBack/doorKitchen` (x ≈ -3.1);
   stare tylne drzwi na sali nadal zablokowane.
-- Klient: `Objects/customer.tscn` (`ENTERING → WAITING → TO_SEAT → EATING → REVIEWING → LEAVING`,
-  `patience` 75 s), sprite tymczasowy (losowy odcień). `CustomerType` dopiero w etapie 7.
+- Klient: `Objects/customer.tscn` (`ENTERING → WAITING → TO_SEAT → EATING → REVIEWING → LEAVING`);
+  rodzaj w `Customers/*.tres` (`Scripts/customer_type.gd`: kind, sprite'y, cierpliwość, napiwek).
+- Teksty, imiona i postacie: `Data/dialogi.json` (czyta `Scripts/dialogs.gd`). UI: `Scenes/dialog_box.tscn`,
+  `Scenes/notebook.tscn`; `player.busy` blokuje ruch. Zamówień nie ma w HUD ani w dymkach.
+- Noce: skład kolejki, czynsz, mandat, nagrody i awaria jako stałe na górze `game.gd`; stan między nocami
+  w `static var save` (znika po wyłączeniu gry), nowa noc = przeładowanie sceny.
+- Nowe obiekty: `fuse_box` (podwórko, przy drzwiach z kuchni), `poster` (ściana frontowa), `radio`.
+- Dźwięk: `Scripts/sfx.gd`. Sprite'y i dźwięki robi `.godot/claude_test/gen_assets.py`
+  (tylko lokalnie; nie nadpisuje istniejących plików).
+- Wystrój i otoczenie budowane w kodzie (`@tool`): `Scripts/build.gd` (klocki), `decor.gd`, `outdoors.gd`,
+  `backyard.gd`, `dumpster.gd`. Tekstury: `Textures/swiat`, `postacie`, `szczury` (generator
+  `.godot/claude_test/gen_world.py`).
+- `Scripts/night.gd`: stan awarii i barwa sprite'ów. Filtr pikseli: `Scenes/pixel_filter.tscn`
+  (`pixel_size`, `levels`). Niebo i mgła: `Materials/night_env.tres`.
+- Nieużywane (do usunięcia po akceptacji): w `Textures/` pliki `customer.png`, `rat.png`, `npc_*`,
+  `food_*`, `szczur_*`, `pimpek_*`, `zloty_*`, `plakat_pimpek.png`.
 - Szczur: `Objects/rat.tscn` (grupy `rat`, `trashable`; strefy `yard`/`kitchen`/`sala`, markery `rat_areas`);
   maszynka: `Objects/grinder.tscn` na dolnej półce blatu.
 - Mięso: `stock` na `prep_station/source_meat` (start 3), uzupełnia `game.gd` po zmieleniu.
@@ -65,5 +95,10 @@ migocząca świetlówka, zaplecze `zapl` jako kryjówka szczura (kucanie ok. 0,9
 **Pomysły:** Sanepid, podanie żywego szczura, absurdalni klienci, plakat „Zaginął szczur”, radio.
 **Nie robić:** ekwipunek, ekonomia, psucie składników, drzewka dialogowe, zapis w środku nocy.
 
+## Spoilery (niespodzianki dodane w etapie 7)
+1. Radio w kuchni (muzyka i wiadomości); muzyka gra też w menu.
+2. Złoty szczur od 2. nocy: szybszy, po zmieleniu +50 zł.
+3. Sekretny finał „Złoty Kebab”: czynsz, oddany Pimpek, zero mandatów i zero niezamówionych szczurów.
+
 ## Do poprawy później
-- Śmietnik (`Objects/dumpster.tscn`): po teście dalej bardzo zły. Przed poprawką ustalić z użytkownikiem, co dokładnie.
+- (nic otwartego; czekamy na test etapu 8)

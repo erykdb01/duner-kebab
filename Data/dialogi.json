@@ -1,0 +1,544 @@
+{
+	"_pomoc": "Opis pliku: Data/JAK_EDYTOWAC.md",
+
+	"imiona": {
+		"m": ["Marek", "Janusz", "Krzysiek", "Seba", "Mirek", "Zbyszek", "Bartek", "Kuba", "Staszek", "Rysiek",
+			"Grzegorz", "Waldek", "Dominik", "Kacper", "Heniek", "Tomek", "Olek", "Czarek", "Darek", "Leszek",
+			"Maciek", "Piotrek", "Adrian", "Wojtek", "Zenek", "Fabian", "Ignacy", "Bogdan"],
+		"k": ["Anka", "Kasia", "Basia", "Halina", "Grażyna", "Ola", "Zosia", "Krystyna", "Jadzia", "Monika",
+			"Dorota", "Nikola", "Wiktoria", "Beata", "Marzena", "Ula", "Iga", "Teresa", "Gosia", "Sandra",
+			"Roksana", "Maja", "Danuta", "Julka", "Bożena", "Kinga", "Lucyna", "Pola"]
+	},
+
+	"skladniki": {
+		"meat": "mięso",
+		"meat_2": "podwójne mięso",
+		"salad": "surówka",
+		"sauce": "sos",
+		"tortilla": "podwójna tortilla",
+		"rat": "wkładka (szczur!)",
+		"bez_salad": "bez surówki",
+		"bez_sauce": "bez sosu"
+	},
+
+	"gracz": {
+		"zamowienie": ["Co podać?", "Słucham, co ma być?", "Jaki kebab robimy?"],
+		"powtorz": ["Możesz powtórzyć zamówienie?", "Jeszcze raz, co miało być?"],
+		"imie": ["Jak masz na imię?", "Na jakie imię zapisać?", "Jak zawołać, gdy będzie gotowe?"],
+		"imie_znowu": ["Przypomnisz imię?"],
+		"pogadaj": ["Pogadajmy chwilę.", "Co słychać?", "Ciężka noc?"],
+		"nie_widzialem": ["Przykro mi, nie widziałem Pimpka."],
+		"koniec_przed": ["Chwileczkę."],
+		"koniec_po": ["Robi się.", "Już się kręci."],
+		"koniec": ["Do widzenia."]
+	},
+
+	"domyslne": {
+		"powitania": ["Dobry wieczór.", "Cześć.", "Czynne jeszcze? Super.", "Siema."],
+		"czekam": ["No?", "Tak?", "Słucham.", "Coś się stało?"],
+		"zamowienie": ["Kebab. Ma być: {lista}.", "Dla mnie: {lista}.", "To tak: {lista}."],
+		"zamowienie_kolejnosc": ["Układaj dokładnie od dołu: {lista}. Kolejność jest ważna!",
+			"Od dołu ma iść: {lista}. Nie pomieszaj."],
+		"powtorka": ["Znowu? {zamowienie}", "Mówię przecież. {zamowienie}", "Zapisz sobie wreszcie. {zamowienie}"],
+		"imie": ["{imie}.", "Mówią mi {imie}.", "{imie}. Tylko nie przekręć."],
+		"po_zamowieniu": ["Usiądę sobie.", "Poczekam przy stoliku.", "Zawołaj, jak będzie."],
+		"nie_zamowione": ["Hej, najpierw zapytaj, co chcę!", "To nie moje. Jeszcze nie było zamówienia."],
+		"ponaglenia": ["Ile można czekać?!", "Halo, szefie?", "Zaraz uschnę z głodu."],
+		"zawolany": ["To ja!", "Idę, idę!", "Nareszcie!"],
+		"juz_stoje": ["Przecież tu stoję!", "No jestem, jestem."],
+		"dzieki": ["Dzięki, szefie!", "Super, dzięki.", "O to chodziło!"],
+		"napiwek": ["Reszty nie trzeba.", "Masz, za tempo."],
+		"pomylka": ["Ujdzie... ale nie to miało być.", "Chyba coś się pomieszało.", "To czyjś inny kebab?"],
+		"zla_kolejnosc": ["Kolejność nie ta...", "Miało być inaczej ułożone."],
+		"bez_miesa": ["Gdzie mięso?! Nie płacę!", "To naleśnik, nie kebab!"],
+		"szczur_w_kebabie": ["W MOIM KEBABIE JEST SZCZUR!!", "To się rusza!!", "Mięso patrzy mi w oczy!"],
+		"szczur_do_reki": ["AAA! SZCZUR!!", "Miał być kebab, nie zwierzak!", "Dzwonię do sanepidu!"],
+		"widzi_szczura": ["SZCZUR! Wychodzę stąd!", "Tu biegają szczury! Żegnam!"],
+		"rezygnacja": ["Mam dość, idę gdzie indziej!", "Po drugiej stronie ulicy mają szybciej.", "Rezygnuję!"],
+		"smacznego": ["Mniam...", "Mmm.", "Gorące!"],
+		"dosc_gadania": ["Mniej gadania, więcej krojenia.", "Pogadamy przy następnym."],
+		"obrazony": ["Wiesz co? Odechciało mi się.", "Z takim podejściem to ja dziękuję."],
+		"opinie_super": ["Pyszny! Jeszcze tu wrócę.", "Szybko i tak jak trzeba.", "Najlepszy po północy."],
+		"opinie_ok": ["Bez zachwytu.", "Dało się zjeść.", "Może być."],
+		"opinie_zle": ["Nie to było w zamówieniu.", "Ktoś tu nie słucha.", "Słabo."],
+		"opinia_bez_miesa": ["Kebab bez mięsa. To się nazywa naleśnik."],
+		"opinia_szczur": ["Mięso patrzyło mi w oczy.", "W środku był ogon. Nie polecam."],
+		"opinia_widzial_szczura": ["Po sali biegał szczur. Czuł się jak u siebie."],
+		"opinia_rezygnacja": ["Czekanie do rana, kebaba brak.", "Obsługa w tempie lodowca."],
+
+		"rozmowy": [
+			{
+				"klient": "Powiedz szczerze: z czego jest to mięso?",
+				"odpowiedzi": [
+					{"gracz": "Stuprocentowa wołowina.", "klient": "Mówisz to bardzo spokojnie. Wierzę.", "cierpliwosc": 8},
+					{"gracz": "Z miłością.", "klient": "To nie jest gatunek zwierzęcia.", "napiwek": 1},
+					{"gracz": "Lepiej nie pytać.", "klient": "...To ja jednak nie pytam.", "cierpliwosc": -10}
+				]
+			},
+			{
+				"klient": "Długo już tu stoisz za ladą?",
+				"odpowiedzi": [
+					{"gracz": "Pierwszy tydzień.", "klient": "Widać. Trzymam kciuki.", "cierpliwosc": 15},
+					{"gracz": "Od zawsze.", "klient": "To dlatego masz takie oczy.", "cierpliwosc": 5},
+					{"gracz": "Za długo.", "klient": "Rozumiem to jak nikt.", "napiwek": 2}
+				]
+			},
+			{
+				"klient": "Słyszysz to drapanie w ścianie?",
+				"odpowiedzi": [
+					{"gracz": "To rury.", "klient": "Rury, które piszczą. Aha.", "cierpliwosc": -5},
+					{"gracz": "Jakie drapanie?", "klient": "Może mi się zdaje. Jestem po dwóch zmianach.", "cierpliwosc": 5},
+					{"gracz": "To mój dostawca.", "klient": "Ha! Dobre. ...To był żart, prawda?", "napiwek": 2,
+						"dalej": [
+							{"gracz": "Oczywiście.", "klient": "Uff.", "cierpliwosc": 10},
+							{"gracz": "Nie.", "klient": "Nie chcę wiedzieć więcej.", "cierpliwosc": -15}
+						]}
+				]
+			},
+			{
+				"klient": "Jaki masz najostrzejszy sos?",
+				"odpowiedzi": [
+					{"gracz": "Taki, po którym widać przodków.", "klient": "Szanuję.", "napiwek": 2},
+					{"gracz": "Mamy tylko jeden.", "klient": "Uczciwie.", "cierpliwosc": 5},
+					{"gracz": "A po co ci?", "klient": "Żeby coś czuć.", "cierpliwosc": -5}
+				]
+			}
+		]
+	},
+
+	"postacie": {
+		"zwykly": {
+			"typ": "regular", "plec": "m", "tytul": "Zwykły klient",
+			"powitania": ["Dobry wieczór.", "Siema, szefie.", "Otwarte? Ratujesz mi życie."],
+			"rozmowy": [
+				{
+					"klient": "Żona myśli, że jestem na siłowni.",
+					"odpowiedzi": [
+						{"gracz": "Kebab to też białko.", "klient": "Właśnie! Ty mnie rozumiesz.", "napiwek": 3},
+						{"gracz": "Powinieneś jej powiedzieć.", "klient": "A ty powinieneś kroić mięso.", "cierpliwosc": -10},
+						{"gracz": "Nic nie widziałem.", "klient": "Dobry człowiek.", "cierpliwosc": 10}
+					]
+				},
+				{
+					"klient": "Oglądałeś wczoraj mecz?",
+					"odpowiedzi": [
+						{"gracz": "Pewnie, dramat.", "klient": "Dramat! Mój kot broniłby lepiej.", "cierpliwosc": 10},
+						{"gracz": "Nie oglądam.", "klient": "To o czym my mamy gadać?", "cierpliwosc": -5},
+						{"gracz": "Wygraliśmy, nie?", "klient": "Chyba w twoich snach.", "cierpliwosc": -5}
+					]
+				}
+			]
+		},
+		"gbur": {
+			"typ": "regular", "plec": "m", "tytul": "Gbur",
+			"powitania": ["No wreszcie ktoś.", "Szybko, nie mam całej nocy.", "Brudno tu."],
+			"imie": ["A po co ci? {imie}.", "{imie}. Pan {imie}.", "{imie}. Zadowolony?"],
+			"po_zamowieniu": ["I żeby było ciepłe.", "Ruszaj się.", "Siadam. Nie każ mi wstawać."],
+			"dzieki": ["No. Da się.", "Mogłeś szybciej.", "Hm."],
+			"zawolany": ["Czego się drzesz?!", "Słyszę!", "Idę, idę, pali się?"],
+			"ponaglenia": ["CO TAM TAK DŁUGO?!", "Sam sobie zrobię!", "Liczę do dziesięciu."],
+			"opinie_super": ["Nie ma się do czego przyczepić. Denerwujące."],
+			"rozmowy": [
+				{
+					"klient": "Kiedyś kebab kosztował dychę.",
+					"odpowiedzi": [
+						{"gracz": "Kiedyś to było.", "klient": "No! Kiedyś to było.", "cierpliwosc": 15},
+						{"gracz": "Inflacja.", "klient": "Nie wyzywaj mnie.", "cierpliwosc": -8},
+						{"gracz": "To wróć do kiedyś.", "klient": "Bezczelny! ...Podoba mi się.", "napiwek": 3}
+					]
+				},
+				{
+					"klient": "Masz coś do powiedzenia na mój temat?",
+					"odpowiedzi": [
+						{"gracz": "Ładna kurtka.", "klient": "...Dzięki. Nikt tak nie mówi.", "cierpliwosc": 25, "napiwek": 2},
+						{"gracz": "Nie.", "klient": "I dobrze.", "cierpliwosc": 0},
+						{"gracz": "Wyglądasz na głodnego i złego.", "klient": "Tego już za wiele.", "wychodzi": true}
+					]
+				}
+			]
+		},
+		"gadula": {
+			"typ": "regular", "plec": "m", "tytul": "Gaduła",
+			"powitania": ["O, dzień dobry! Czy raczej dobry wieczór! A może już dzień dobry?",
+				"Cześć! Muszę ci coś opowiedzieć!"],
+			"zamowienie": ["Więc tak, długo myślałem, nawet w autobusie, i stanęło na: {lista}.",
+				"Mój szwagier mówi, żeby brać {lista}. To biorę."],
+			"imie": ["{imie}, po dziadku, który hodował nutrie, to ciekawa historia... {imie}."],
+			"po_zamowieniu": ["Poczekam i pomyślę, co ci jeszcze opowiedzieć."],
+			"rozmowy": [
+				{
+					"klient": "Wiedziałeś, że ślimak ma tysiące zębów?",
+					"odpowiedzi": [
+						{"gracz": "Niesamowite!", "klient": "Prawda?! A rekin to dopiero...", "cierpliwosc": 20,
+							"dalej": [
+								{"gracz": "Mów dalej.", "klient": "Jesteś moim najlepszym przyjacielem.", "napiwek": 4},
+								{"gracz": "Muszę kroić mięso.", "klient": "Jasne, jasne. Rekin poczeka.", "cierpliwosc": 0}
+							]},
+						{"gracz": "Nie wiedziałem i nie chciałem.", "klient": "Smutne masz życie.", "cierpliwosc": -10}
+					]
+				},
+				{
+					"klient": "Mój sąsiad trzyma w wannie karpia od Wigilii. Trzy lata temu.",
+					"odpowiedzi": [
+						{"gracz": "Jak ma na imię?", "klient": "Karp? Prezes. Sąsiad? Nie pamiętam.", "cierpliwosc": 15},
+						{"gracz": "A gdzie się myje?", "klient": "Karp w wannie. A sąsiad... nie myje się.", "napiwek": 2},
+						{"gracz": "Mhm.", "klient": "Nie słuchasz.", "cierpliwosc": -5}
+					]
+				}
+			]
+		},
+		"taksowkarz": {
+			"typ": "regular", "plec": "m", "tytul": "Taksówkarz",
+			"powitania": ["Postój mam, silnik chodzi.", "Dobry, kierowniku. Szybki kurs po kebaba."],
+			"ponaglenia": ["Licznik mi bije!", "Klient w aucie czeka!"],
+			"imie": ["{imie}. Taryfa numer siedem."],
+			"opinie_super": ["Pięć gwiazdek, jak ode mnie nikt nie daje."],
+			"rozmowy": [
+				{
+					"klient": "Woziłem dziś gościa z klatką. Pustą. Cały czas do niej mówił.",
+					"odpowiedzi": [
+						{"gracz": "Normalny wtorek.", "klient": "W tym mieście? Zgadza się.", "cierpliwosc": 10},
+						{"gracz": "I zapłacił?", "klient": "Zapłacił za dwóch. Tego się boję.", "napiwek": 2},
+						{"gracz": "Dokąd jechał?", "klient": "Tutaj. Za lokal, na śmietnik.", "cierpliwosc": 5}
+					]
+				},
+				{
+					"klient": "Którędy najszybciej na dworzec?",
+					"odpowiedzi": [
+						{"gracz": "Przecież to ty jesteś taksówkarzem.", "klient": "Testuję cię. Oblałeś. Ja też.", "cierpliwosc": 5},
+						{"gracz": "Prosto i w lewo.", "klient": "Tam jest rzeka.", "cierpliwosc": -5},
+						{"gracz": "Naokoło, więcej na liczniku.", "klient": "O! Fachowiec.", "napiwek": 4}
+					]
+				}
+			]
+		},
+		"poeta": {
+			"typ": "regular", "plec": "m", "tytul": "Nocny poeta",
+			"powitania": ["Noc. Neon. Głód.", "Witaj, strażniku rożna."],
+			"zamowienie": ["Niech w mej tortilli zamieszkają: {lista}.", "Dusza ma pragnie: {lista}."],
+			"imie": ["Zwą mnie {imie}.", "{imie}. Rym do tego trudny."],
+			"dzieki": ["Cóż za strofa smaku!"],
+			"opinie_super": ["O kebabie! Tyś jak świt nad blokowiskiem."],
+			"rozmowy": [
+				{
+					"klient": "Piszę wiersz. Co rymuje się z 'surówka'?",
+					"odpowiedzi": [
+						{"gracz": "Mrówka.", "klient": "Mrówka w surówce... Genialne i niepokojące.", "napiwek": 3},
+						{"gracz": "Wymówka.", "klient": "Moje całe życie.", "cierpliwosc": 15},
+						{"gracz": "Nic. Zamów coś innego.", "klient": "Barbarzyńca.", "cierpliwosc": -10}
+					]
+				},
+				{
+					"klient": "Czy szczur też marzy?",
+					"odpowiedzi": [
+						{"gracz": "O wolności.", "klient": "Notuję. Ukradnę ci to.", "cierpliwosc": 15},
+						{"gracz": "O twoim kebabie.", "klient": "Zatem dzielimy marzenie.", "napiwek": 2},
+						{"gracz": "Ostatnio krótko.", "klient": "Mroczne. Zbyt mroczne nawet dla mnie.", "cierpliwosc": -10}
+					]
+				}
+			]
+		},
+		"teoretyk": {
+			"typ": "regular", "plec": "m", "tytul": "Teoretyk spisku",
+			"powitania": ["Nikt za mną nie szedł?", "Zasłoń kamery."],
+			"imie": ["Dla ciebie... {imie}. To nie jest prawdziwe imię. Dobra, jest."],
+			"zawolany": ["Ciszej! Po imieniu?!", "Jestem, nie rozgłaszaj."],
+			"rozmowy": [
+				{
+					"klient": "Gołębie to drony. Wiedziałeś?",
+					"odpowiedzi": [
+						{"gracz": "Ładują się na liniach.", "klient": "Nareszcie ktoś przytomny!", "napiwek": 3},
+						{"gracz": "Bzdura.", "klient": "Dokładnie to powiedziałby agent.", "cierpliwosc": -10},
+						{"gracz": "A szczury?", "klient": "Szczury są po naszej stronie. Dbaj o nie.", "cierpliwosc": 10}
+					]
+				},
+				{
+					"klient": "Dlaczego ten lokal działa tylko w nocy, co?",
+					"odpowiedzi": [
+						{"gracz": "W dzień śpię.", "klient": "Alibi. Słabe.", "cierpliwosc": 0},
+						{"gracz": "Bo w dzień przychodzi sanepid.", "klient": "Szczerość! Podejrzane, ale doceniam.", "napiwek": 2},
+						{"gracz": "Nie mogę powiedzieć.", "klient": "WIEDZIAŁEM. Poczekam na dowody.", "cierpliwosc": 20}
+					]
+				}
+			]
+		},
+
+		"zwykla": {
+			"typ": "klientka", "plec": "k", "tytul": "Zwykła klientka",
+			"powitania": ["Dobry wieczór.", "Hej! Jeszcze robicie?"],
+			"pomylka": ["Ujdzie... ale nie to zamawiałam."],
+			"rozmowy": [
+				{
+					"klient": "Uciekł mi ostatni autobus.",
+					"odpowiedzi": [
+						{"gracz": "Za to kebab nie ucieknie.", "klient": "Oby. Choć u ciebie nigdy nie wiadomo.", "cierpliwosc": 15},
+						{"gracz": "Zadzwoń po taksówkę.", "klient": "Taksówkarz stoi u ciebie w kolejce.", "cierpliwosc": 0},
+						{"gracz": "Spacer to zdrowie.", "klient": "Osiem kilometrów zdrowia. Super.", "cierpliwosc": -8}
+					]
+				}
+			]
+		},
+		"influencerka": {
+			"typ": "klientka", "plec": "k", "tytul": "Influencerka",
+			"powitania": ["Hejka, kochani! A, to tylko ty.", "Czy tu można nagrywać? Już nagrywam."],
+			"zamowienie": ["Okej, na stories leci: {lista}.", "Moi widzowie wybrali: {lista}."],
+			"imie": ["{imie}! Serio nie znasz?", "{imie}. Zaobserwuj."],
+			"po_zamowieniu": ["Idę łapać światło."],
+			"pomylka": ["To nie wygląda jak na zdjęciu."],
+			"opinie_super": ["10/10, kochani, kod KEBS daje nic."],
+			"rozmowy": [
+				{
+					"klient": "Powiesz do kamery, że to kebab premium?",
+					"odpowiedzi": [
+						{"gracz": "Premium premium!", "klient": "Naturalny talent!", "napiwek": 4},
+						{"gracz": "To zwykły kebab.", "klient": "Autentyczność. Też się klika.", "cierpliwosc": 10},
+						{"gracz": "Zabierz ten telefon.", "klient": "Skasuj to z głowy, bo wrzucę.", "cierpliwosc": -15}
+					]
+				},
+				{
+					"klient": "Ten szczur przy śmietniku ma własny profil?",
+					"odpowiedzi": [
+						{"gracz": "Ma więcej obserwujących niż ty.", "klient": "Au. Prawdopodobne.", "cierpliwosc": -5},
+						{"gracz": "Mogę być jego menedżerem.", "klient": "Zróbmy kolaborację.", "napiwek": 3},
+						{"gracz": "Jaki szczur?", "klient": "Ten, co właśnie pozował.", "cierpliwosc": 5}
+					]
+				}
+			]
+		},
+		"pielegniarka": {
+			"typ": "klientka", "plec": "k", "tytul": "Pielęgniarka z dyżuru",
+			"powitania": ["Dwunasta godzina dyżuru. Nakarm mnie.", "Cześć. Mam piętnaście minut przerwy."],
+			"pomylka": ["Nie to zamawiałam, ale nie mam siły się kłócić."],
+			"dzieki": ["Przywróciłeś mi funkcje życiowe."],
+			"rozmowy": [
+				{
+					"klient": "Myjesz ręce po każdym kliencie?",
+					"odpowiedzi": [
+						{"gracz": "I przed.", "klient": "Wzruszyłam się.", "napiwek": 3},
+						{"gracz": "Czasem.", "klient": "Udam, że tego nie słyszałam.", "cierpliwosc": -10},
+						{"gracz": "Zakładam rękawiczki. Myślami.", "klient": "Antybiotyk wypiszę ci gratis.", "cierpliwosc": 0}
+					]
+				},
+				{
+					"klient": "Blado wyglądasz. Śpisz coś?",
+					"odpowiedzi": [
+						{"gracz": "Po czynszu.", "klient": "Znam to. Trzymaj się.", "cierpliwosc": 15},
+						{"gracz": "Sen jest dla słabych.", "klient": "I dla zdrowych.", "cierpliwosc": 5},
+						{"gracz": "Śnią mi się szczury.", "klient": "To już do specjalisty.", "napiwek": 1}
+					]
+				}
+			]
+		},
+		"korpo": {
+			"typ": "klientka", "plec": "k", "tytul": "Pani z korpo",
+			"powitania": ["Mam deadline na wczoraj.", "Hej, zróbmy szybki sync o kebabie."],
+			"zamowienie": ["Moje requirements: {lista}.", "W scope wchodzi: {lista}."],
+			"ponaglenia": ["Gdzie status mojego ticketu?", "Eskaluję to!"],
+			"imie": ["{imie}. Możesz mi dać na CC."],
+			"opinie_super": ["Dowiezione na czas. Szok."],
+			"rozmowy": [
+				{
+					"klient": "Jak oceniasz swój performance w tym kwartale?",
+					"odpowiedzi": [
+						{"gracz": "Dowożę kebaby.", "klient": "Konkret. Lubię.", "napiwek": 2},
+						{"gracz": "Mam synergię z maszynką do mięsa.", "klient": "Piękny slajd by z tego był.", "cierpliwosc": 15},
+						{"gracz": "A kto pyta?", "klient": "Feedback przyjęty. Negatywnie.", "cierpliwosc": -10}
+					]
+				}
+			]
+		},
+		"punkowa": {
+			"typ": "klientka", "plec": "k", "tytul": "Perkusistka po koncercie",
+			"powitania": ["CO?! Sorry, jeszcze mi dzwoni w uszach.", "Siema! Zagraliśmy dla czterech osób. Rekord."],
+			"imie": ["{imie}! Głośniej nie umiem."],
+			"zawolany": ["CO? A, ja! Idę!"],
+			"rozmowy": [
+				{
+					"klient": "Szukamy nazwy dla zespołu. Dawaj.",
+					"odpowiedzi": [
+						{"gracz": "Mielony Gryzoń.", "klient": "BIORĘ. Jesteś w creditsach.", "napiwek": 4},
+						{"gracz": "Ostry Sos.", "klient": "Już istnieje. Dwa razy.", "cierpliwosc": 5},
+						{"gracz": "Cisza.", "klient": "Obrzydliwe.", "cierpliwosc": -8}
+					]
+				}
+			]
+		},
+
+		"student": {
+			"typ": "student", "plec": "m", "tytul": "Student",
+			"powitania": ["Mistrzu, szybko, mam kolokwium.", "Cześć. Przyjmujesz zapłatę w notatkach?"],
+			"zamowienie": ["Dawaj na szybko: {lista}.", "Stypendium przyszło, szaleję: {lista}."],
+			"ponaglenia": ["Za pięć minut mam autobus!", "Kolokwium się samo nie obleje!"],
+			"dzieki": ["Życie mi ratujesz!"],
+			"opinie_super": ["Lepsze niż stołówka. Wszystko jest lepsze."],
+			"rozmowy": [
+				{
+					"klient": "Pożyczysz dwa złote?",
+					"odpowiedzi": [
+						{"gracz": "Jasne.", "klient": "Oddam po sesji. Albo po studiach.", "cierpliwosc": 20, "napiwek": -2},
+						{"gracz": "Sam zbieram na czynsz.", "klient": "Solidarność biedy. Szanuję.", "cierpliwosc": 5},
+						{"gracz": "Idź do pracy.", "klient": "Mamo?!", "cierpliwosc": -10}
+					]
+				},
+				{
+					"klient": "Ile to jest siedem razy osiem? Pilne.",
+					"odpowiedzi": [
+						{"gracz": "56.", "klient": "Zdałem. Chyba. Dzięki!", "napiwek": 3},
+						{"gracz": "54.", "klient": "Zapisuję. Ufam ci bezgranicznie.", "cierpliwosc": 10},
+						{"gracz": "To zależy od sosu.", "klient": "Profesor mówi podobnie.", "cierpliwosc": 5}
+					]
+				}
+			]
+		},
+		"filozof": {
+			"typ": "student", "plec": "m", "tytul": "Student filozofii",
+			"powitania": ["Czy kebab istnieje, gdy nikt go nie je?", "Dobry wieczór, o ile dobro istnieje."],
+			"zamowienie": ["Zakładając, że mam wolną wolę: {lista}.", "Wybieram, więc jestem: {lista}."],
+			"imie": ["Nazywają mnie {imie}. Kim jestem, to osobna kwestia."],
+			"rozmowy": [
+				{
+					"klient": "Czy zmielony szczur to nadal szczur?",
+					"odpowiedzi": [
+						{"gracz": "To już tylko porcje.", "klient": "Redukcjonista! Fascynujące.", "cierpliwosc": 10},
+						{"gracz": "Szczurem jest się całe życie.", "klient": "A potem przez chwilę kebabem.", "napiwek": 2},
+						{"gracz": "Nie mielę żadnych szczurów.", "klient": "Nie pytałem o ciebie. Ciekawe.", "cierpliwosc": 0}
+					]
+				}
+			]
+		},
+
+		"babcia": {
+			"typ": "babcia", "plec": "k", "tytul": "Babcia z torebką",
+			"powitania": ["Szczęść Boże, wnusiu.", "Wnusiu, ty tu sam po nocy?"],
+			"zamowienie": ["Zrób mi takiego: {lista}.", "Lekarz zabronił, więc daj: {lista}."],
+			"ponaglenia": ["Za komuny szybciej dawali.", "Wnusiu, ja nie mam dużo czasu. W ogóle."],
+			"imie": ["{imie}, dziecko. {imie}.", "Babcia {imie}."],
+			"dzieki": ["Masz parę groszy na cukierki."],
+			"pomylka": ["Nie o to prosiłam, ale zjem, bo szkoda."],
+			"zawolany": ["Już, już, kolana nie te."],
+			"opinie_super": ["Dobre. Mój kotlet lepszy, ale dobre."],
+			"rozmowy": [
+				{
+					"klient": "A ty żonę to masz?",
+					"odpowiedzi": [
+						{"gracz": "Szukam.", "klient": "Mam wnuczkę. Lubi cebulę i ma charakter.", "napiwek": 2},
+						{"gracz": "Mam kebaba.", "klient": "To widać po koszuli.", "cierpliwosc": 10},
+						{"gracz": "Nie pani sprawa.", "klient": "Oj, nieładnie.", "cierpliwosc": -15}
+					]
+				},
+				{
+					"klient": "Czapkę nosisz? Przewieje cię.",
+					"odpowiedzi": [
+						{"gracz": "Założę, obiecuję.", "klient": "Grzeczny chłopiec.", "cierpliwosc": 25, "napiwek": 1},
+						{"gracz": "Stoję przy rożnie.", "klient": "Tym bardziej przewieje.", "cierpliwosc": 10}
+					]
+				}
+			]
+		},
+		"krystyna": {
+			"typ": "babcia", "plec": "k", "tytul": "Emerytka detektyw",
+			"powitania": ["Obserwuję ten lokal od tygodnia.", "Dobry wieczór. Mam lornetkę i dużo czasu."],
+			"imie": ["{imie}. Zapisz, ja też cię zapisałam."],
+			"rozmowy": [
+				{
+					"klient": "Co wynosisz w nocy na podwórko?",
+					"odpowiedzi": [
+						{"gracz": "Śmieci.", "klient": "Śmieci nie piszczą.", "cierpliwosc": 0},
+						{"gracz": "Chodzę na świeże powietrze.", "klient": "Przy tym śmietniku? Śmiałe.", "cierpliwosc": 10},
+						{"gracz": "Pani nic nie widziała.", "klient": "Za dwa złote mogę nie widzieć.", "napiwek": -2, "cierpliwosc": 20}
+					]
+				}
+			]
+		},
+
+		"sanepid": {
+			"typ": "sanepid", "plec": "m", "tytul": "Zwykły Przechodzień",
+			"powitania": ["Dobry wieczór. Jestem zupełnie zwyczajnym klientem.",
+				"Witam. Przypadkiem przechodziłem. Z podkładką."],
+			"zamowienie": ["Próbka... to znaczy kebab: {lista}.", "Poproszę, zgodnie z procedurą: {lista}."],
+			"ponaglenia": ["Notuję czas oczekiwania... to znaczy, czekam."],
+			"imie": ["{imie}. Zwykłe, cywilne {imie}.", "Inspek... {imie}. Po prostu {imie}."],
+			"dzieki": ["Hm. Zgodnie z normą. To znaczy: mniam."],
+			"opinie_super": ["Czystość i smak bez zastrzeżeń. Protokół zamknięty."],
+			"mandat": ["SANEPID! Mandat się należy!", "Koniec przebrania. MANDAT!"],
+			"opinia_szczur": ["Szczur w lokalu gastronomicznym. Mandat wystawiony."],
+			"opinia_widzial_szczura": ["Szczur w lokalu gastronomicznym. Mandat wystawiony."],
+			"rozmowy": [
+				{
+					"klient": "Tak z ciekawości: w jakiej temperaturze trzymacie mięso?",
+					"odpowiedzi": [
+						{"gracz": "W odpowiedniej.", "klient": "Hm. Odpowiedź wymijająca.", "cierpliwosc": 0},
+						{"gracz": "Cztery stopnie, jak trzeba.", "klient": "Wzorowo! To znaczy... nie znam się.", "napiwek": 3},
+						{"gracz": "Żywe samo trzyma ciepło.", "klient": "Słucham?! Zapisuję.", "cierpliwosc": -15}
+					]
+				},
+				{
+					"klient": "Ładne wąsy mam, prawda? Prawdziwe.",
+					"odpowiedzi": [
+						{"gracz": "Przepiękne.", "klient": "Dwa pięćdziesiąt w kiosku. To znaczy: dziękuję.", "cierpliwosc": 20},
+						{"gracz": "Odklejają się.", "klient": "To od pary z rożna. Proszę nie patrzeć.", "cierpliwosc": -5}
+					]
+				}
+			]
+		},
+
+		"smakosz": {
+			"typ": "smakosz", "plec": "m", "tytul": "Smakosz",
+			"powitania": ["Szepnięto mi, że serwujecie... specjały.", "Maestro! Przyszedłem z apetytem na coś żywszego."],
+			"zamowienie": ["Z wkładką! Płacę podwójnie: {lista}.", "Degustacja nocna: {lista}."],
+			"ponaglenia": ["Wkładka ucieka? Poczekam, ale krótko."],
+			"dzieki": ["Ach! Ten ogonek! Brawo, maestro!"],
+			"brak_wkladki": ["A gdzie moja wkładka?!"],
+			"surowy_szczur": ["Surowy?! Ja chcę w kebabie!"],
+			"opinie_super": ["Wkładka świeża, jeszcze protestowała. Polecam."],
+			"opinia_brak_wkladki": ["Zero wkładki. Nuda."],
+			"opinia_surowy_szczur": ["Podali mi wkładkę bez kebaba. Barbarzyństwo."],
+			"rozmowy": [
+				{
+					"klient": "Który rocznik poleca kuchnia?",
+					"odpowiedzi": [
+						{"gracz": "Śmietnik, rocznik bieżący.", "klient": "Wybornie. Nuta kartonu.", "napiwek": 5},
+						{"gracz": "Mamy tylko wołowinę.", "klient": "Proszę mnie nie obrażać.", "cierpliwosc": -10},
+						{"gracz": "Świeżo złapany.", "klient": "Ślinka mi cieknie.", "cierpliwosc": 20}
+					]
+				}
+			]
+		},
+
+		"wlascicielka": {
+			"typ": "wlasciciel", "plec": "k", "tytul": "Pani od Pimpka",
+			"powitania": ["Widział ktoś Pimpka? Ma czerwoną kokardkę!", "Przepraszam... szukam mojego Pimpusia."],
+			"czekam": ["Widział pan Pimpka?", "I co, jest Pimpek?"],
+			"imie": ["{imie}. A on nazywa się Pimpek."],
+			"ponaglenia": ["Pimpek? Pimpuś! Cip, cip..."],
+			"zawolany": ["Znalazł się Pimpek?!"],
+			"po_zamowieniu": ["Usiądę i popłaczę."],
+			"pimpek_oddany": ["PIMPUŚ! Moje słoneczko! Proszę, to dla pana."],
+			"nie_pimpek": ["To nie Pimpek! Pimpek ma kokardkę!"],
+			"nie_glodna": ["Nie jestem głodna. Szukam Pimpka!"],
+			"pimpek_w_kebabie": ["CZY TO... PIMPEK?!"],
+			"nie_widziano": ["Pójdę szukać dalej..."],
+			"rezygnacja": ["Pójdę szukać dalej..."],
+			"opinie_super": ["Oddali mi Pimpka. Najlepszy kebab w mieście."],
+			"opinia_szczur": ["W kebabie był ogonek. Znajomy ogonek."],
+			"opinia_rezygnacja": ["Nikt tu nie widział Pimpka. Podejrzane."],
+			"rozmowy": [
+				{
+					"klient": "On jest taki ufny. Idzie do każdego, kto ma coś do jedzenia.",
+					"odpowiedzi": [
+						{"gracz": "Będę miał oczy otwarte.", "klient": "Dziękuję. Dobry z pana człowiek.", "cierpliwosc": 30},
+						{"gracz": "Do mnie też by przyszedł.", "klient": "Oby! ...Dlaczego pan się tak uśmiecha?", "cierpliwosc": 5},
+						{"gracz": "To tylko szczur.", "klient": "TYLKO?!", "cierpliwosc": -30}
+					]
+				},
+				{
+					"klient": "Lubi surówkę i spać w bucie. Myśli pan, że mu zimno?",
+					"odpowiedzi": [
+						{"gracz": "Przy śmietniku jest przytulnie.", "klient": "Przy śmietniku?! Zajrzę tam.", "cierpliwosc": 20},
+						{"gracz": "Przy rożnie na pewno nie.", "klient": "Proszę tak nie mówić!", "cierpliwosc": -15}
+					]
+				}
+			]
+		}
+	}
+}

@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" path="res://Objects/food_sauce.tscn" id="9_sauce"]
 [ext_resource type="PackedScene" path="res://Objects/sauce_bottle.tscn" id="10_bottle"]
 
-[ext_resource type="Texture2D" path="res://Textures/rat.png" id="11_rat"]
+[ext_resource type="Texture2D" path="res://Textures/szczury/szczur_0.png" id="11_rat"]
 
 [sub_resource type="BoxMesh" id="mesh_board"]
 material = ExtResource("3_mboard")
@@ -71,7 +71,7 @@ visible = false
 [node name="rat" type="Sprite3D" parent="board"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 visible = false
-pixel_size = 0.014
+pixel_size = 0.007
 billboard = 1
 alpha_cut = 1
 texture_filter = 0

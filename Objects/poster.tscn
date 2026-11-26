@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Textures/swiat/plakat.png" id="1_tex"]
+
+[node name="poster" type="Node3D"]
+
+[node name="paper" type="Sprite3D" parent="."]
+pixel_size = 0.011
+shaded = true
+texture_filter = 0
+texture = ExtResource("1_tex")
+
+[node name="Title" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0.01)
+pixel_size = 0.0016
+modulate = Color(0.55, 0.04, 0.03, 1)
+outline_size = 0
+text = "ZAGINĄŁ
+PIMPEK"
+font_size = 56
+shaded = true
+
+[node name="Note" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0.01)
+pixel_size = 0.0014
+modulate = Color(0.08, 0.06, 0.05, 1)
+outline_size = 0
+text = "czerwona kokardka
+NAGRODA 60 zł"
+font_size = 36
+shaded = true

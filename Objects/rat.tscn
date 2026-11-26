@@ -1,7 +1,18 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/rat.gd" id="1_rat"]
-[ext_resource type="Texture2D" path="res://Textures/rat.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://Textures/szczury/szczur_0.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://Textures/swiat/cien.png" id="3_shadow"]
+
+[sub_resource type="StandardMaterial3D" id="mat_shadow"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("3_shadow")
+texture_filter = 0
+
+[sub_resource type="QuadMesh" id="mesh_shadow"]
+material = SubResource("mat_shadow")
+size = Vector2(0.55, 0.32)
 
 [sub_resource type="SphereShape3D" id="shape"]
 radius = 0.3
@@ -13,12 +24,16 @@ monitoring = false
 script = ExtResource("1_rat")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
-pixel_size = 0.02
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+pixel_size = 0.012
 billboard = 1
 alpha_cut = 1
 texture_filter = 0
 texture = ExtResource("2_tex")
+
+[node name="Shadow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.008, 0)
+mesh = SubResource("mesh_shadow")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)

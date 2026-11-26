@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
-[ext_resource type="Texture2D" path="res://Textures/food_tortilla.png" id="1"]
+[ext_resource type="Texture2D" path="res://Textures/swiat/tortilla.png" id="1"]
 
 [resource]
 albedo_texture = ExtResource("1")

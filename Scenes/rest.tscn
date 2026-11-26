@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://civx42xh4eniu" path="res://Objects/blat.tscn" id="7_kqg6h"]
 [ext_resource type="PackedScene" uid="uid://63vhuoncna6h" path="res://Scenes/zapl.tscn" id="8_r8tef"]
 [ext_resource type="PackedScene" uid="uid://c0ga1ibpuje8r" path="res://Scenes/smieci.tscn" id="9_4ot61"]
+[ext_resource type="Texture2D" path="res://Textures/swiat/asfalt.png" id="10_asphalt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_247cf"]
 albedo_texture = ExtResource("1_q8ubf")
@@ -44,7 +45,11 @@ texture_filter = 0
 albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
-albedo_color = Color(0.13, 0.13, 0.14, 1)
+albedo_color = Color(0.7, 0.7, 0.75, 1)
+albedo_texture = ExtResource("10_asphalt")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+texture_filter = 0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_doorfront"]
 size = Vector3(2.25, 2, 0.1)

@@ -1,0 +1,83 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/radio.gd" id="1_radio"]
+[ext_resource type="Texture2D" path="res://Textures/restaurant_wood_128.png" id="2_wood"]
+
+[sub_resource type="StandardMaterial3D" id="mat_case"]
+albedo_color = Color(0.7, 0.5, 0.35, 1)
+albedo_texture = ExtResource("2_wood")
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="StandardMaterial3D" id="mat_dark"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_metal"]
+albedo_color = Color(0.7, 0.7, 0.72, 1)
+metallic = 0.6
+
+[sub_resource type="BoxMesh" id="mesh_shelf"]
+material = SubResource("mat_dark")
+size = Vector3(0.24, 0.03, 0.5)
+
+[sub_resource type="BoxMesh" id="mesh_case"]
+material = SubResource("mat_case")
+size = Vector3(0.14, 0.2, 0.36)
+
+[sub_resource type="BoxMesh" id="mesh_speaker"]
+material = SubResource("mat_dark")
+size = Vector3(0.01, 0.13, 0.15)
+
+[sub_resource type="BoxMesh" id="mesh_knob"]
+material = SubResource("mat_metal")
+size = Vector3(0.02, 0.04, 0.04)
+
+[sub_resource type="BoxMesh" id="mesh_antenna"]
+material = SubResource("mat_metal")
+size = Vector3(0.008, 0.28, 0.008)
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.24, 0.28, 0.45)
+
+[node name="radio" type="Area3D"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_radio")
+
+[node name="shelf" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
+mesh = SubResource("mesh_shelf")
+
+[node name="case" type="MeshInstance3D" parent="."]
+mesh = SubResource("mesh_case")
+
+[node name="speaker" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.072, 0, 0.08)
+mesh = SubResource("mesh_speaker")
+
+[node name="knob0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, 0.04, -0.09)
+mesh = SubResource("mesh_knob")
+
+[node name="knob1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, -0.04, -0.09)
+mesh = SubResource("mesh_knob")
+
+[node name="antenna" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866, -0.5, 0, 0.5, 0.866, 0, 0.21, -0.1)
+mesh = SubResource("mesh_antenna")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.02, 0.42, 0)
+pixel_size = 0.0016
+font_size = 40
+outline_size = 12
+
+[node name="music" type="AudioStreamPlayer3D" parent="."]
+volume_db = -6.0
+unit_size = 2.5
+max_distance = 14.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape")

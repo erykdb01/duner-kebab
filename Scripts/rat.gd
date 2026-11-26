@@ -2,7 +2,14 @@ extends Area3D
 # Szczur: żyje przy śmietniku, czasem zakrada się na salę. Ucieka przed graczem
 # i daje się złapać w przerwach. Wypuszczony zostaje tam, gdzie wylądował.
 
+signal consumed # zmielony, wyrzucony, zawinięty...
+
 enum State { WANDER, FLEE, HELD, TRAVEL }
+
+const Sfx = preload("res://Scripts/sfx.gd")
+const FRAME_TIME := 0.12
+const GOLD_SPEED := 1.35 # złoty szczur jest szybszy
+const Night = preload("res://Scripts/night.gd")
 
 const WANDER_SPEED := 1.2
 const FLEE_SPEED := 3.0
@@ -31,6 +38,9 @@ var _destination := &"" # strefa po dojściu; pusta = szczur znika
 var _player: Node3D
 var _target := Vector3.ZERO
 var _pause := 1.0
+var _frames: Array[Texture2D] = []
+var _anim_time := 0.0
+var _speed_scale := 1.0
 
 @onready var sprite: Sprite3D = $Sprite3D
 
@@ -41,6 +51,21 @@ func start(areas: Dictionary, player: Node3D) -> void:
 	global_position = _areas[zone].pick_random()
 	_target = global_position
 
+# &"szczur", &"pimpek" albo &"zloty". Wywołać po dodaniu do sceny.
+func set_variant(variant: StringName) -> void:
+	_frames = [
+		load("res://Textures/szczury/%s_0.png" % variant),
+		load("res://Textures/szczury/%s_1.png" % variant)]
+	sprite.texture = _frames[0]
+	if variant != &"szczur":
+		add_to_group(variant)
+	if variant == &"zloty":
+		_speed_scale = GOLD_SPEED
+
+# Gracz pozbywa się szczura na dobre (przed usunięciem węzła).
+func consume() -> void:
+	consumed.emit()
+
 # Idzie podaną trasą na salę.
 func invade(path: Array[Vector3]) -> void:
 	_travel(path, &"sala")
@@ -50,8 +75,13 @@ func escape(path: Array[Vector3]) -> void:
 	_travel(path, &"")
 
 func _process(delta: float) -> void:
+	sprite.modulate = Night.tint(global_position)
+	$Shadow.visible = state != State.HELD
 	if state == State.HELD:
+		_animate(delta * 0.5) # wierzga w ręce
 		return
+	if state == State.TRAVEL or not global_position.is_equal_approx(_target):
+		_animate(delta)
 	if state == State.TRAVEL:
 		_follow_path(delta)
 		return
@@ -60,7 +90,7 @@ func _process(delta: float) -> void:
 		_flee()
 	elif not global_position.is_equal_approx(_target):
 		var speed := FLEE_SPEED if state == State.FLEE else WANDER_SPEED
-		global_position = global_position.move_toward(_target, speed * delta)
+		global_position = global_position.move_toward(_target, speed * _speed_scale * delta)
 		if global_position.is_equal_approx(_target):
 			_pause = CATCH_WINDOW if state == State.FLEE else randf_range(0.5, 2.0)
 	else:
@@ -74,7 +104,13 @@ func _process(delta: float) -> void:
 			_run_to(_areas[zone].pick_random())
 
 func get_prompt(player) -> String:
-	return "Masz zajęte ręce" if player.held else "[E] Złap szczura"
+	if player.held:
+		return "Masz zajęte ręce"
+	if is_in_group("pimpek"):
+		return "[E] Złap szczura (ma czerwoną kokardkę)"
+	if is_in_group("zloty"):
+		return "[E] Złap ZŁOTEGO szczura"
+	return "[E] Złap szczura"
 
 func interact(player) -> void:
 	if player.held:
@@ -83,6 +119,7 @@ func interact(player) -> void:
 	zone = &""
 	sprite.scale = Vector3.ONE * HELD_SCALE
 	player.hold(self)
+	Sfx.play(player, "squeak")
 
 # Wywoływane przez gracza po "odłożeniu" szczura.
 func release(point: Vector3) -> void:
@@ -99,6 +136,12 @@ func release(point: Vector3) -> void:
 		clampf(point.x, bounds.position.x, bounds.end.x), FLOOR_Y,
 		clampf(point.z, bounds.position.y, bounds.end.y))
 	_flee()
+
+func _animate(delta: float) -> void:
+	if _frames.is_empty():
+		return
+	_anim_time += delta
+	sprite.texture = _frames[int(_anim_time / FRAME_TIME) % 2]
 
 func _travel(path: Array[Vector3], destination: StringName) -> void:
 	state = State.TRAVEL

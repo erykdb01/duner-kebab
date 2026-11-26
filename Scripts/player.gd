@@ -2,6 +2,11 @@ extends CharacterBody3D
 
 signal prompt_changed(text: String)
 
+const Night = preload("res://Scripts/night.gd")
+const Sfx = preload("res://Scripts/sfx.gd")
+
+var torch := SpotLight3D.new()
+
 @onready var cam = $Camera3D
 @onready var col = $CollisionShape3D
 @onready var ray: RayCast3D = $Camera3D/InteractRay
@@ -10,23 +15,41 @@ signal prompt_changed(text: String)
 var held: Area3D = null
 var _held_layer := 0
 var _prompt := ""
+var busy := false # rozmowa, notatnik albo wołanie: gracz stoi, mysz jest wolna
+
+func set_busy(value: bool) -> void:
+	busy = value
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if value else Input.MOUSE_MODE_CAPTURED
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	ray.add_exception(self)
+	torch.light_color = Color(1, 0.94, 0.8)
+	torch.light_energy = 2.2
+	torch.spot_range = 10.0
+	torch.spot_angle = 32.0
+	torch.position = Vector3(0.2, -0.15, 0)
+	torch.visible = false
+	cam.add_child(torch)
+	Night.torch = torch
 
 func _unhandled_input(e):
+	if busy:
+		return
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		if e is InputEventMouseButton and e.pressed:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif e.is_action_pressed("interact"):
 		_interact()
+	elif e.is_action_pressed("flashlight"):
+		torch.visible = not torch.visible
+		Sfx.play(self, "switch", -8.0)
 	elif e is InputEventMouseMotion:
 		rotate_y(-e.relative.x * 0.003)
 		cam.rotation.x = clamp(cam.rotation.x - e.relative.y * 0.003, -1.5, 1.5)
 
 func _physics_process(delta):
-	var crouch = Input.is_action_pressed("crouch")
+	var crouch = not busy and Input.is_action_pressed("crouch")
 	var h = 1.2 if crouch else 1.75
 	col.shape.height = h
 	col.position.y = h / 2
@@ -35,7 +58,8 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	var input = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var input = Vector2.ZERO if busy else Input.get_vector(
+		"move_left", "move_right", "move_forward", "move_back")
 	var dir = (transform.basis * Vector3(input.x, 0, input.y)).normalized()
 	var speed = 1.5 if crouch else 5.0
 	velocity.x = dir.x * speed
@@ -54,6 +78,8 @@ func hold(item: Area3D) -> void:
 	item.transform = Transform3D.IDENTITY
 
 func discard() -> void:
+	if held.has_method("consume"):
+		held.consume()
 	held.queue_free()
 	held = null
 
@@ -86,7 +112,9 @@ func _interact() -> void:
 func _update_prompt() -> void:
 	var target = _target()
 	var text := ""
-	if target:
+	if busy:
+		pass
+	elif target:
 		text = target.get_prompt(self)
 	elif _can_place():
 		text = "[E] Wypuść szczura" if held.is_in_group("rat") else "[E] Odłóż"

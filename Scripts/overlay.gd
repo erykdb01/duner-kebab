@@ -1,9 +1,12 @@
 extends CanvasLayer
 # Pauza (Esc) i podsumowanie nocy. Działa także przy zatrzymanej grze.
 
+const Game = preload("res://Scripts/game.gd")
 const MENU_SCENE := "res://Scenes/menu.tscn"
 
 var _summary := false
+var _next_action := Callable()
+var _new_game_on_restart := false
 
 @onready var title: Label = %Title
 @onready var details: Label = %Details
@@ -12,6 +15,8 @@ var _summary := false
 func _ready() -> void:
 	hide()
 	resume_button.pressed.connect(_resume)
+	%Next.pressed.connect(func(): _next_action.call())
+	%Next.hide()
 	%Restart.pressed.connect(_restart)
 	%Menu.pressed.connect(_to_menu)
 	%Quit.pressed.connect(get_tree().quit)
@@ -25,10 +30,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	else:
 		_open("Pauza", "")
 
-func show_summary(text: String) -> void:
+# Podsumowanie nocy; przycisk "next_label" prowadzi dalej.
+func show_summary(heading: String, text: String, next_label: String, next_action: Callable) -> void:
 	_summary = true
-	_open("Koniec nocy", text)
+	_next_action = next_action
+	_open(heading, text)
 	resume_button.hide()
+	%Next.text = next_label
+	%Next.show()
+	%Next.grab_focus()
+
+# Koniec gry: można tylko zacząć od nowa albo wyjść.
+func show_finale(heading: String, text: String) -> void:
+	_summary = true
+	_open(heading, text)
+	resume_button.hide()
+	%Next.hide()
+	%Restart.text = "Zagraj od nowa"
+	_new_game_on_restart = true
 
 func _open(heading: String, text: String) -> void:
 	title.text = heading
@@ -44,6 +63,8 @@ func _resume() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _restart() -> void:
+	if _new_game_on_restart:
+		Game.new_game()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 

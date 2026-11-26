@@ -1,128 +1,13 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://Textures/restaurant_wood_128.png" id="1_wood"]
+[ext_resource type="Script" path="res://Scripts/backyard.gd" id="1_yard"]
 [ext_resource type="PackedScene" path="res://Objects/dumpster.tscn" id="2_dumpster"]
 
-[sub_resource type="StandardMaterial3D" id="mat_fence"]
-albedo_color = Color(0.55, 0.5, 0.45, 1)
-albedo_texture = ExtResource("1_wood")
-uv1_triplanar = true
-texture_filter = 0
-
-[sub_resource type="StandardMaterial3D" id="mat_bag"]
-albedo_color = Color(0.045, 0.05, 0.055, 1)
-roughness = 0.35
-
-[sub_resource type="BoxMesh" id="mesh_side"]
-material = SubResource("mat_fence")
-size = Vector3(0.1, 2.2, 8)
-
-[sub_resource type="BoxShape3D" id="shape_side"]
-size = Vector3(0.1, 2.2, 8)
-
-[sub_resource type="BoxMesh" id="mesh_far"]
-material = SubResource("mat_fence")
-size = Vector3(5.8, 2.2, 0.1)
-
-[sub_resource type="BoxShape3D" id="shape_far"]
-size = Vector3(5.8, 2.2, 0.1)
-
-[sub_resource type="BoxMesh" id="mesh_near"]
-material = SubResource("mat_fence")
-size = Vector3(3, 2.2, 0.1)
-
-[sub_resource type="BoxShape3D" id="shape_near"]
-size = Vector3(3, 2.2, 0.1)
-
-[sub_resource type="SphereMesh" id="mesh_bag"]
-material = SubResource("mat_bag")
-radius = 0.35
-height = 0.55
-radial_segments = 7
-rings = 4
-
-[sub_resource type="CylinderMesh" id="mesh_knot"]
-material = SubResource("mat_bag")
-top_radius = 0.1
-bottom_radius = 0.03
-height = 0.14
-radial_segments = 6
-rings = 0
-
 [node name="backyard" type="Node3D"]
-
-[node name="fence" type="StaticBody3D" parent="."]
-
-[node name="west" type="CollisionShape3D" parent="fence"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.1, 9)
-shape = SubResource("shape_side")
-
-[node name="mesh" type="MeshInstance3D" parent="fence/west"]
-mesh = SubResource("mesh_side")
-
-[node name="east" type="CollisionShape3D" parent="fence"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.1, 9)
-shape = SubResource("shape_side")
-
-[node name="mesh" type="MeshInstance3D" parent="fence/east"]
-mesh = SubResource("mesh_side")
-
-[node name="far" type="CollisionShape3D" parent="fence"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 1.1, 13)
-shape = SubResource("shape_far")
-
-[node name="mesh" type="MeshInstance3D" parent="fence/far"]
-mesh = SubResource("mesh_far")
-
-[node name="near" type="CollisionShape3D" parent="fence"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.1, 5)
-shape = SubResource("shape_near")
-
-[node name="mesh" type="MeshInstance3D" parent="fence/near"]
-mesh = SubResource("mesh_near")
+script = ExtResource("1_yard")
 
 [node name="dumpster" parent="." instance=ExtResource("2_dumpster")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, 11.7)
-
-[node name="bag0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.55, 0.25, 8.4)
-mesh = SubResource("mesh_bag")
-
-[node name="knot" type="MeshInstance3D" parent="bag0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
-mesh = SubResource("mesh_knot")
-
-[node name="bag1" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.8, 0, 0.3, 0, 0.9, 0, -0.3, 0, 0.8, -6.6, 0.22, 7.75)
-mesh = SubResource("mesh_bag")
-
-[node name="knot" type="MeshInstance3D" parent="bag1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
-mesh = SubResource("mesh_knot")
-
-[node name="bag2" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.7, 0, -0.35, 0, 0.7, 0, 0.35, 0, 0.7, -6.15, 0.18, 8.0)
-mesh = SubResource("mesh_bag")
-
-[node name="knot" type="MeshInstance3D" parent="bag2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
-mesh = SubResource("mesh_knot")
-
-[node name="bag3" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.75, 0, 0.2, 0, 0.7, 0, -0.2, 0, 0.75, -6.5, 0.6, 8.1)
-mesh = SubResource("mesh_bag")
-
-[node name="knot" type="MeshInstance3D" parent="bag3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
-mesh = SubResource("mesh_knot")
-
-[node name="bag4" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.9, 0, 0, 0, 0.8, 0, 0, 0, 0.9, -1.7, 0.2, 12.5)
-mesh = SubResource("mesh_bag")
-
-[node name="knot" type="MeshInstance3D" parent="bag4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0)
-mesh = SubResource("mesh_knot")
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6.4, 0, 11.4)
 
 [node name="light_door" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 2.5, 5.7)

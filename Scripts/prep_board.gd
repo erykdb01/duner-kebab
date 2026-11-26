@@ -3,6 +3,7 @@ extends Area3D
 
 const Kebab = preload("res://Objects/kebab.tscn")
 const KebabScript = preload("res://Scripts/kebab.gd")
+const Sfx = preload("res://Scripts/sfx.gd")
 const MAX_LAYERS := 10
 const FIRST_LAYER_Y := 0.038
 const LAYER_HEIGHTS := {
@@ -35,6 +36,7 @@ func add(ingredient: StringName, player) -> bool:
 	else:
 		contents.append(ingredient)
 	_refresh()
+	Sfx.play_at(self, "plop")
 	return true
 
 func get_prompt(player) -> String:
@@ -56,11 +58,13 @@ func interact(player) -> void:
 			player.discard()
 			contents.append(&"rat")
 			_refresh()
+			Sfx.play_at(self, "squeak")
 		return
 	var kebab = Kebab.instantiate()
 	add_child(kebab)
 	kebab.setup(contents.duplicate())
 	player.hold(kebab)
+	Sfx.play_at(self, "wrap")
 	has_tortilla = false
 	contents.clear()
 	_refresh()
