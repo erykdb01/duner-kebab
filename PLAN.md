@@ -36,6 +36,12 @@ Finał zależy od czynszu, losu Pimpka, mandatów i podanych szczurów (rozbudow
 w tym sekretnego).
 
 ## Otwarte
+- Klienci to całe zdjęcia z tłem, rozpikselowane (`Textures/zdjecia/<postać>.*`, `customer.gd`);
+  użytkownik dodał 10 (do sprawdzenia w grze). Bez zdjęć (pożyczają cudze tej samej płci): zwykla,
+  influencerka, pielegniarka, korpo, punkowa, krystyna, wlascicielka, taksowkarz.
+  Zdjęcia są rozciągnięte w górę (`STRETCH` w `customer.gd`).
+  Rysunki `Textures/postacie` wyłączone (do usunięcia po akceptacji).
+- **Przed publikacją gry:** zdjęcia mają znaki wodne banków zdjęć i brak do nich licencji – podmienić.
 - Poziom trudności w ustawieniach (czeka na decyzję; może zastąpi go Endless).
 
 ## Stan kodu

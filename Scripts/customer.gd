@@ -17,7 +17,12 @@ const Dialogs = preload("res://Scripts/dialogs.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Night = preload("res://Scripts/night.gd")
 const Speech = preload("res://Scripts/speech.gd")
-const LOOK := "res://Textures/postacie/%s.png"
+const PHOTO := "res://Textures/zdjecia/%s.%s"
+const PHOTO_TYPES: Array[String] = ["png", "jpg", "webp"]
+const PHOTO_PIXELS := 64 # wysokość zdjęcia po rozpikselowaniu; mniej = większe piksele
+const BODY_HEIGHT := 1.76
+const MAX_WIDTH := 1.6 # szersze zdjęcia są odpowiednio niższe
+const STRETCH := 1.2 # rozciągnięcie zdjęć w górę; 1.0 = oryginalne proporcje
 const SPEED := 1.6
 const AISLE_X := 0.5 # przejście wzdłuż lady
 const BASE_PRICE := 20
@@ -40,6 +45,8 @@ const TYPES := {
 	&"smakosz": [&"gourmet", 90.0, 10],
 	&"wlasciciel": [&"owner", 110.0, 0],
 }
+
+static var _photos := {} # gotowe zdjęcia, żeby nie przerabiać ich przy każdym wejściu
 
 var kind := &"regular" # regular, sanepid, gourmet, owner
 var patience := 75.0
@@ -91,9 +98,7 @@ func start(type_id: StringName, new_character: String, new_name: String, new_slo
 	tip = stats[2]
 	character = new_character
 	first_name = new_name
-	# Wygląd: pole "wyglad" w pliku dialogów albo obrazek o nazwie postaci.
-	var look := LOOK % str(Dialogs.character(character).get("wyglad", character))
-	sprite.texture = load(look if ResourceLoader.exists(look) else LOOK % "zwykly")
+	_set_look(str(Dialogs.character(character).get("wyglad", character)))
 	slot = new_slot
 	_street = street
 	_door = door
@@ -105,7 +110,7 @@ func start(type_id: StringName, new_character: String, new_name: String, new_slo
 
 func _process(delta: float) -> void:
 	sprite.modulate = Night.tint(global_position)
-	speech.height = sprite.position.y + 1.05
+	speech.height = sprite.position.y + 1.05 + BODY_HEIGHT * (STRETCH - 1.0)
 	speech.pinned = talking
 	match state:
 		State.WAITING:
@@ -267,6 +272,54 @@ func see_rat() -> void:
 		_leave(_line("widzi_szczura"), 1, _line("opinia_widzial_szczura"))
 
 # --- Wewnętrzne ---
+
+# Wygląd: chodzące zdjęcie. Bez własnego pożycza cudze.
+func _set_look(look: String) -> void:
+	var texture := _photo(look)
+	if not texture:
+		texture = _borrowed_photo()
+	if not texture:
+		return
+	sprite.texture = texture
+	sprite.pixel_size = BODY_HEIGHT / PHOTO_PIXELS
+	# Niższe (poziome) zdjęcia mają górę na wysokości głowy, żeby było je widać zza lady.
+	sprite.offset.y = roundi(PHOTO_PIXELS * STRETCH) - PHOTO_PIXELS / 2.0 - texture.get_height() / 2.0
+
+# Losowe zdjęcie postaci tej samej płci, a gdy takiego nie ma, dowolne.
+func _borrowed_photo() -> Texture2D:
+	var gender := str(Dialogs.character(character).get("plec", "m"))
+	var same: Array[Texture2D] = []
+	var everyone: Array[Texture2D] = []
+	for id in Dialogs.section("postacie"):
+		var texture := _photo(id)
+		if not texture:
+			continue
+		everyone.append(texture)
+		if Dialogs.character(id).get("plec", "m") == gender:
+			same.append(texture)
+	var choice := same if same else everyone
+	return choice.pick_random() if choice else null
+
+# Rozpikselowane zdjęcie postaci albo null, gdy go nie ma.
+func _photo(look: String) -> Texture2D:
+	if _photos.has(look):
+		return _photos[look]
+	for extension in PHOTO_TYPES:
+		var path := PHOTO % [look, extension]
+		if ResourceLoader.exists(path):
+			_photos[look] = _pixelated(load(path))
+			return _photos[look]
+	return null
+
+# Zmniejsza całe zdjęcie (z tłem) do prostokąta z dużymi pikselami, nie szerszego niż MAX_WIDTH.
+func _pixelated(photo: Texture2D) -> Texture2D:
+	var image := photo.get_image()
+	if image.is_compressed():
+		image.decompress()
+	var aspect := image.get_width() / float(image.get_height())
+	var height := mini(PHOTO_PIXELS, roundi(MAX_WIDTH / BODY_HEIGHT * PHOTO_PIXELS / aspect))
+	image.resize(maxi(roundi(height * aspect), 1), roundi(height * STRETCH), Image.INTERPOLATE_LANCZOS)
+	return ImageTexture.create_from_image(image)
 
 func _line(key: String, values := {}) -> String:
 	return Dialogs.line(character, key, values)
