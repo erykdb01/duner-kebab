@@ -17,6 +17,7 @@ const CustomerType = preload("res://Scripts/customer_type.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Night = preload("res://Scripts/night.gd")
+const Speech = preload("res://Scripts/speech.gd")
 const LOOK := "res://Textures/postacie/%s.png"
 const SPEED := 1.6
 const AISLE_X := 0.5 # przejście wzdłuż lady
@@ -43,7 +44,8 @@ var fed := false
 var called := false # zawołany po imieniu, czeka przy ladzie
 var talking := false # w trakcie rozmowy cierpliwość stoi
 var chats := 0
-var last_words := ""
+var speech := Speech.new() # wypowiedzi nad głową
+var _greeting := {}
 var drain := 1.0 # tempo utraty cierpliwości (radio uspokaja, ciemność denerwuje)
 var order: Array[StringName] = [] # warstwy od dołu
 var strict := false # czy liczy się kolejność
@@ -56,18 +58,18 @@ var _path: Array[Vector3] = []
 var _door := Vector3.ZERO
 var _street := Vector3.ZERO
 var _timer := 0.0
-var _bubble_time := 0.0
 var _walk_time := 0.0
 var _complained := false
 var _opinion := ""
 var _stars := 3
 
 @onready var sprite: Sprite3D = $Sprite3D
-@onready var bubble: Label3D = $Bubble
 @onready var _layer := collision_layer
 
 func _ready() -> void:
 	collision_layer = 0
+	speech.target = self
+	add_child(speech)
 
 # Wywołać po dodaniu do sceny.
 func start(new_type: CustomerType, new_character: String, new_name: String, new_slot: int,
@@ -84,14 +86,13 @@ func start(new_type: CustomerType, new_character: String, new_name: String, new_
 	global_position = street
 	_path = [door, _aisle(counter), counter]
 	_conversations = Dialogs.conversations(character, type.kind != &"owner")
+	_greeting = Dialogs.greeting(character)
 	_make_order()
 
 func _process(delta: float) -> void:
 	sprite.modulate = Night.tint(global_position)
-	if _bubble_time > 0.0:
-		_bubble_time -= delta
-		if _bubble_time <= 0.0:
-			bubble.text = ""
+	speech.height = sprite.position.y + 1.05
+	speech.pinned = talking
 	match state:
 		State.WAITING:
 			if not talking:
@@ -121,7 +122,6 @@ func get_prompt(player) -> String:
 func interact(player) -> void:
 	if not player.held:
 		if state == State.WAITING or state == State.EATING:
-			bubble.text = ""
 			talk_requested.emit(self)
 		return
 	if state != State.WAITING:
@@ -139,7 +139,7 @@ func interact(player) -> void:
 			_leave(_line("szczur_do_reki"), 1, _line("opinia_szczur"))
 	elif player.held is Kebab:
 		if not ordered:
-			_say(_line("nie_zamowione"))
+			say(_line("nie_zamowione"))
 			return
 		var contents: Array[StringName] = player.held.contents
 		player.discard()
@@ -150,12 +150,27 @@ func interact(player) -> void:
 func display_name() -> String:
 	return first_name if name_known else str(Dialogs.character(character).get("tytul", "Klient"))
 
-func greet() -> String:
+func say(text: String) -> void:
+	speech.say(text)
+
+# Początek rozmowy. Zwraca powitanie, jeśli można na nie odpowiedzieć (przy pierwszej rozmowie).
+func greet() -> Dictionary:
 	if state == State.EATING:
-		return _line("smacznego")
-	var key := "czekam" if _greeted else "powitania"
+		say(_line("smacznego"))
+		return {}
+	if _greeted:
+		say(_line("czekam"))
+		return {}
 	_greeted = true
-	return _line(key)
+	say(str(_greeting.get("klient", "...")))
+	return _greeting
+
+# Odpowiedź na "Co?".
+func explain(talk: Dictionary) -> void:
+	say(str(talk["co"]) if talk.has("co") else _line("co"))
+
+func throw_out() -> void:
+	_leave(_line("wyproszony"), 1, _line("opinia_wyproszony"))
 
 func can_take_order() -> bool:
 	return type.kind != &"owner" and state == State.WAITING
@@ -179,21 +194,21 @@ func can_chat() -> bool:
 
 func next_conversation() -> Dictionary:
 	chats += 1
-	return _conversations.pop_front()
+	return Dialogs.take(_conversations)
 
 func tired_of_chat() -> String:
 	return _line("dosc_gadania")
 
-# Skutki wybranej odpowiedzi. Zwraca reakcję klienta.
-func apply_reply(reply: Dictionary) -> String:
-	var reaction := str(reply.get("klient", "..."))
+# Reakcja i skutki wybranej odpowiedzi.
+func apply_reply(reply: Dictionary) -> void:
+	var reaction := str(reply.get("klient", ""))
+	say(reaction)
 	_bonus_tip += int(reply.get("napiwek", 0))
 	var seconds := float(reply.get("cierpliwosc", 0))
 	if state == State.WAITING and seconds != 0.0:
 		time_left = clampf(time_left + seconds, 5.0, _max_time)
 	if reply.get("wychodzi", false) and state == State.WAITING:
 		_leave(reaction, 1, _line("obrazony"))
-	return reaction
 
 # Właścicielce powiedziano, że Pimpka nie ma.
 func dismiss() -> void:
@@ -207,7 +222,7 @@ func sit(new_seat: int, position_at_table: Vector3) -> void:
 	slot = -1
 	_walk_to(position_at_table)
 	if not fed:
-		_say(_line("po_zamowieniu"))
+		say(_line("po_zamowieniu"))
 
 # Zawołany po imieniu: wraca do lady.
 func come_to_counter(new_slot: int, counter: Vector3) -> void:
@@ -215,10 +230,10 @@ func come_to_counter(new_slot: int, counter: Vector3) -> void:
 	seat = -1
 	called = true
 	_walk_to(counter)
-	_say(_line("zawolany"))
+	say(_line("zawolany"))
 
 func say_already_here() -> void:
-	_say(_line("juz_stoje"))
+	say(_line("juz_stoje"))
 
 func is_hungry() -> bool:
 	return not fed and (state == State.WAITING or state == State.WALKING)
@@ -242,11 +257,6 @@ func see_rat() -> void:
 func _line(key: String, values := {}) -> String:
 	return Dialogs.line(character, key, values)
 
-# Dymek nad głową, znika po chwili.
-func _say(text: String) -> void:
-	bubble.text = text
-	_bubble_time = 4.0
-
 func _fine() -> void:
 	fined.emit()
 	_leave(_line("mandat"), 1, _line("opinia_widzial_szczura"))
@@ -257,10 +267,10 @@ func _owner_takes(player) -> void:
 		player.discard()
 		_leave(_line("pimpek_oddany"), 5, _line("opinie_super"))
 	elif player.held.is_in_group("rat"):
-		_say(_line("nie_pimpek"))
+		say(_line("nie_pimpek"))
 	elif player.held is Kebab:
 		if not &"rat" in player.held.contents:
-			_say(_line("nie_glodna"))
+			say(_line("nie_glodna"))
 			return
 		player.discard()
 		rat_served.emit()
@@ -356,11 +366,11 @@ func _rate(contents: Array[StringName]) -> void:
 	if state == State.WAITING:
 		if seat >= 0: # jest już przy stoliku
 			_start_eating()
-			_say(reaction)
+			say(reaction)
 		else:
 			_leave(reaction, _stars, _opinion)
 	else:
-		_say(reaction) # poszedł do stolika
+		say(reaction) # poszedł do stolika
 
 func _walk_to(target: Vector3) -> void:
 	state = State.WALKING
@@ -387,8 +397,7 @@ func _arrive() -> void:
 	if state == State.ENTERING:
 		_max_time = type.patience
 		time_left = _max_time
-		_say(_line("powitania"))
-		_greeted = true
+		say(str(_greeting.get("klient", "...")))
 	collision_layer = _layer
 	if seat >= 0:
 		sprite.position.y = SEATED_SPRITE_Y
@@ -400,7 +409,7 @@ func _arrive() -> void:
 func _start_eating() -> void:
 	state = State.EATING
 	_timer = randf_range(12.0, 20.0)
-	_say(_line("smacznego"))
+	say(_line("smacznego"))
 
 func _wait(delta: float) -> void:
 	time_left -= delta * drain
@@ -408,14 +417,12 @@ func _wait(delta: float) -> void:
 		_leave(_line("rezygnacja"), 2 if type.kind == &"owner" else 1, _line("opinia_rezygnacja"))
 	elif not _complained and time_left <= _max_time * 0.4:
 		_complained = true
-		_say(_line("ponaglenia"))
+		say(_line("ponaglenia"))
 
 func _leave(text: String, stars: int, review: String) -> void:
 	state = State.FAREWELL
 	_timer = clampf(text.length() * 0.07, 2.5, 5.0)
-	_bubble_time = 0.0
-	bubble.text = text
-	last_words = text
+	say(text)
 	collision_layer = 0
 	if stars <= 1:
 		Sfx.play_at(self, "angry")

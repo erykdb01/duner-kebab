@@ -26,10 +26,20 @@ Skopiuj dowolną w `postacie`, zmień nazwę i teksty. Wymagane:
 Wygląd to obrazek `Textures/postacie/<nazwa postaci>.png` (40x64). Nowa postać może pożyczyć cudzy,
 np. `"wyglad": "gbur"`.
 
+## Powitania
+Zwykły napis (`"Dobry wieczór."`), gdy nie wymaga odpowiedzi. Jeśli klient o coś pyta albo mówi coś
+dziwnego, zapisz powitanie jak rozmowę (niżej), żeby dostać pasujące odpowiedzi.
+
+Klient w rozmowach mówi na przemian swoje i wspólne (`domyslne`), a ta sama rozmowa nie powtarza się
+w ciągu jednej nocy. Rozmowy wspólne pisz bez form „byłem/byłam”, bo mówią je i panowie, i panie.
+
 ## Rozmowa
+`co` to wyjaśnienie, które klient powie po twoim „Co?”. Każdą rozmowę zaczyna przycisk „Co słychać?”,
+więc pierwsza kwestia powinna pasować jako odpowiedź na to pytanie.
 ```json
 {
 	"klient": "Co mówi klient",
+	"co": "Jak to wyjaśnia",
 	"odpowiedzi": [
 		{"gracz": "Twoja odpowiedź", "klient": "Reakcja", "cierpliwosc": 10, "napiwek": 2},
 		{"gracz": "Niemiła odpowiedź", "klient": "Wychodzę!", "wychodzi": true},

@@ -101,4 +101,12 @@ migocząca świetlówka, zaplecze `zapl` jako kryjówka szczura (kucanie ok. 0,9
 3. Sekretny finał „Złoty Kebab”: czynsz, oddany Pimpek, zero mandatów i zero niezamówionych szczurów.
 
 ## Do poprawy później
-- (nic otwartego; czekamy na test etapu 8)
+- Poprawki po teście etapu 8 zrobione (do sprawdzenia): dialogi z pasującymi odpowiedziami, „Co?” i
+  wyproszenie; kwestie klienta nad głową (`Scripts/speech.gd`, 2D), w oknie tylko odpowiedzi gracza;
+  słabszy filtr; czcionka szeryfowa z systemu (`Materials/serif.tres`); bez tylnych drzwi sali
+  i tabliczki na bramie.
+- Ustawienia (rozdzielczość, pełny ekran) w menu i pauzie: `Scripts/settings.gd` (do sprawdzenia).
+- Dialogi przepisane na bardziej życiowe i rozbudowane (ok. 130 rozmów); rozmowy własne i wspólne na
+  przemian, bez powtórek w nocy (do oceny w grze). Użytkownik sam edytuje `Data/dialogi.json` – nie
+  nadpisywać jego zmian.
+- Czeka na decyzję: poziom trudności.

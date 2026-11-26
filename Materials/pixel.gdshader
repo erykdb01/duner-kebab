@@ -2,8 +2,8 @@ shader_type canvas_item;
 // Pikselizacja obrazu 3D z delikatnym ditheringiem i winietą (HUD zostaje ostry).
 
 uniform sampler2D screen : hint_screen_texture, filter_nearest;
-uniform float pixel_size = 3.0;
-uniform float levels = 32.0;
+uniform float pixel_size = 2.0;
+uniform float levels = 64.0;
 
 float bayer2(vec2 at) {
 	at = floor(at);
@@ -21,6 +21,6 @@ void fragment() {
 	vec3 color = textureLod(screen, uv, 0.0).rgb;
 	color = floor(color * levels + bayer4(cell)) / levels;
 	float edge = distance(SCREEN_UV, vec2(0.5));
-	color *= 1.0 - smoothstep(0.45, 0.8, edge) * 0.35;
+	color *= 1.0 - smoothstep(0.5, 0.8, edge) * 0.2;
 	COLOR = vec4(color, 1.0);
 }

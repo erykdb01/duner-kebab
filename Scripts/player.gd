@@ -21,6 +21,15 @@ func set_busy(value: bool) -> void:
 	busy = value
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if value else Input.MOUSE_MODE_CAPTURED
 
+# Płynnie obraca widok na podany punkt (twarz rozmówcy).
+func look_toward(point: Vector3) -> void:
+	var offset: Vector3 = point - cam.global_position
+	var yaw := atan2(-offset.x, -offset.z)
+	var pitch := atan2(offset.y, Vector2(offset.x, offset.z).length())
+	var tween := create_tween().set_parallel()
+	tween.tween_property(self, "rotation:y", rotation.y + wrapf(yaw - rotation.y, -PI, PI), 0.35)
+	tween.tween_property(cam, "rotation:x", clampf(pitch, -1.5, 1.5), 0.35)
+
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	ray.add_exception(self)

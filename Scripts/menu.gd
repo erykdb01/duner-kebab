@@ -4,6 +4,7 @@ extends Control
 const Game = preload("res://Scripts/game.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Night = preload("res://Scripts/night.gd")
+const Settings = preload("res://Scripts/settings.gd")
 const GAME_SCENE := "res://Scenes/game.tscn"
 const RAT_SIZE := Vector2(144, 78)
 const FRAME_TIME := 0.12
@@ -18,6 +19,16 @@ func _ready() -> void:
 	%Continue.pressed.connect(get_tree().change_scene_to_file.bind(GAME_SCENE))
 	%Controls.pressed.connect(func(): %Help.visible = not %Help.visible)
 	%Quit.pressed.connect(get_tree().quit)
+	Settings.apply_saved()
+	var settings := Settings.new()
+	add_child(settings)
+	%Settings.pressed.connect(func():
+		$Box.hide()
+		%Help.hide()
+		settings.open())
+	settings.closed.connect(func():
+		$Box.show()
+		%Settings.grab_focus())
 	# Postęp pamiętany tylko do wyłączenia gry.
 	%Continue.visible = not Game.save.is_empty()
 	if %Continue.visible:
@@ -30,6 +41,12 @@ func _ready() -> void:
 	_add_rat("szczur", -200.0, 130.0)
 	_add_rat("pimpek", -700.0, 95.0)
 	_add_rat("szczur", 1900.0, -160.0)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		for child in get_children():
+			if child is Settings and child.visible:
+				child.close()
 
 func _process(delta: float) -> void:
 	_time += delta

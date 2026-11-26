@@ -1,18 +1,16 @@
 extends CanvasLayer
-# Rozmowa z klientem: jego kwestia i odpowiedzi do wyboru (mysz albo klawisze 1-6).
+# Twoje odpowiedzi w rozmowie (mysz albo klawisze 1-7). Kwestie klienta są nad jego głową.
 
 signal closed(customer: Node)
 
 const Dialogs = preload("res://Scripts/dialogs.gd")
+const HEAD_HEIGHT := 1.85 # tu patrzy gracz podczas rozmowy
 
 var player: Node
 var notebook: Node
 var customer: Node = null
 var _actions: Array[Callable] = []
-var _over := false # klient skończył rozmowę i wychodzi
 
-@onready var speaker: Label = %Speaker
-@onready var words: Label = %Words
 @onready var options: VBoxContainer = %Options
 
 func _ready() -> void:
@@ -21,10 +19,14 @@ func _ready() -> void:
 func open(target: Node) -> void:
 	customer = target
 	customer.talking = true
-	_over = false
 	show()
 	player.set_busy(true)
-	_show_main(customer.greet())
+	player.look_toward(customer.global_position + Vector3(0, HEAD_HEIGHT, 0))
+	var greeting: Dictionary = customer.greet()
+	if greeting.has("odpowiedzi"):
+		_show_replies(greeting)
+	else:
+		_show_main()
 
 func close() -> void:
 	if not visible:
@@ -37,13 +39,13 @@ func close() -> void:
 		talked.talking = false
 		closed.emit(talked)
 
+# Gdy klient postanawia wyjść, rozmowa się kończy (pożegnanie widać nad głową).
 func _process(_delta: float) -> void:
-	if not visible or _over:
+	if not visible:
 		return
-	if not is_instance_valid(customer):
+	if not is_instance_valid(customer) or customer.state == customer.State.FAREWELL \
+			or customer.state == customer.State.LEAVING:
 		close()
-	elif customer.state == customer.State.FAREWELL or customer.state == customer.State.LEAVING:
-		_show_end(customer.last_words)
 
 func _input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("ui_cancel"):
@@ -61,65 +63,70 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 # --- Widoki ---
 
-func _show_main(text: String) -> void:
+func _show_main() -> void:
 	var list := []
-	var is_owner: bool = customer.type.kind == &"owner"
 	if customer.can_take_order():
 		var key := "powtorz" if customer.ordered else "zamowienie"
-		list.append(_option(key, func(said): _answer(said, customer.ask_order())))
+		list.append(_option(key, _ask_order))
 	var name_key := "imie_znowu" if customer.name_known else "imie"
-	list.append(_option(name_key, func(said): _answer(said, customer.ask_name())))
+	list.append(_option(name_key, _ask_name))
 	list.append(_option("pogadaj", _chat))
-	if is_owner and customer.state == customer.State.WAITING:
-		list.append(_option("nie_widzialem", func(_said): customer.dismiss()))
+	if customer.type.kind == &"owner" and customer.state == customer.State.WAITING:
+		list.append(_option("nie_widzialem", func(): customer.dismiss()))
+	list.append(_option("wypros", func(): customer.throw_out()))
 	var end_key := "koniec_po" if customer.ordered else "koniec_przed"
-	list.append(_option(end_key, func(_said): close()))
-	_show(text, list)
+	list.append(_option(end_key, close))
+	_show(list)
 
-func _chat(said: String) -> void:
-	if not customer.can_chat():
-		_answer(said, customer.tired_of_chat())
-		return
-	var talk: Dictionary = customer.next_conversation()
-	_show_replies(_quote(said, str(talk.get("klient", "..."))), talk.get("odpowiedzi", []))
-
-func _show_replies(text: String, replies: Array) -> void:
+# talk = {"co": wyjaśnienie, "odpowiedzi": [...]}
+func _show_replies(talk: Dictionary, explained := false) -> void:
 	var list := []
-	for reply in replies:
+	for reply in talk.get("odpowiedzi", []):
 		list.append([str(reply.get("gracz", "...")), _reply.bind(reply)])
 	if list.is_empty():
-		_show_main(text)
+		_show_main()
 		return
-	_show(text, list)
+	if not explained:
+		list.append(_option("co", _ask_what.bind(talk)))
+	list.append(_option("wypros", func(): customer.throw_out()))
+	_show(list)
+
+func _ask_what(talk: Dictionary) -> void:
+	customer.explain(talk)
+	_show_replies(talk, true)
+
+func _chat() -> void:
+	if not customer.can_chat():
+		customer.say(customer.tired_of_chat())
+		_show_main()
+		return
+	var talk: Dictionary = customer.next_conversation()
+	customer.say(str(talk.get("klient", "...")))
+	_show_replies(talk)
 
 func _reply(reply: Dictionary) -> void:
-	var text := _quote(str(reply.get("gracz", "...")), customer.apply_reply(reply))
-	if customer.state == customer.State.FAREWELL:
-		_show_end(text)
-	elif reply.has("dalej"):
-		_show_replies(text, reply["dalej"])
+	customer.apply_reply(reply)
+	if reply.has("dalej"):
+		# Ciąg dalszy: te same zasady, "Co?" powtarza ostatnią kwestię.
+		var more := {"co": reply.get("co", reply.get("klient", "...")), "odpowiedzi": reply["dalej"]}
+		_show_replies(more)
 	else:
-		_show_main(text)
+		_show_main()
 
-func _answer(said: String, answer: String) -> void:
-	_show_main(_quote(said, answer))
+func _ask_order() -> void:
+	customer.say(customer.ask_order())
+	_show_main()
 
-func _show_end(text: String) -> void:
-	_over = true
-	_show(text, [_option("koniec", func(_said): close())])
+func _ask_name() -> void:
+	customer.say(customer.ask_name())
+	_show_main()
 
-# Przycisk z losową kwestią gracza; akcja dostaje wypowiedziany tekst.
+# Przycisk z losową kwestią gracza.
 func _option(key: String, action: Callable) -> Array:
-	var text := Dialogs.player_line(key)
-	return [text, action.bind(text)]
-
-func _quote(said: String, answer: String) -> String:
-	return "Ty: %s\n\n%s" % [said, answer]
+	return [Dialogs.player_line(key), action]
 
 # list = [[napis, akcja], ...]
-func _show(text: String, list: Array) -> void:
-	speaker.text = customer.display_name()
-	words.text = text
+func _show(list: Array) -> void:
 	for button in options.get_children():
 		options.remove_child(button)
 		button.queue_free()

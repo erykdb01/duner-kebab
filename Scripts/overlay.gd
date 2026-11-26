@@ -2,11 +2,13 @@ extends CanvasLayer
 # Pauza (Esc) i podsumowanie nocy. Działa także przy zatrzymanej grze.
 
 const Game = preload("res://Scripts/game.gd")
+const Settings = preload("res://Scripts/settings.gd")
 const MENU_SCENE := "res://Scenes/menu.tscn"
 
 var _summary := false
 var _next_action := Callable()
 var _new_game_on_restart := false
+var _settings := Settings.new()
 
 @onready var title: Label = %Title
 @onready var details: Label = %Details
@@ -20,9 +22,21 @@ func _ready() -> void:
 	%Restart.pressed.connect(_restart)
 	%Menu.pressed.connect(_to_menu)
 	%Quit.pressed.connect(get_tree().quit)
+	add_child(_settings)
+	%Settings.pressed.connect(func():
+		$Center.hide()
+		_settings.open())
+	_settings.closed.connect(func(): $Center.show())
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _summary or not event.is_action_pressed("ui_cancel"):
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	# Esc najpierw zamyka ustawienia.
+	if _settings.visible:
+		get_viewport().set_input_as_handled()
+		_settings.close()
+		return
+	if _summary:
 		return
 	get_viewport().set_input_as_handled()
 	if visible:
@@ -36,6 +50,7 @@ func show_summary(heading: String, text: String, next_label: String, next_action
 	_next_action = next_action
 	_open(heading, text)
 	resume_button.hide()
+	%Settings.hide() # w podsumowaniu brakuje na to miejsca
 	%Next.text = next_label
 	%Next.show()
 	%Next.grab_focus()
@@ -45,6 +60,7 @@ func show_finale(heading: String, text: String) -> void:
 	_summary = true
 	_open(heading, text)
 	resume_button.hide()
+	%Settings.hide()
 	%Next.hide()
 	%Restart.text = "Zagraj od nowa"
 	_new_game_on_restart = true

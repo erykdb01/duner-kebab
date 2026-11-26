@@ -11,7 +11,7 @@ func _ready() -> void:
 	_front()
 	_east()
 	_back()
-	_alley()
+	_west()
 	_distant()
 	_restaurant_outside()
 
@@ -68,16 +68,8 @@ func _back() -> void:
 	_prop_can(Vector3(-6.3, 0, 13.8))
 	B.on_floor(self, "kaluza", Vector3(-3.0, 0.004, 15.2), 1.6, 40)
 
-# Zaułek za tylnymi drzwiami sali oraz zabudowa po zachodniej stronie.
-func _alley() -> void:
-	_pavement(Vector3(1.45, -0.012, 9), Vector3(5.2, 0.02, 8))
-	B.box(self, Vector3(1.45, 1.6, 9.3), Vector3(5.2, 3.2, 0.3), B.mat("cegla", Color.WHITE, 0.8))
-	for i in 3:
-		B.box(self, Vector3(-0.2 + i * 0.1, 0.25 + i * 0.48, 8.7), Vector3(0.7, 0.46, 0.6),
-			B.mat("deski", Color.WHITE, 1.5), Vector3(0, i * 17 - 10, 0))
-	B.ball(self, Vector3(1.4, 0.25, 8.8), Vector3(0.8, 0.55, 0.7), B.mat("folia", Color.WHITE, 2.0))
-	B.light(self, Vector3(0.4, 2.4, 6.6), Color(0.9, 0.7, 0.45), 0.6, 4.0)
-	B.on_wall(self, "grzyb", Vector3(0.9, 1.4, 9.14), Vector2(1.6, 1.4), 180)
+# Zabudowa po zachodniej stronie.
+func _west() -> void:
 	for house in [[-4.0, 6.5, "blok"], [3.0, 5.0, "kamienica"], [10.5, 7.0, "blok"], [17.0, 5.5, "kamienica"]]:
 		_building(Vector3(-11.0, house[1] / 2, house[0]), Vector3(5, house[1], 6.4), house[2])
 	_building(Vector3(-6.2, 1.9, 0.0), Vector3(3.2, 3.8, 9.6), "blok")

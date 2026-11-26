@@ -59,8 +59,6 @@ func _gate() -> void:
 		B.box(self, Vector3(x, 1.2, 13), Vector3(0.12, 2.4, 0.12), metal)
 	B.solid(self, Vector3(-4.1, 1.2, 13), Vector3(5.8, 2.4, 0.12))
 	B.box(self, Vector3(-4.1, 1.05, 12.95), Vector3(0.14, 0.18, 0.08), B.mat("metal_zolty", Color.WHITE, 4.0))
-	B.box(self, Vector3(-3.4, 1.55, 12.95), Vector3(0.8, 0.32, 0.03), B.mat("plastik_kremowy", Color.WHITE, 2.0))
-	B.label(self, Vector3(-3.4, 1.55, 12.92), "BRAMA\nZAMKNIĘTA", 36, Color(0.55, 0.05, 0.03), 180, 0.0018)
 
 # Zadaszona wiata nad kontenerem w zachodnim rogu.
 func _shelter() -> void:

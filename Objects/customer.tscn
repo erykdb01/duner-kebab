@@ -35,14 +35,6 @@ texture = ExtResource("2_tex")
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.008, 0)
 mesh = SubResource("mesh_shadow")
 
-[node name="Bubble" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, 0)
-pixel_size = 0.0022
-billboard = 1
-font_size = 40
-outline_size = 12
-vertical_alignment = 2
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 shape = SubResource("shape")

@@ -186,17 +186,10 @@ func _kitchen() -> void:
 func _hall() -> void:
 	var metal := B.mat("metal_ciemny", Color(1.3, 1.3, 1.4), 2.0)
 	var wood := B.mat("deski", Color(0.8, 0.7, 0.6), 2.0)
-	# futryny drzwi i krata w tylnych
-	for door in [[0.0, -4.93, 2.3], [0.4, 4.93, 1.56]]:
-		var half: float = door[2] / 2.0
-		for side in [-1, 1]:
-			B.box(self, Vector3(door[0] + half * side, 1.05, door[1]), Vector3(0.09, 2.1, 0.08), wood)
-		B.box(self, Vector3(door[0], 2.1, door[1]), Vector3(door[2] + 0.1, 0.1, 0.08), wood)
-	for i in 9:
-		B.box(self, Vector3(-0.28 + i * 0.17, 1.02, 5.0), Vector3(0.025, 1.98, 0.025), metal)
-	for y in [0.5, 1.5]:
-		B.box(self, Vector3(0.4, y, 5.0), Vector3(1.5, 0.04, 0.03), metal)
-	B.label(self, Vector3(0.4, 1.75, 4.9), "WYJŚCIE\nNIECZYNNE", 40, Color(1, 0.8, 0.3), 180)
+	# futryna drzwi wejściowych
+	for side in [-1.15, 1.15]:
+		B.box(self, Vector3(side, 1.05, -4.93), Vector3(0.09, 2.1, 0.08), wood)
+	B.box(self, Vector3(0, 2.1, -4.93), Vector3(2.4, 0.1, 0.08), wood)
 	# neon
 	_powered(B.label(self, Vector3(2.55, 2.75, 4.92), "KEBAB 24H", 96, Color(1, 0.3, 0.65), 180, 0.003))
 	_powered(B.label(self, Vector3(2.55, 2.42, 4.92), "prawie zawsze świeży", 40, Color(0.35, 0.9, 1), 180))

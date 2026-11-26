@@ -23,6 +23,10 @@ window/stretch/aspect="expand"
 
 project/assembly_name="DunerKebub"
 
+[gui]
+
+theme/custom_font="res://Materials/serif.tres"
+
 [input]
 
 move_forward={
