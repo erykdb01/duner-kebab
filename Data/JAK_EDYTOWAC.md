@@ -12,7 +12,9 @@ Wszystko jest w `Data/dialogi.json`. Zmiany działają od następnego uruchomien
 - `skladniki`: nazwy używane, gdy klient mówi zamówienie.
 - `gracz`: twoje kwestie na przyciskach (`wypros` – losowe wyproszenie poza rozmową).
 - `domyslne`: wspólna pula zwykłych klientów (także sanepidu) i teksty dla każdego, kto nie ma własnych.
-  Pisz je bez form zdradzających płeć klienta („byłem/byłam”).
+  Pisz je bez form zdradzających płeć klienta („byłem/byłam”). Mniej oczywiste klucze:
+  `ponaglenia_kolejka` (narzekanie w kolejce), `ostrzezenie` i `zdenerwowany` (nerwy),
+  `zamowienie_po_cichu` (prośba o żywego szczura), `mandat` (sanepid).
 - `postacie`: klienci charakterystyczni. Ich teksty zastępują domyślne o tej samej nazwie.
   Postać z własnymi `rozmowy` nie korzysta ze wspólnych.
 

@@ -1,10 +1,12 @@
 extends StaticBody3D
-# Maszynka do mięsa: truchła z torby albo szczur z ręki, jeden szczur to jedna porcja.
+# Maszynka do mięsa: truchła z torby albo szczur z ręki. Jeden szczur to jedna porcja,
+# wielki szczur daje ich więcej.
 
 signal meat_ground(portions: int)
 
 const Sfx = preload("res://Scripts/sfx.gd")
 const Qte = preload("res://Scripts/qte.gd")
+const BIG_PORTIONS := 3 # porcje z wielkiego szczura
 const GRIND_TIME := 2.5
 const SHAKES := 20
 const JAM_CHANCE := 0.25 # szansa, że przy mieleniu się zatnie
@@ -24,8 +26,9 @@ func get_prompt(player) -> String:
 		return "[E] Odetkaj maszynkę"
 	if _has_rat(player):
 		return "[E] Wrzuć szczura do maszynki"
-	if player.carcasses > 0:
-		return "Masz zajęte ręce" if player.held else "[E] Zmiel truchła (%d)" % player.carcasses
+	var portions := _bag_portions(player)
+	if portions > 0:
+		return "Masz zajęte ręce" if player.held else "[E] Zmiel truchła (porcje: %d)" % portions
 	return "Maszynka: potrzebne szczury"
 
 func interact(player) -> void:
@@ -38,9 +41,10 @@ func interact(player) -> void:
 	if _has_rat(player):
 		player.discard()
 		portions = 1
-	elif not player.held and player.carcasses > 0:
-		portions = player.carcasses
-		player.add_carcasses(-portions)
+	elif not player.held and _bag_portions(player) > 0:
+		portions = _bag_portions(player)
+		player.add_carcasses(-player.carcasses)
+		player.add_big_carcasses(-player.big_carcasses)
 	else:
 		return
 	Sfx.play_at(self, "squeak")
@@ -84,6 +88,9 @@ func _unclog(player) -> void:
 		else:
 			bubble.text = "Nadal zacięta!")
 	qte.start("Odetkaj maszynkę!", JAM_KEYS, JAM_KEY_TIME)
+
+func _bag_portions(player) -> int:
+	return player.carcasses + player.big_carcasses * BIG_PORTIONS
 
 func _has_rat(player) -> bool:
 	return player.held != null and player.held.is_in_group("rat")

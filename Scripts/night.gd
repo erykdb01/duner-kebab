@@ -1,4 +1,3 @@
-@tool
 extends RefCounted
 # Barwa sprite'ów (postacie i szczury nie reagują same na światła).
 

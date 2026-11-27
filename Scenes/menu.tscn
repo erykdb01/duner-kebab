@@ -193,27 +193,28 @@ anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 offset_left = -620.0
-offset_top = -200.0
+offset_top = -265.0
 offset_right = -40.0
-offset_bottom = 200.0
+offset_bottom = 265.0
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("style_help")
 
 [node name="Text" type="Label" parent="Help"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 3
 text = "WASD – chodzenie,  Ctrl – kucanie
 E / lewy przycisk – użyj, weź, porozmawiaj
 Tab – notatnik,  Q – zawołaj po imieniu
+R – wyjmij lub schowaj szczura z worka
+G – zjedz kebaba ze szczurem (jedyne leczenie)
 F – latarka,  Esc – pauza
-
-Przygotuj mięso i obróć tabliczkę przy drzwiach.
-Po 4 minutach lokal otworzy się sam, z tłumem.
-Zapytaj klienta o zamówienie i imię, zapisz je sam.
-Zrób kebaba i zanieś go albo zawołaj klienta do lady.
+Walka: 1–5 lub mysz,  minigry: WASD lub strzałki
 
 Mięso: właz w altanie prowadzi do kanałów. Ubij
-szczury, zmiel truchła w maszynce (1 szczur = 1 porcja).
-Żywcem łapiesz do worka; R wyjmuje go i chowa."
+szczury i zmiel truchła (1 porcja, wielki szczur 3).
+Obróć tabliczkę przy drzwiach, żeby otworzyć lokal;
+po 4 minutach otworzy się sam i wpadnie tłum.
+Zapytaj klienta o zamówienie, potem o imię i zapisz
+je sam. Zrób kebaba i zanieś go albo zawołaj klienta."

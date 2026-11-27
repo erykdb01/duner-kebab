@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 signal prompt_changed(text: String)
 signal sack_used # [R]: wyjęcie szczura z worka albo schowanie
+signal eat_pressed # [G]: zjedzenie trzymanego kebaba
 
 const Sfx = preload("res://Scripts/sfx.gd")
 
@@ -15,12 +16,44 @@ var torch := SpotLight3D.new()
 var held: Area3D = null
 var _held_layer := 0
 var _prompt := ""
-var busy := false # rozmowa, notatnik, wołanie, walka albo minigra: gracz stoi
+var busy := false # rozmowa, notatnik, wołanie, walka, minigra albo praca przy desce: gracz stoi
+var work_title := "" # nazwa trwającej pracy; niepusta = nie można nawet się rozejrzeć
+var _work_left := 0.0
+var _work_total := 1.0
+var _work_done := Callable()
 var carcasses := 0 # truchła szczurów w torbie (z kanałów)
+var big_carcasses := 0 # truchła wielkich szczurów (więcej mięsa)
 var sack := &"" # żywy szczur w worku ("szczur" albo "pimpek"); pusty = wolny worek
+
+# Praca (nakładanie, zawijanie, jedzenie): bez ruchu, rozglądania i jakichkolwiek akcji
+# (mysz zostaje schwytana, działa tylko pauza). Pasek postępu rysuje HUD.
+func start_work(title: String, time: float, done := Callable()) -> void:
+	busy = true
+	work_title = title
+	_work_left = time
+	_work_total = time
+	_work_done = done
+
+# 0..1
+func work_progress() -> float:
+	return clampf(1.0 - _work_left / _work_total, 0.0, 1.0)
+
+func _process(delta: float) -> void:
+	if work_title.is_empty():
+		return
+	_work_left -= delta
+	if _work_left > 0.0:
+		return
+	busy = false
+	work_title = ""
+	if _work_done.is_valid():
+		_work_done.call()
 
 func add_carcasses(count: int) -> void:
 	carcasses = maxi(carcasses + count, 0)
+
+func add_big_carcasses(count: int) -> void:
+	big_carcasses = maxi(big_carcasses + count, 0)
 
 func set_sack(variant: StringName) -> void:
 	sack = variant
@@ -59,6 +92,8 @@ func _unhandled_input(e):
 		_interact()
 	elif e.is_action_pressed("sack"):
 		sack_used.emit()
+	elif e.is_action_pressed("eat"):
+		eat_pressed.emit()
 	elif e.is_action_pressed("flashlight"):
 		torch.visible = not torch.visible
 		Sfx.play(self, "switch", -8.0)
@@ -69,9 +104,10 @@ func _unhandled_input(e):
 func _physics_process(delta):
 	var crouch = not busy and Input.is_action_pressed("crouch")
 	var h = 1.2 if crouch else 1.75
-	col.shape.height = h
-	col.position.y = h / 2
-	cam.position.y = h - 0.15
+	if work_title.is_empty(): # przy pracy widok stoi w miejscu, także w kucki
+		col.shape.height = h
+		col.position.y = h / 2
+		cam.position.y = h - 0.15
 
 	if not is_on_floor():
 		velocity += get_gravity() * delta

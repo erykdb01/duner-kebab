@@ -7,6 +7,10 @@ const Rat = preload("res://Objects/rat.tscn")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
 const Qte = preload("res://Scripts/qte.gd")
+const Battle = preload("res://Scripts/battle.gd")
+const KebabScript = preload("res://Scripts/kebab.gd")
+const EAT_TIME := 3.0
+const KEBAB_HEAL := 25 # zdrowie za zjedzenie kebaba z żywym szczurem
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
 	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"charakter",
@@ -47,6 +51,7 @@ const INTRO := """Uzbieraj %d zł na czynsz do końca %d. nocy.
 Nie masz mięsa. Właz w altanie śmietnikowej prowadzi do kanałów:
 ubij szczury i zmiel truchła w maszynce (1 szczur = 1 porcja).
 Żywego szczura złapiesz do worka ([R] wyjmuje go i chowa).
+Rany nie goją się same: zjedz [G] kebaba z żywym szczurem.
 
 Obróć tabliczkę przy drzwiach, żeby otworzyć lokal.
 Po %d min otworzy się sam i wpadnie tłum.
@@ -102,24 +107,27 @@ func _ready() -> void:
 	$grinder.meat_ground.connect($prep_station/source_meat.refill)
 	$grinder.meat_ground.connect(func(portions): _rats_ground += portions)
 	$player.sack_used.connect(_on_sack_used)
+	$player.eat_pressed.connect(_on_eat_pressed)
 	$player.add_carcasses(save.get("carcasses", 0))
+	$player.add_big_carcasses(save.get("big_carcasses", 0))
 	$player.set_sack(save.get("sack", &""))
 	$sewer.message.connect(hud.show_message.bind(5.0))
 	$sewer.gold_taken.connect(_on_gold_found)
 	$sewer.gold_chance = GOLD_CHANCE if night > 1 and not _gold_seen else 0.0
+	# Wolny Pimpek (nie w worku) siedzi w którymś gnieździe w kanałach.
+	$sewer.pimpek_free = pimpek == "free" and $player.sack != &"pimpek"
+	$sewer.pimpek_killed.connect(_on_pimpek_consumed)
 	$sewer.setup($player)
 	$open_sign.opened.connect(_start_night)
 	Sfx.make_loop($ambient, "night")
 	$ambient.play()
 	_refresh_poster()
-	# Na górze mieszka tylko Pimpek (o ile jest wolny i nie siedzi w worku).
-	if pimpek == "free" and $player.sack != &"pimpek":
-		_spawn_rat(&"pimpek")
 	if night == 1:
 		overlay.show_intro("Pierwsza noc", INTRO % [RENT, NIGHTS.size(), int(PREP_TIME / 60.0)])
 
 func _process(delta: float) -> void:
 	_show_inventory()
+	hud.show_work($player.work_title, $player.work_progress())
 	_watch_sanepid()
 	_watch_sala_rats(delta)
 	_update_queue()
@@ -145,7 +153,7 @@ func _next_state() -> Dictionary:
 		"night": night + 1, "money": money, "pimpek": pimpek, "fines": fines,
 		"rat_kebabs": rat_kebabs, "gold_seen": _gold_seen,
 		"meat": $prep_station/source_meat.stock, "carcasses": $player.carcasses,
-		"sack": $player.sack,
+		"sack": $player.sack, "big_carcasses": $player.big_carcasses,
 	}
 
 # --- Noc ---
@@ -210,7 +218,7 @@ func _end_night() -> void:
 	$sewer.abort()
 	$dialog_box.close()
 	$notebook.close()
-	var text := "Zarobek tej nocy: %d zł\nKasa: %d zł (czynsz: %d zł)\nZapłacili: %d z %d\nZmielone szczury: %d" % [
+	var text := "Zarobek tej nocy: %d zł\nKasa: %d zł (czynsz: %d zł)\nZapłacili: %d z %d\nZmielone porcje mięsa: %d" % [
 		_earned, money, RENT, _paid, _expected, _rats_ground]
 	if _night_fines > 0:
 		text += "\nMandaty: %d zł" % (_night_fines * FINE)
@@ -329,11 +337,35 @@ func _on_sack_used() -> void:
 		return
 	Sfx.play(player, "squeak")
 
+# [G]: kebab z żywym szczurem to jedyne lekarstwo na pogryzienia.
+func _on_eat_pressed() -> void:
+	var player = $player
+	if not _holds_rat_kebab():
+		return
+	if $sewer.hp >= Battle.MAX_HP:
+		hud.show_message("Nic ci nie dolega.", 3.0)
+		return
+	player.start_work("Jesz kebaba ze szczurem", EAT_TIME, func():
+		player.discard()
+		$sewer.heal(KEBAB_HEAL)
+		Sfx.play(player, "plop")
+		hud.show_message("Od razu lepiej. Zdrowie: %d/%d" % [$sewer.hp, Battle.MAX_HP], 4.0))
+
+func _holds_rat_kebab() -> bool:
+	var held = $player.held
+	return held is KebabScript and &"rat" in held.contents
+
 func _show_inventory() -> void:
 	var player = $player
 	var lines: Array[String] = []
+	if $sewer.hp < Battle.MAX_HP:
+		lines.append("Zdrowie: %d/%d" % [$sewer.hp, Battle.MAX_HP])
+	if _holds_rat_kebab():
+		lines.append("[G] zjedz kebaba (leczy rany)")
 	if player.carcasses > 0:
 		lines.append("Truchła szczurów: %d" % player.carcasses)
+	if player.big_carcasses > 0:
+		lines.append("Wielkie truchła: %d" % player.big_carcasses)
 	if player.sack != &"":
 		lines.append("W worku: %s  [R] wyjmij" % ("Pimpek" if player.sack == &"pimpek" else "żywy szczur"))
 	elif player.held and player.held.is_in_group("rat"):

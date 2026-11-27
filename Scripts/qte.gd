@@ -4,12 +4,9 @@ extends CanvasLayer
 
 signal done(success: bool)
 
-const Speech = preload("res://Scripts/speech.gd")
+const Ui = preload("res://Scripts/pixel_ui.gd")
 const KEYS := {KEY_W: "W", KEY_A: "A", KEY_S: "S", KEY_D: "D"}
 const ARROWS := {KEY_UP: KEY_W, KEY_LEFT: KEY_A, KEY_DOWN: KEY_S, KEY_RIGHT: KEY_D}
-const DONE_COLOR := Color(0.4, 0.95, 0.4)
-const NOW_COLOR := Color(1, 0.72, 0.3)
-const LATER_COLOR := Color(0.55, 0.55, 0.6)
 
 var _sequence: Array[int] = []
 var _letters: Array[Label] = []
@@ -26,18 +23,16 @@ func start(title: String, length: int, per_key: float) -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
+	center.theme = Ui.theme()
 	var panel := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.06, 0.05, 0.09, 0.94)
-	style.border_color = NOW_COLOR
-	style.set_border_width_all(3)
-	style.set_content_margin_all(20)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", Ui.frame(Ui.BACK, Ui.ACCENT, 20.0))
 	center.add_child(panel)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 12)
 	panel.add_child(column)
-	column.add_child(_label(title, 24))
+	var heading := Ui.label(22, title)
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(heading)
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 18)
@@ -45,14 +40,16 @@ func start(title: String, length: int, per_key: float) -> void:
 	for i in length:
 		var key: int = KEYS.keys().pick_random()
 		_sequence.append(key)
-		var letter := _label(KEYS[key], 44)
+		var letter := Ui.label(44, KEYS[key])
+		letter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		letter.custom_minimum_size.x = 48
 		row.add_child(letter)
 		_letters.append(letter)
 	_bar.max_value = per_key
-	_bar.show_percentage = false
-	_bar.custom_minimum_size = Vector2(360, 14)
-	column.add_child(_bar)
+	_bar.step = 0.01
+	Ui.bar(column, _bar)
+	var fill: StyleBoxFlat = _bar.get_theme_stylebox("fill")
+	fill.bg_color = Ui.WARN
 	_refresh()
 
 func _process(delta: float) -> void:
@@ -87,13 +84,5 @@ func _finish(success: bool) -> void:
 
 func _refresh() -> void:
 	for i in _letters.size():
-		_letters[i].modulate = DONE_COLOR if i < _next else (NOW_COLOR if i == _next else LATER_COLOR)
-
-func _label(text: String, size: int) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_outline_color", Speech.OUTLINE_COLOR)
-	label.add_theme_constant_override("outline_size", Speech.OUTLINE)
-	return label
+		_letters[i].add_theme_color_override("font_color",
+			Ui.GOOD if i < _next else (Ui.ACCENT if i == _next else Ui.DIM))

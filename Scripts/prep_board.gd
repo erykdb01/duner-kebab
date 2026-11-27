@@ -1,10 +1,15 @@
 extends Area3D
 # Deska: najpierw tortilla, potem dowolne warstwy, na końcu zawinięcie w kebaba.
+# Każda czynność chwilę trwa (stałe WAIT i WRAP_TIME, zawijanie najdłużej) i na ten czas
+# unieruchamia gracza.
 
 const Kebab = preload("res://Objects/kebab.tscn")
 const KebabScript = preload("res://Scripts/kebab.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 const MAX_LAYERS := 10
+# Ile sekund trwa dołożenie składnika.
+const WAIT := {&"tortilla": 1.0, &"meat": 1.6, &"salad": 1.2, &"sauce": 1.0, &"rat": 1.6}
+const WRAP_TIME := 3.0
 const FIRST_LAYER_Y := 0.038
 const LAYER_HEIGHTS := {
 	&"tortilla": 0.014, &"meat": 0.036, &"salad": 0.034, &"sauce": 0.012, &"rat": 0.1,
@@ -36,6 +41,7 @@ func add(ingredient: StringName, player) -> bool:
 	else:
 		contents.append(ingredient)
 	_refresh()
+	player.start_work("Nakładasz", WAIT[ingredient])
 	Sfx.play_at(self, "plop")
 	return true
 
@@ -58,8 +64,14 @@ func interact(player) -> void:
 			player.discard()
 			contents.append(&"rat")
 			_refresh()
+			player.start_work("Upychasz szczura", WAIT[&"rat"])
 			Sfx.play_at(self, "squeak")
 		return
+	player.start_work("Zawijasz kebaba", WRAP_TIME, _hand_over.bind(player))
+	Sfx.play_at(self, "wrap")
+
+# Koniec zawijania: gotowy kebab trafia do ręki.
+func _hand_over(player) -> void:
 	var kebab = Kebab.instantiate()
 	add_child(kebab)
 	kebab.setup(contents.duplicate())

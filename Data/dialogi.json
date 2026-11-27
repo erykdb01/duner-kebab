@@ -736,7 +736,7 @@
 					"wypros": {"gracz": "To nie biuro rzeczy znalezionych. Do widzenia.", "klient": "Nawet pan nie pomoże..."}},
 				{"klient": "Dobry wieczór. To ja powiesiłam plakat przy drzwiach.",
 					"odpowiedzi": [
-						{"gracz": "Rozejrzę się na podwórku.", "klient": "Oby tam był. Lubi kontenery.", "cierpliwosc": 20},
+						{"gracz": "Zajrzę do kanałów.", "klient": "Oby tam był. Zawsze go ciągnęło pod ziemię.", "cierpliwosc": 20},
 						{"gracz": "Czy nagroda jest aktualna?", "klient": "Sześćdziesiąt złotych, jak obiecałam.", "cierpliwosc": 5},
 						{"gracz": "Plakat wisi krzywo.", "klient": "Serce mi pęka, a pan o plakacie.", "cierpliwosc": -10}
 					],

@@ -4,8 +4,40 @@ extends CanvasLayer
 @onready var money = $Money
 @onready var payment = $Payment
 
+const Ui = preload("res://Scripts/pixel_ui.gd")
+
 var _payment_tween: Tween
 var _message_tween: Tween
+var _work := PanelContainer.new() # pasek postępu pod celownikiem
+var _work_title: Label
+var _work_bar := ProgressBar.new()
+
+func _ready() -> void:
+	_work.theme = Ui.theme()
+	_work.add_theme_stylebox_override("panel", Ui.frame())
+	_work.set_anchors_preset(Control.PRESET_CENTER)
+	_work.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_work.offset_top = 42.0
+	_work.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 6)
+	_work.add_child(column)
+	_work_title = Ui.label(18)
+	_work_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(_work_title)
+	_work_bar.max_value = 1.0
+	_work_bar.step = 0.01
+	Ui.bar(column, _work_bar)
+	var fill: StyleBoxFlat = _work_bar.get_theme_stylebox("fill")
+	fill.bg_color = Ui.ACCENT
+	add_child(_work)
+	_work.hide()
+
+# Pusta nazwa chowa pasek; "progress" 0..1.
+func show_work(title: String, progress: float) -> void:
+	_work.visible = not title.is_empty()
+	_work_title.text = title
+	_work_bar.value = progress
 
 func show_prompt(text: String) -> void:
 	prompt.text = text
