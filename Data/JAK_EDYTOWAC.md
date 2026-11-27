@@ -3,55 +3,55 @@
 Wszystko jest w `Data/dialogi.json`. Zmiany działają od następnego uruchomienia nocy.
 
 ## Zasady pliku JSON
-- Tekst w cudzysłowie `"..."`. Cudzysłów w środku tekstu zastąp pojedynczym `'`.
+- Tekst w cudzysłowie `"..."`. Cudzysłów w środku tekstu zapisz jako `„...”`.
 - Między elementami listy przecinek, po ostatnim **bez** przecinka.
 - Jeśli coś się zepsuje, w panelu błędów Godota pojawi się numer linii.
 
 ## Części
 - `imiona`: `m` i `k`. Dodawaj dowolnie.
 - `skladniki`: nazwy używane, gdy klient mówi zamówienie.
-- `gracz`: twoje kwestie na przyciskach.
-- `domyslne`: teksty dla każdego, kto nie ma własnych. `rozmowy` stąd są wspólne dla wszystkich
-  poza właścicielką Pimpka.
-- `postacie`: własne teksty nadpisują domyślne o tej samej nazwie.
+- `gracz`: twoje kwestie na przyciskach (`wypros` – losowe wyproszenie poza rozmową).
+- `domyslne`: wspólna pula zwykłych klientów (także sanepidu) i teksty dla każdego, kto nie ma własnych.
+  Pisz je bez form zdradzających płeć klienta („byłem/byłam”).
+- `postacie`: klienci charakterystyczni. Ich teksty zastępują domyślne o tej samej nazwie.
+  Postać z własnymi `rozmowy` nie korzysta ze wspólnych.
 
 Gdzie jest lista, gra losuje jeden tekst.
 
 ## Nowa postać
 Skopiuj dowolną w `postacie`, zmień nazwę i teksty. Wymagane:
-- `typ` (wygląd i zachowanie): `regular`, `klientka`, `student`, `babcia`, `sanepid`, `smakosz`, `wlasciciel`,
+- `typ`: `charakter` (zwykłe zachowanie), `babcia`, `student`, `smakosz`, `wlasciciel`,
 - `plec`: `m` lub `k` (z tej listy losowane jest imię),
 - `tytul`: podpis, dopóki nie znasz imienia.
 
-Zdjęcia leżą w `Textures/zdjecia/<nazwa postaci>.png`, `.jpg` albo `.webp`. Gra pokazuje je w całości,
-jako rozpikselowany prostokąt (`PHOTO_PIXELS` w `Scripts/customer.gd`: mniej = większe piksele).
-Zdjęcia nie są na razie przypisane do osób: każdy klient dostaje losowe zdjęcie swojej płci
-(płeć zdjęcia = `plec` postaci o tej nazwie). Pole `"wyglad"` nie działa.
+Opcjonalnie `gracz` (twoje własne kwestie do tej postaci, np. na „pani”) i `nerwy`
+(po ilu irytacjach wychodzi; domyślnie 3). Irytują: niemiła odpowiedź, powtórne pytanie
+o zamówienie lub imię i trzecie „Co słychać?”.
 
-## Powitania
-Zwykły napis (`"Dobry wieczór."`), gdy nie wymaga odpowiedzi. Jeśli klient o coś pyta albo mówi coś
-dziwnego, zapisz powitanie jak rozmowę (niżej), żeby dostać pasujące odpowiedzi.
+## Zdjęcia
+Są przycinane do kwadratu i losowane według płci, nie są przypisane do osób.
+- Nowe wrzucaj do `Textures/zdjecia/zwykli/m` lub `zwykli/k` (dowolne nazwy: png, jpg, webp).
+- Zdjęcia z głównego folderu są wymienione na liście `PHOTOS` w `Scripts/customer.gd`.
+- Zwykłe klientki przychodzą dopiero, gdy w `zwykli/k` jest choć jedno zdjęcie.
 
-Klient w rozmowach mówi na przemian swoje i wspólne (`domyslne`), a ta sama rozmowa nie powtarza się
-w ciągu jednej nocy. Rozmowy wspólne pisz bez form „byłem/byłam”, bo mówią je i panowie, i panie.
-
-## Rozmowa
-`co` to wyjaśnienie, które klient powie po twoim „Co?”. Każdą rozmowę zaczyna przycisk „Co słychać?”,
-więc pierwsza kwestia powinna pasować jako odpowiedź na to pytanie.
+## Rozmowa i powitanie
+Powitanie to zwykły napis (`"Dobry wieczór."`) albo, gdy klient o coś pyta, taki sam blok jak rozmowa.
+Rozmowę zaczyna przycisk „Co słychać?”, więc pierwsza kwestia powinna pasować jako odpowiedź.
 ```json
 {
 	"klient": "Co mówi klient",
-	"co": "Jak to wyjaśnia",
 	"odpowiedzi": [
 		{"gracz": "Twoja odpowiedź", "klient": "Reakcja", "cierpliwosc": 10, "napiwek": 2},
 		{"gracz": "Niemiła odpowiedź", "klient": "Wychodzę!", "wychodzi": true},
 		{"gracz": "Dłuższy wątek", "klient": "Słuchaj dalej...", "dalej": [
 			{"gracz": "Tak?", "klient": "Koniec."}
 		]}
-	]
+	],
+	"wypros": {"gracz": "Wyproszenie pasujące do tej kwestii", "klient": "Reakcja wyproszonego"}
 }
 ```
-`cierpliwosc` (sekundy), `napiwek` (zł), `wychodzi` i `dalej` są opcjonalne.
+`cierpliwosc` (sekundy), `napiwek` (zł), `wychodzi`, `dalej` i `wypros` są opcjonalne.
+Bez `wypros` gra losuje je z `gracz`.
 
 ## Wstawki
 `{lista}` – składniki, `{imie}` – imię klienta, `{zamowienie}` – całe zamówienie (w `powtorka`).

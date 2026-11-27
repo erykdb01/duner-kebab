@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 signal prompt_changed(text: String)
+signal carcasses_changed(count: int)
 
 const Sfx = preload("res://Scripts/sfx.gd")
 
@@ -14,7 +15,12 @@ var torch := SpotLight3D.new()
 var held: Area3D = null
 var _held_layer := 0
 var _prompt := ""
-var busy := false # rozmowa, notatnik albo wołanie: gracz stoi, mysz jest wolna
+var busy := false # rozmowa, notatnik, wołanie albo walka: gracz stoi, mysz jest wolna
+var carcasses := 0 # truchła szczurów w torbie (z kanałów)
+
+func add_carcasses(count: int) -> void:
+	carcasses = maxi(carcasses + count, 0)
+	carcasses_changed.emit(carcasses)
 
 func set_busy(value: bool) -> void:
 	busy = value

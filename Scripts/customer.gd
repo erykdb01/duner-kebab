@@ -2,6 +2,7 @@ extends Area3D
 # Klient: wchodzi, rozmawia i zamawia przy ladzie, czeka (zwykle przy stoliku), dostaje kebaba
 # do ręki albo podchodzi zawołany po imieniu, płaci, czasem je i wychodzi.
 # Zachowanie zależy od rodzaju (TYPES), teksty od postaci z Data/dialogi.json.
+# W kolejce czeka dłużej; zbyt często drażniony wychodzi.
 
 signal served(customer: Node, payment: int, may_sit: bool)
 signal talk_requested(customer: Node)
@@ -19,10 +20,19 @@ const Night = preload("res://Scripts/night.gd")
 const Speech = preload("res://Scripts/speech.gd")
 const PHOTO := "res://Textures/zdjecia/%s.%s"
 const PHOTO_TYPES: Array[String] = ["png", "jpg", "webp"]
-const PHOTO_PIXELS := 64 # wysokość zdjęcia po rozpikselowaniu; mniej = większe piksele
-const BODY_HEIGHT := 1.76
-const MAX_WIDTH := 1.6 # szersze zdjęcia są odpowiednio niższe
-const STRETCH := 1.2 # rozciągnięcie zdjęć w górę; 1.0 = oryginalne proporcje
+# Zdjęcia losowane według płci: te z głównego folderu (PHOTOS) i wszystkie z EXTRA_PHOTOS.
+const PHOTOS := {
+	"m": ["filozof", "gadula", "gbur", "poeta", "sanepid", "smakosz", "student", "teoretyk", "zwykly"],
+	"k": ["babcia"],
+}
+const EXTRA_PHOTOS := "res://Textures/zdjecia/zwykli/%s/" # m albo k
+const PHOTO_PIXELS := 64 # bok zdjęcia po rozpikselowaniu; mniej = większe piksele
+const PHOTO_SIZE := 1.3 # bok kwadratu w metrach
+const PHOTO_TOP := 1.95 # wysokość górnej krawędzi stojącego klienta
+const HEAD_ROOM := 0.15 # z pionowego zdjęcia ucinana jest ta część nadmiaru u góry, reszta u dołu
+const DEFAULT_NERVES := 3 # po tylu irytacjach wychodzi ("nerwy" w dialogi.json)
+const QUEUE_DRAIN := 0.5 # w kolejce cierpliwość ubywa wolniej
+const QUEUE_COMPLAINT := 40.0 # co tyle sekund w kolejce narzeka
 const SPEED := 1.6
 const AISLE_X := 0.5 # przejście wzdłuż lady
 const BASE_PRICE := 20
@@ -38,7 +48,7 @@ const FRONT_WALL_Z := -5.0
 # "typ" postaci -> [zachowanie, cierpliwość w sekundach, napiwek w zł]
 const TYPES := {
 	&"regular": [&"regular", 75.0, 5],
-	&"klientka": [&"regular", 75.0, 5],
+	&"charakter": [&"regular", 75.0, 5],
 	&"student": [&"regular", 55.0, 8],
 	&"babcia": [&"regular", 110.0, 2],
 	&"sanepid": [&"sanepid", 75.0, 5],
@@ -61,6 +71,11 @@ var ordered := false
 var fed := false
 var called := false # zawołany po imieniu, czeka przy ladzie
 var talking := false # w trakcie rozmowy cierpliwość stoi
+var queued := false # ktoś, kto przyszedł wcześniej, jeszcze czeka (ustawia game.gd)
+var gender := "m"
+var look := "" # ścieżka wylosowanego zdjęcia
+var _annoyance := 0
+var _queue_time := 0.0
 var chats := 0
 var speech := Speech.new() # wypowiedzi nad głową
 var _greeting := {}
@@ -89,13 +104,14 @@ func _ready() -> void:
 	add_child(speech)
 
 # Wywołać po dodaniu do sceny.
-func start(type_id: StringName, new_character: String, new_name: String, new_slot: int,
-		street: Vector3, door: Vector3, counter: Vector3) -> void:
+func start(type_id: StringName, new_character: String, new_gender: String, new_name: String,
+		new_slot: int, street: Vector3, door: Vector3, counter: Vector3) -> void:
 	var stats: Array = TYPES[type_id]
 	kind = stats[0]
 	patience = stats[1]
 	tip = stats[2]
 	character = new_character
+	gender = new_gender
 	first_name = new_name
 	_set_look()
 	slot = new_slot
@@ -103,13 +119,13 @@ func start(type_id: StringName, new_character: String, new_name: String, new_slo
 	_door = door
 	global_position = street
 	_path = [door, _aisle(counter), counter]
-	_conversations = Dialogs.conversations(character, kind != &"owner")
+	_conversations = Dialogs.conversations(character)
 	_greeting = Dialogs.greeting(character)
 	_make_order()
 
 func _process(delta: float) -> void:
 	sprite.modulate = Night.tint(global_position)
-	speech.height = sprite.position.y + 1.05 + BODY_HEIGHT * (STRETCH - 1.0)
+	speech.height = sprite.position.y + PHOTO_TOP - SPRITE_Y + 0.12
 	speech.pinned = talking
 	match state:
 		State.WAITING:
@@ -171,6 +187,10 @@ func display_name() -> String:
 func say(text: String) -> void:
 	speech.say(text)
 
+# Połowa szerokości zdjęcia w metrach (obok niej stają przyciski rozmowy).
+func half_width() -> float:
+	return sprite.texture.get_width() * sprite.pixel_size / 2.0 if sprite.texture else 0.4
+
 # Początek rozmowy. Zwraca powitanie, jeśli można na nie odpowiedzieć (przy pierwszej rozmowie).
 func greet() -> Dictionary:
 	if state == State.EATING:
@@ -183,29 +203,32 @@ func greet() -> Dictionary:
 	say(str(_greeting.get("klient", "...")))
 	return _greeting
 
-# Odpowiedź na "Co?".
-func explain(talk: Dictionary) -> void:
-	say(str(talk["co"]) if talk.has("co") else _line("co"))
-
-func throw_out() -> void:
-	_leave(_line("wyproszony"), 1, _line("opinia_wyproszony"))
+# "reaction" to odpowiedź na wyproszenie pasujące do rozmowy.
+func throw_out(reaction := "") -> void:
+	_leave(reaction if reaction else _line("wyproszony"), 1, _line("opinia_wyproszony"))
 
 func can_take_order() -> bool:
 	return kind != &"owner" and state == State.WAITING
 
-func ask_order() -> String:
+func ask_order() -> void:
 	if not ordered:
 		ordered = true
 		_max_time = patience * FOOD_PATIENCE
 		time_left = _max_time
 		_complained = false
-		return _order_text()
+		say(_order_text())
+		return
 	time_left = maxf(time_left - REPEAT_COST, 5.0)
-	return _line("powtorka", {"zamowienie": _order_text()})
+	say(_line("powtorka", {"zamowienie": _order_text()}))
+	_annoy()
 
-func ask_name() -> String:
+# Pierwsze pytanie o imię jest w porządku, kolejne drażnią.
+func ask_name() -> void:
+	var again := name_known
 	name_known = true
-	return _line("imie", {"imie": first_name})
+	say(_line("imie", {"imie": first_name}))
+	if again:
+		_annoy()
 
 func can_chat() -> bool:
 	return chats < MAX_CHATS and not _conversations.is_empty()
@@ -214,8 +237,9 @@ func next_conversation() -> Dictionary:
 	chats += 1
 	return Dialogs.take(_conversations)
 
-func tired_of_chat() -> String:
-	return _line("dosc_gadania")
+func tired_of_chat() -> void:
+	say(_line("dosc_gadania"))
+	_annoy()
 
 # Reakcja i skutki wybranej odpowiedzi.
 func apply_reply(reply: Dictionary) -> void:
@@ -227,6 +251,8 @@ func apply_reply(reply: Dictionary) -> void:
 		time_left = clampf(time_left + seconds, 5.0, _max_time)
 	if reply.get("wychodzi", false) and state == State.WAITING:
 		_leave(reaction, 1, _line("obrazony"))
+	elif seconds < 0.0:
+		_annoy(2 if seconds <= -20.0 else 1)
 
 # Właścicielce powiedziano, że Pimpka nie ma.
 func dismiss() -> void:
@@ -272,49 +298,46 @@ func see_rat() -> void:
 
 # --- Wewnętrzne ---
 
-# Wygląd: chodzące zdjęcie, losowe dla płci postaci.
+# Zdjęcia z własnych folderów zwykłych klientów (bez nich nie przychodzą zwykłe klientki).
+static func extra_photos(of_gender: String) -> Array[String]:
+	var folder := EXTRA_PHOTOS % of_gender
+	var paths: Array[String] = []
+	for file in ResourceLoader.list_directory(folder):
+		if file.get_extension().to_lower() in ["png", "jpg", "jpeg", "webp"]:
+			paths.append(folder + file)
+	return paths
+
+# Wygląd: chodzące kwadratowe zdjęcie. Nie jest przypisane do osoby: losowe spośród zdjęć
+# jej płci, w miarę możliwości inne niż u klientów, którzy już są.
 func _set_look() -> void:
-	var texture := _random_photo()
-	if not texture:
+	var paths := extra_photos(gender)
+	for id in PHOTOS[gender]:
+		for extension in PHOTO_TYPES:
+			var path := PHOTO % [id, extension]
+			if ResourceLoader.exists(path):
+				paths.append(path)
+	if paths.is_empty():
 		return
-	sprite.texture = texture
-	sprite.pixel_size = BODY_HEIGHT / PHOTO_PIXELS
-	# Niższe (poziome) zdjęcia mają górę na wysokości głowy, żeby było je widać zza lady.
-	sprite.offset.y = roundi(PHOTO_PIXELS * STRETCH) - PHOTO_PIXELS / 2.0 - texture.get_height() / 2.0
+	var taken := get_tree().get_nodes_in_group("customers").map(
+		func(other): return other.look)
+	var fresh := paths.filter(func(path): return not path in taken)
+	look = (fresh if fresh else paths).pick_random()
+	sprite.texture = _photo(look)
+	sprite.pixel_size = PHOTO_SIZE / PHOTO_PIXELS
+	sprite.offset.y = (PHOTO_TOP - PHOTO_SIZE / 2.0 - SPRITE_Y) / sprite.pixel_size
 
-# Zdjęcia nie są przypisane do osób: każdy dostaje losowe spośród zdjęć swojej płci
-# (płeć zdjęcia wynika z postaci o tej samej nazwie).
-func _random_photo() -> Texture2D:
-	var gender := str(Dialogs.character(character).get("plec", "m"))
-	var choice: Array[Texture2D] = []
-	for id in Dialogs.section("postacie"):
-		if Dialogs.character(id).get("plec", "m") != gender:
-			continue
-		var texture := _photo(id)
-		if texture:
-			choice.append(texture)
-	return choice.pick_random() if choice else null
-
-# Rozpikselowane zdjęcie postaci albo null, gdy go nie ma.
-func _photo(look: String) -> Texture2D:
-	if _photos.has(look):
-		return _photos[look]
-	for extension in PHOTO_TYPES:
-		var path := PHOTO % [look, extension]
-		if ResourceLoader.exists(path):
-			_photos[look] = _pixelated(load(path))
-			return _photos[look]
-	return null
-
-# Zmniejsza całe zdjęcie (z tłem) do prostokąta z dużymi pikselami, nie szerszego niż MAX_WIDTH.
-func _pixelated(photo: Texture2D) -> Texture2D:
-	var image := photo.get_image()
-	if image.is_compressed():
-		image.decompress()
-	var aspect := image.get_width() / float(image.get_height())
-	var height := mini(PHOTO_PIXELS, roundi(MAX_WIDTH / BODY_HEIGHT * PHOTO_PIXELS / aspect))
-	image.resize(maxi(roundi(height * aspect), 1), roundi(height * STRETCH), Image.INTERPOLATE_LANCZOS)
-	return ImageTexture.create_from_image(image)
+# Przycina zdjęcie do kwadratu i zmniejsza, żeby było widać piksele.
+func _photo(path: String) -> Texture2D:
+	if not _photos.has(path):
+		var image: Image = load(path).get_image()
+		if image.is_compressed():
+			image.decompress()
+		var side := mini(image.get_width(), image.get_height())
+		image = image.get_region(Rect2i((image.get_width() - side) / 2,
+			int((image.get_height() - side) * HEAD_ROOM), side, side))
+		image.resize(PHOTO_PIXELS, PHOTO_PIXELS, Image.INTERPOLATE_LANCZOS)
+		_photos[path] = ImageTexture.create_from_image(image)
+	return _photos[path]
 
 func _line(key: String, values := {}) -> String:
 	return Dialogs.line(character, key, values)
@@ -364,15 +387,16 @@ func _order_text() -> String:
 		for id in order:
 			words.append(Dialogs.ingredient(id))
 		return _line("zamowienie_kolejnosc", {"lista": ", potem ".join(words)})
+	# Tylko to, co ma być w środku: "mięso, surówka i sos".
 	for id in COUNTED:
 		var amount := order.count(id)
 		if id == &"meat" and amount > 1:
 			words.append(Dialogs.ingredient("meat_2"))
 		elif amount > 0:
 			words.append(Dialogs.ingredient(id))
-		elif id == &"salad" or id == &"sauce":
-			words.append(Dialogs.ingredient("bez_" + str(id)))
-	return _line("zamowienie", {"lista": ", ".join(words)})
+	var last: String = words.pop_back()
+	var list := "%s i %s" % [", ".join(words), last] if words else last
+	return _line("zamowienie", {"lista": list})
 
 func _rate(contents: Array[StringName]) -> void:
 	var gourmet := kind == &"gourmet"
@@ -481,12 +505,28 @@ func _start_eating() -> void:
 	say(_line("smacznego"))
 
 func _wait(delta: float) -> void:
-	time_left -= delta
+	time_left -= delta * (QUEUE_DRAIN if queued else 1.0)
+	if queued:
+		_queue_time += delta
+		if _queue_time >= QUEUE_COMPLAINT:
+			_queue_time = 0.0
+			say(_line("ponaglenia_kolejka"))
 	if time_left <= 0.0:
 		_leave(_line("rezygnacja"), 2 if kind == &"owner" else 1, _line("opinia_rezygnacja"))
 	elif not _complained and time_left <= _max_time * 0.4:
 		_complained = true
 		say(_line("ponaglenia"))
+
+# Irytacja czekającego klienta: przy przedostatniej ostrzega, przy ostatniej wychodzi.
+func _annoy(amount := 1) -> void:
+	if state != State.WAITING:
+		return
+	_annoyance += amount
+	var nerves := int(Dialogs.character(character).get("nerwy", DEFAULT_NERVES))
+	if _annoyance >= nerves:
+		_leave(_line("zdenerwowany"), 1, _line("opinia_zdenerwowany"))
+	elif _annoyance == nerves - 1:
+		say(_line("ostrzezenie"))
 
 func _leave(text: String, stars: int, review: String) -> void:
 	state = State.FAREWELL

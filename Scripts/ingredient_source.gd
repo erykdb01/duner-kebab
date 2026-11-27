@@ -12,7 +12,7 @@ func _ready() -> void:
 
 func get_prompt(player) -> String:
 	if stock == 0:
-		return "Brak mięsa - zmiel szczura"
+		return "Brak mięsa - zmiel szczury"
 	var prompt: String = board.add_prompt(ingredient, player)
 	return prompt if stock < 0 else "%s (porcje: %d)" % [prompt, stock]
 

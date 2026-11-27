@@ -30,7 +30,7 @@ static func mat(name: String, tint := Color.WHITE, tiles := 1.0) -> StandardMate
 static func facade(name: String) -> StandardMaterial3D:
 	var key := "facade " + name
 	if not _cache.has(key):
-		var material: StandardMaterial3D = mat(name, Color.WHITE, 0.25).duplicate()
+		var material: StandardMaterial3D = mat(name, Color(0.5, 0.5, 0.58), 0.25).duplicate()
 		material.emission_enabled = true
 		material.emission = Color.BLACK
 		material.emission_texture = texture(name + "_swiatlo")

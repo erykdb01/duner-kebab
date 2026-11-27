@@ -2,39 +2,45 @@ extends Node3D
 # Stan gry: trzy noce, kasa, klienci (miejsca przy ladzie i przy stolikach), szczury i finał.
 
 const Customer = preload("res://Objects/customer.tscn")
+const CustomerScript = preload("res://Scripts/customer.gd")
 const Rat = preload("res://Objects/rat.tscn")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"charakter",
+		&"charakter", &"student", &"babcia", &"smakosz"],
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"charakter",
+		&"charakter", &"charakter", &"student", &"smakosz", &"sanepid", &"wlasciciel"],
 	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
-		&"regular", &"student", &"babcia", &"smakosz"],
-	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
-		&"regular", &"regular", &"student", &"smakosz", &"sanepid", &"wlasciciel"],
-	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
-		&"regular", &"regular", &"regular", &"regular", &"student", &"smakosz", &"sanepid",
+		&"charakter", &"charakter", &"charakter", &"student", &"babcia", &"smakosz", &"sanepid",
 		&"wlasciciel"],
 ]
-# Postacie z dialogi.json, które na razie nie przychodzą (babcia to jedyna "babcia").
-const DISABLED: Array[String] = ["krystyna"]
 const SPECIALS: Array[StringName] = [&"smakosz", &"sanepid", &"wlasciciel"]
 const RENT := 500
 const FINE := 40
 const PIMPEK_REWARD := 60
 const GOLD_BONUS := 50
-const GOLD_CHANCE := 0.2 # od 2. nocy, przy każdym nowym szczurze
+const GOLD_CHANCE := 0.15 # od 2. nocy, przy każdej nowej grupie szczurów w kanałach
 const NIGHT_LENGTH := 480.0 # tyle sekund zajmuje zegarowi dojście do 04:00
 const CLOCK_START := 22 * 60 # minuty
 const CLOCK_SPAN := 6 * 60
+const PREP_TIME := 240.0 # tyle sekund na przygotowania, potem lokal otwiera się sam
+const PREP_WARNINGS: Array[int] = [60, 15] # sekundy przed otwarciem
+const RUSH_SIZE := 3 # grupa w tłoku po samoczynnym otwarciu
+const RUSH_EXTRA := 2 # dodatkowi klienci, którzy wchodzą z pierwszą grupą
+const RUSH_GROUPS := 2
+const COUNTER_PLACES := 3 # zwykła kolejka przy ladzie; dalsze miejsca tylko w tłoku
+const RUSH_DELAY := 15.0 # przerwa między grupami w tłoku
 const FIRST_DELAY := 3.0
 const MIN_DELAY := 28.0
 const MAX_DELAY := 45.0
-const PICKUP_SLOT := 3 # miejsce odbioru dla zawołanych (poza trzema miejscami w kolejce)
+const PICKUP_SLOT := 5 # miejsce odbioru dla zawołanych (poza miejscami w counter_slots)
 const PAIR_CHANCE := 0.3
 const MAX_INSIDE := 5
 const SIT_CHANCE := 0.6
-const MAX_RATS := 2
-const RAT_DELAY := 20.0
+const MAX_RATS := 2 # żywe szczury na górze (w tym Pimpek); mięso zdobywa się w kanałach
+const RAT_DELAY := 90.0
 const MIN_INVASION_DELAY := 140.0
 const MAX_INVASION_DELAY := 240.0
 const SNEAK_MIN_DISTANCE := 4.0 # szczur nie zakrada się przy graczu
@@ -52,6 +58,8 @@ var rat_kebabs := 0 # kebaby ze szczurem podane komukolwiek poza smakoszem
 var _gold_seen := false
 var _rat_pending := false
 var _night_running := false
+var _prep_left := PREP_TIME
+var _rush_left := 0 # ile tłocznych grup jeszcze przyjdzie
 var _elapsed := 0.0
 var _queue: Array[StringName] = [] # klienci, którzy jeszcze nie przyszli
 var _expected := 0 # płacący klienci tej nocy (bez właścicielki Pimpka)
@@ -80,10 +88,15 @@ func _ready() -> void:
 	$notebook.dialog = $dialog_box
 	$notebook.shouted.connect(_on_shout)
 	hud.show_money(money, RENT)
-	_show_clock("Zamknięte (tabliczka przy drzwiach)")
+	_show_prep_clock()
 	$grinder.meat_ground.connect($prep_station/source_meat.refill)
-	$grinder.meat_ground.connect(func(_portions): _rats_ground += 1)
-	$grinder.gold_found.connect(_on_gold_found)
+	$grinder.meat_ground.connect(func(portions): _rats_ground += portions)
+	$player.carcasses_changed.connect(hud.show_carcasses)
+	$player.add_carcasses(save.get("carcasses", 0))
+	$sewer.message.connect(hud.show_message.bind(5.0))
+	$sewer.gold_taken.connect(_on_gold_found)
+	$sewer.gold_chance = GOLD_CHANCE if night > 1 and not _gold_seen else 0.0
+	$sewer.setup($player)
 	$open_sign.opened.connect(_start_night)
 	Sfx.make_loop($ambient, "night")
 	$ambient.play()
@@ -92,19 +105,22 @@ func _ready() -> void:
 		_spawn_rat()
 	if night == 1:
 		hud.show_message(
-			("Uzbieraj %d zł na czynsz do końca %d. nocy.\nPytaj klientów o zamówienie i imię, "
-			+ "zapisuj w notatniku [Tab].\nObróć tabliczkę przy drzwiach, żeby otworzyć.")
-			% [RENT, NIGHTS.size()], 14.0)
+			("Uzbieraj %d zł na czynsz do końca %d. nocy.\nNie ma mięsa: zejdź włazem w altanie "
+			+ "do kanałów, ubij szczury\ni zmiel truchła. Po %d min lokal otworzy się sam.")
+			% [RENT, NIGHTS.size(), int(PREP_TIME / 60.0)], 14.0)
 
 func _process(delta: float) -> void:
 	# Gdy szczurów ubędzie, po chwili przy śmietniku pojawia się nowy.
 	if not _rat_pending and get_tree().get_nodes_in_group("rat").size() < MAX_RATS:
 		_rat_pending = true
 		get_tree().create_timer(RAT_DELAY, false).timeout.connect(_spawn_rat)
-	_watch_held_rat()
+	_watch_sanepid()
 	_watch_sala_rats(delta)
+	_update_queue()
 	if _night_running:
 		_run_night(delta)
+	elif not $open_sign.is_open:
+		_run_prep(delta)
 
 # --- Stan między nocami ---
 
@@ -122,7 +138,7 @@ func _next_state() -> Dictionary:
 	return {
 		"night": night + 1, "money": money, "pimpek": pimpek, "fines": fines,
 		"rat_kebabs": rat_kebabs, "gold_seen": _gold_seen,
-		"meat": $prep_station/source_meat.stock,
+		"meat": $prep_station/source_meat.stock, "carcasses": $player.carcasses,
 	}
 
 # --- Noc ---
@@ -144,9 +160,30 @@ func _build_queue() -> void:
 			break
 	_expected = _queue.size() - _queue.count(&"wlasciciel")
 
+func _run_prep(delta: float) -> void:
+	var before := ceili(_prep_left)
+	_prep_left -= delta
+	var now := ceili(_prep_left)
+	if _prep_left <= 0.0:
+		_rush_left = RUSH_GROUPS
+		for i in RUSH_EXTRA:
+			_queue.push_front(&"regular")
+		_expected += RUSH_EXTRA
+		hud.show_message("Czas minął! Klienci sami otworzyli drzwi.", 5.0)
+		$open_sign.open()
+		return
+	_show_prep_clock()
+	if now != before and now in PREP_WARNINGS:
+		hud.show_message("Za %d s lokal otworzy się sam." % now, 4.0)
+
+func _show_prep_clock() -> void:
+	var seconds := ceili(_prep_left)
+	_show_clock("Zamknięte, otwarcie za %d:%02d" % [seconds / 60, seconds % 60])
+
+# Lokal otwarty: zaczyna się noc.
 func _start_night() -> void:
 	_night_running = true
-	_schedule_customers(FIRST_DELAY)
+	_schedule_customers(0.5 if _rush_left > 0 else FIRST_DELAY)
 	_schedule_invasion()
 
 # Zegar jest dekoracyjny; noc kończy się, gdy ostatni klient zniknie.
@@ -163,6 +200,7 @@ func _show_clock(text: String) -> void:
 
 func _end_night() -> void:
 	_night_running = false
+	$sewer.abort()
 	$dialog_box.close()
 	$notebook.close()
 	var text := "Zarobek tej nocy: %d zł\nKasa: %d zł (czynsz: %d zł)\nZapłacili: %d z %d\nZmielone szczury: %d" % [
@@ -247,9 +285,6 @@ func _spawn_rat() -> void:
 	if pimpek == "free" and get_tree().get_nodes_in_group("pimpek").is_empty():
 		variant = &"pimpek"
 		rat.consumed.connect(_on_pimpek_consumed)
-	elif night > 1 and not _gold_seen and _night_running and randf() < GOLD_CHANCE * night:
-		variant = &"zloty"
-		_gold_seen = true
 	rat.set_variant(variant)
 
 func _on_pimpek_consumed() -> void:
@@ -265,8 +300,9 @@ func _on_pimpek_returned(_customer: Node) -> void:
 	_refresh_poster()
 
 func _on_gold_found() -> void:
+	_gold_seen = true
 	_add_money(GOLD_BONUS)
-	hud.show_message("Maszynka wypluła złoty ząb! +%d zł" % GOLD_BONUS, 5.0)
+	hud.show_message("Złoty szczur miał złoty ząb! +%d zł" % GOLD_BONUS, 5.0)
 
 func _refresh_poster() -> void:
 	if pimpek == "returned":
@@ -295,17 +331,36 @@ func _invade() -> void:
 		intruder.invade(_marker_positions($invasion_route))
 		Sfx.play_at(intruder, "squeak")
 
-# Sanepid widzi też szczura niesionego w ręce po sali.
-func _watch_held_rat() -> void:
+# Sanepidowi w lokalu wystarczy chwila: mandat od razu, gdy w środku jest szczur.
+func _watch_sanepid() -> void:
+	var inspectors := get_tree().get_nodes_in_group("customers").filter(
+		func(customer): return customer.kind == &"sanepid" and customer.can_see_rat())
+	if inspectors and _rat_inside():
+		for inspector in inspectors:
+			inspector.see_rat()
+
+# Szczur biegający po kuchni lub sali albo niesiony w ręce po sali.
+func _rat_inside() -> bool:
 	var player = $player
-	if not player.held or not player.held.is_in_group("rat"):
-		return
-	var at: Vector3 = player.global_position
-	if at.x < SALA_X or absf(at.z) > 5.0:
-		return
+	if player.held and player.held.is_in_group("rat"):
+		var at: Vector3 = player.global_position
+		if at.x >= SALA_X and _in_building(at):
+			return true
+	return get_tree().get_nodes_in_group("rat").any(func(rat):
+		return rat.state != rat.State.HELD and _in_building(rat.global_position))
+
+func _in_building(at: Vector3) -> bool:
+	return absf(at.x) < 4.0 and absf(at.z) < 5.0
+
+# --- Kolejka ---
+
+# Klienci są w grupie w kolejności przyjścia: za pierwszym głodnym wszyscy stoją w kolejce.
+func _update_queue() -> void:
+	var ahead := false
 	for customer in get_tree().get_nodes_in_group("customers"):
-		if customer.kind == &"sanepid" and customer.can_see_rat():
-			customer.see_rat()
+		customer.queued = ahead
+		if customer.kind != &"owner" and customer.is_hungry():
+			ahead = true
 
 # Klienci zauważają szczura na sali po chwili i wychodzą.
 func _watch_sala_rats(delta: float) -> void:
@@ -326,6 +381,8 @@ func _watch_sala_rats(delta: float) -> void:
 			customer.see_rat()
 		witnesses.clear()
 		rat.escape(_front_exit())
+	if warning.is_empty() and $sewer.occupied and _customers_inside() > 0:
+		warning = "Klienci na górze: %d" % _customers_inside()
 	hud.show_warning(warning)
 
 func _front_exit() -> Array[Vector3]:
@@ -336,17 +393,22 @@ func _front_exit() -> Array[Vector3]:
 func _schedule_customers(delay: float) -> void:
 	get_tree().create_timer(delay, false).timeout.connect(_spawn_group)
 
-# Przychodzi jedna osoba albo para, o ile jest miejsce.
+# Przychodzi jedna osoba albo para (w tłoku więcej), o ile jest miejsce.
 func _spawn_group() -> void:
-	var group_size := mini(2 if randf() < PAIR_CHANCE else 1, _queue.size())
-	for i in group_size:
-		_spawn_customer(i)
+	var wanted := 2 if randf() < PAIR_CHANCE else 1
+	var crowd := _rush_left > 0
+	if crowd:
+		wanted = RUSH_SIZE + (RUSH_EXTRA if _rush_left == RUSH_GROUPS else 0)
+		_rush_left -= 1
+	for i in mini(wanted, _queue.size()):
+		_spawn_customer(i, crowd)
 	if not _queue.is_empty():
-		_schedule_customers(randf_range(MIN_DELAY, MAX_DELAY))
+		_schedule_customers(RUSH_DELAY if _rush_left > 0 else randf_range(MIN_DELAY, MAX_DELAY))
 
-func _spawn_customer(place_in_group: int) -> void:
+func _spawn_customer(place_in_group: int, crowd: bool) -> void:
 	var slot := _free_index($counter_slots, &"slot")
-	if slot < 0 or _customers_inside() >= MAX_INSIDE or _queue.is_empty():
+	if slot < 0 or (slot >= COUNTER_PLACES and not crowd) or _customers_inside() >= MAX_INSIDE \
+			or _queue.is_empty():
 		return
 	var customer = Customer.instantiate()
 	add_child(customer)
@@ -359,14 +421,18 @@ func _spawn_customer(place_in_group: int) -> void:
 	var street: Vector3 = $customer_route/street.global_position + Vector3(0, 0, -0.9 * place_in_group)
 	customer.talk_requested.connect($dialog_box.open)
 	var type_id: StringName = _queue.pop_front()
-	var options := Dialogs.characters_of(type_id).filter(
-		func(id): return not id in DISABLED)
-	var character: String = _pick_unused(options, _used_characters, type_id)
-	var gender: String = Dialogs.character(character).get("plec", "m")
+	# Zwykli klienci (i sanepid) nie mają postaci: mówią teksty ze wspólnej puli.
+	var character: String = _pick_unused(
+		Dialogs.characters_of(type_id), _used_characters, type_id)
+	var gender: String = Dialogs.character(character).get("plec", _regular_gender())
 	var first_name: String = _pick_unused(Dialogs.names(gender), _used_names, "Alex")
-	customer.start(type_id, character, first_name, slot, street,
+	customer.start(type_id, character, gender, first_name, slot, street,
 		$customer_route/door.global_position, $counter_slots.get_child(slot).global_position)
 	Sfx.play_at($open_sign, "bell")
+
+# Płeć zwykłego klienta: kobiety przychodzą, gdy są dla nich zdjęcia w zwykli/k.
+func _regular_gender() -> String:
+	return ["m", "k"].pick_random() if CustomerScript.extra_photos("k") else "m"
 
 # Losuje coś, czego tej nocy jeszcze nie było (a gdy wszystko było, cokolwiek).
 func _pick_unused(options: Array, used: Array, fallback: String) -> String:
@@ -391,6 +457,9 @@ func _seat_customer(customer: Node) -> void:
 # --- Wołanie po imieniu ---
 
 func _on_shout(text: String) -> void:
+	if $sewer.occupied:
+		hud.show_message("Z kanałów nikt cię nie usłyszy.", 3.0)
+		return
 	var wanted := _plain(text)
 	for customer in get_tree().get_nodes_in_group("customers"):
 		if not customer.is_hungry() or _plain(customer.first_name) != wanted:

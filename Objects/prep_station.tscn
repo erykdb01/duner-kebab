@@ -122,7 +122,7 @@ monitoring = false
 script = ExtResource("2_source")
 ingredient = &"meat"
 board_path = NodePath("../board")
-stock = 3
+stock = 0
 
 [node name="fill" type="MeshInstance3D" parent="source_meat"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)

@@ -2,34 +2,31 @@
 
 [ext_resource type="Script" path="res://Scripts/dialog_box.gd" id="1_dialog"]
 
-[sub_resource type="StyleBoxFlat" id="style_panel"]
-content_margin_left = 12.0
-content_margin_top = 10.0
-content_margin_right = 12.0
-content_margin_bottom = 10.0
-bg_color = Color(0.05, 0.04, 0.07, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 0.62, 0.3, 1)
+[sub_resource type="Gradient" id="gradient"]
+offsets = PackedFloat32Array(0, 0.65, 1)
+colors = PackedColorArray(0.42, 0.42, 0.45, 0.75, 0.42, 0.42, 0.45, 0.55, 0.42, 0.42, 0.45, 0)
+
+[sub_resource type="GradientTexture2D" id="gradient_texture"]
+gradient = SubResource("gradient")
+width = 128
+height = 4
+
+[sub_resource type="StyleBoxTexture" id="style_panel"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 40.0
+content_margin_bottom = 6.0
+texture = SubResource("gradient_texture")
 
 [node name="dialog_box" type="CanvasLayer"]
 layer = 7
 script = ExtResource("1_dialog")
 
 [node name="Panel" type="PanelContainer" parent="."]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -20.0
-offset_right = 440.0
-offset_bottom = -20.0
-grow_vertical = 0
+unique_name_in_owner = true
 theme_override_styles/panel = SubResource("style_panel")
 
 [node name="Options" type="VBoxContainer" parent="Panel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 0

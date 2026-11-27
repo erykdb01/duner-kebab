@@ -1,16 +1,13 @@
 extends StaticBody3D
-# Maszynka do mięsa: wchodzi szczur, wychodzą porcje. Bez szczegółów.
+# Maszynka do mięsa: truchła z torby albo szczur z ręki, jeden szczur to jedna porcja.
 
 signal meat_ground(portions: int)
-signal gold_found
 
 const Sfx = preload("res://Scripts/sfx.gd")
-const PORTIONS := 3
 const GRIND_TIME := 2.5
 const SHAKES := 20
 
 var _busy := false
-var _golden := false
 
 @onready var model: Node3D = $model
 @onready var bubble: Label3D = $Bubble
@@ -20,13 +17,22 @@ func get_prompt(player) -> String:
 		return "Maszynka mieli..."
 	if _has_rat(player):
 		return "[E] Wrzuć szczura do maszynki"
-	return "Maszynka: potrzebny szczur"
+	if player.carcasses > 0:
+		return "Masz zajęte ręce" if player.held else "[E] Zmiel truchła (%d)" % player.carcasses
+	return "Maszynka: potrzebne szczury"
 
 func interact(player) -> void:
-	if _busy or not _has_rat(player):
+	if _busy:
 		return
-	_golden = player.held.is_in_group("zloty")
-	player.discard()
+	var portions := 0
+	if _has_rat(player):
+		player.discard()
+		portions = 1
+	elif not player.held and player.carcasses > 0:
+		portions = player.carcasses
+		player.add_carcasses(-portions)
+	else:
+		return
 	_busy = true
 	Sfx.play_at(self, "squeak")
 	Sfx.play_at(self, "grind")
@@ -36,18 +42,16 @@ func interact(player) -> void:
 		if i == 6:
 			tween.tween_callback(bubble.set_text.bind("BRRRUM... CHRUP"))
 		tween.tween_property(model, "rotation:x", 0.09 if i % 2 == 0 else -0.09, GRIND_TIME / SHAKES)
-	tween.tween_callback(_finish)
+	tween.tween_callback(_finish.bind(portions))
 	tween.tween_interval(1.5)
 	tween.tween_callback(bubble.set_text.bind(""))
 
 func _has_rat(player) -> bool:
 	return player.held != null and player.held.is_in_group("rat")
 
-func _finish() -> void:
+func _finish(portions: int) -> void:
 	model.rotation.x = 0.0
-	bubble.text = "DING! +%d porcje" % PORTIONS
+	bubble.text = "DING! Porcje: +%d" % portions
 	_busy = false
 	Sfx.play_at(self, "ding")
-	meat_ground.emit(PORTIONS)
-	if _golden:
-		gold_found.emit()
+	meat_ground.emit(portions)

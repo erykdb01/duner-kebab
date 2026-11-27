@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/radio.gd" id="1_radio"]
 [ext_resource type="Texture2D" path="res://Textures/restaurant_wood_128.png" id="2_wood"]
+[ext_resource type="Script" path="res://Scripts/radio_knob.gd" id="3_knob"]
 
 [sub_resource type="StandardMaterial3D" id="mat_case"]
 albedo_color = Color(0.7, 0.5, 0.35, 1)
@@ -28,16 +29,27 @@ size = Vector3(0.14, 0.2, 0.36)
 material = SubResource("mat_dark")
 size = Vector3(0.01, 0.13, 0.15)
 
-[sub_resource type="BoxMesh" id="mesh_knob"]
+[sub_resource type="CylinderMesh" id="mesh_knob"]
 material = SubResource("mat_metal")
-size = Vector3(0.02, 0.04, 0.04)
+top_radius = 0.045
+bottom_radius = 0.045
+height = 0.03
+radial_segments = 8
+rings = 0
+
+[sub_resource type="BoxMesh" id="mesh_mark"]
+material = SubResource("mat_dark")
+size = Vector3(0.006, 0.036, 0.012)
 
 [sub_resource type="BoxMesh" id="mesh_antenna"]
 material = SubResource("mat_metal")
 size = Vector3(0.008, 0.28, 0.008)
 
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(0.24, 0.28, 0.45)
+size = Vector3(0.24, 0.28, 0.25)
+
+[sub_resource type="BoxShape3D" id="shape_knob"]
+size = Vector3(0.14, 0.24, 0.17)
 
 [node name="radio" type="Area3D"]
 collision_layer = 2
@@ -56,13 +68,25 @@ mesh = SubResource("mesh_case")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.072, 0, 0.08)
 mesh = SubResource("mesh_speaker")
 
-[node name="knob0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, 0.04, -0.09)
+[node name="knob" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.085, 0, -0.1)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("3_knob")
+
+[node name="dial" type="Node3D" parent="knob"]
+
+[node name="wheel" type="MeshInstance3D" parent="knob/dial"]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("mesh_knob")
 
-[node name="knob1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, -0.04, -0.09)
-mesh = SubResource("mesh_knob")
+[node name="mark" type="MeshInstance3D" parent="knob/dial"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.017, 0.022, 0)
+mesh = SubResource("mesh_mark")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="knob"]
+shape = SubResource("shape_knob")
 
 [node name="antenna" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.866, -0.5, 0, 0.5, 0.866, 0, 0.21, -0.1)
@@ -80,4 +104,5 @@ unit_size = 2.5
 max_distance = 14.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
 shape = SubResource("shape")

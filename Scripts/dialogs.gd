@@ -38,7 +38,7 @@ static func line(id: String, key: String, values := {}) -> String:
 	var texts = character(id).get(key, section("domyslne").get(key, "..."))
 	return _pick(texts).format(values)
 
-# Powitanie: {"klient": ...} i ewentualnie "co" oraz "odpowiedzi".
+# Powitanie: {"klient": ...} i ewentualnie "odpowiedzi" oraz "wypros".
 static func greeting(id: String) -> Dictionary:
 	var list = character(id).get("powitania", section("domyslne").get("powitania", []))
 	if list is Array and list:
@@ -47,25 +47,17 @@ static func greeting(id: String) -> Dictionary:
 		return list
 	return {"klient": str(list) if list is String else "..."}
 
-static func player_line(key: String) -> String:
-	return _pick(section("gracz").get(key, "..."))
+# Twoja kwestia na przycisku; postać może mieć własne (np. na "pani").
+static func player_line(id: String, key: String) -> String:
+	var own: Dictionary = character(id).get("gracz", {})
+	return _pick(own.get(key, section("gracz").get(key, "...")))
 
 static func ingredient(key: String) -> String:
 	return str(section("skladniki").get(key, key))
 
-# Rozmowy postaci na przemian ze wspólnymi (zaczyna się od własnej).
-static func conversations(id: String, with_common: bool) -> Array:
-	var own := _shuffled(character(id).get("rozmowy", []))
-	var common: Array = []
-	if with_common:
-		common = _shuffled(section("domyslne").get("rozmowy", []))
-	var mixed := []
-	for i in maxi(own.size(), common.size()):
-		if i < own.size():
-			mixed.append(own[i])
-		if i < common.size():
-			mixed.append(common[i])
-	return mixed
+# Własne rozmowy postaci, a gdy ich nie ma, wspólna pula (w losowej kolejności).
+static func conversations(id: String) -> Array:
+	return _shuffled(character(id).get("rozmowy", section("domyslne").get("rozmowy", [])))
 
 # Zabiera z listy pierwszą rozmowę, której tej nocy jeszcze nie było.
 static func take(list: Array) -> Dictionary:

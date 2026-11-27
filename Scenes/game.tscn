@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://bmnyr5pt8726b" path="res://Scripts/decor.gd" id="17_decor"]
 [ext_resource type="Script" uid="uid://bgiu7vl3jt7o0" path="res://Scripts/outdoors.gd" id="18_outdoors"]
 [ext_resource type="PackedScene" path="res://Scenes/pixel_filter.tscn" id="19_pixel"]
+[ext_resource type="Script" path="res://Scripts/sewer.gd" id="21_sewer"]
 
 [node name="game" type="Node3D" unique_id=1248679954]
 script = ExtResource("6_game")
@@ -49,7 +50,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.06, 0.827, 0.7)
 
 [node name="backyard" parent="." unique_id=408882306 instance=ExtResource("8_yard")]
 
-[node name="open_sign" parent="." unique_id=153727298 instance=ExtResource("9_sign")]
+[node name="sewer" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 0, 0)
+script = ExtResource("21_sewer")
+
+[node name="open_sign" parent="."unique_id=153727298 instance=ExtResource("9_sign")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -4.91)
 
 [node name="overlay" parent="." unique_id=64093445 instance=ExtResource("10_overlay")]
@@ -169,6 +174,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, 2.45)
 
 [node name="c2" type="Marker3D" parent="counter_slots" unique_id=1938138343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, 3.6)
+
+[node name="c3" type="Marker3D" parent="counter_slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, -1)
+
+[node name="c4" type="Marker3D" parent="counter_slots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.05, -2.15)
 
 [node name="seats" type="Node3D" parent="." unique_id=1083675929]
 

@@ -9,7 +9,6 @@ enum State { WANDER, FLEE, HELD, TRAVEL }
 const Sfx = preload("res://Scripts/sfx.gd")
 const Night = preload("res://Scripts/night.gd")
 const FRAME_TIME := 0.12
-const GOLD_SPEED := 1.35 # złoty szczur jest szybszy
 const WANDER_SPEED := 1.2
 const FLEE_SPEED := 3.0
 const SNEAK_SPEED := 1.6
@@ -39,7 +38,6 @@ var _target := Vector3.ZERO
 var _pause := 1.0
 var _frames: Array[Texture2D] = []
 var _anim_time := 0.0
-var _speed_scale := 1.0
 
 @onready var sprite: Sprite3D = $Sprite3D
 
@@ -50,7 +48,7 @@ func start(areas: Dictionary, player: Node3D) -> void:
 	global_position = _areas[zone].pick_random()
 	_target = global_position
 
-# &"szczur", &"pimpek" albo &"zloty". Wywołać po dodaniu do sceny.
+# &"szczur" albo &"pimpek". Wywołać po dodaniu do sceny.
 func set_variant(variant: StringName) -> void:
 	_frames = [
 		load("res://Textures/szczury/%s_0.png" % variant),
@@ -58,8 +56,6 @@ func set_variant(variant: StringName) -> void:
 	sprite.texture = _frames[0]
 	if variant != &"szczur":
 		add_to_group(variant)
-	if variant == &"zloty":
-		_speed_scale = GOLD_SPEED
 
 # Gracz pozbywa się szczura na dobre (przed usunięciem węzła).
 func consume() -> void:
@@ -89,7 +85,7 @@ func _process(delta: float) -> void:
 		_flee()
 	elif not global_position.is_equal_approx(_target):
 		var speed := FLEE_SPEED if state == State.FLEE else WANDER_SPEED
-		global_position = global_position.move_toward(_target, speed * _speed_scale * delta)
+		global_position = global_position.move_toward(_target, speed * delta)
 		if global_position.is_equal_approx(_target):
 			_pause = CATCH_WINDOW if state == State.FLEE else randf_range(0.5, 2.0)
 	else:
@@ -107,8 +103,6 @@ func get_prompt(player) -> String:
 		return "Masz zajęte ręce"
 	if is_in_group("pimpek"):
 		return "[E] Złap szczura (ma czerwoną kokardkę)"
-	if is_in_group("zloty"):
-		return "[E] Złap ZŁOTEGO szczura"
 	return "[E] Złap szczura"
 
 func interact(player) -> void:

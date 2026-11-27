@@ -22,7 +22,7 @@ func _process(delta: float) -> void:
 		return
 	_time += delta
 	var flicker := fmod(_time, 5.3) < 0.4 and fmod(_time, 0.16) < 0.08
-	_lamp.light_energy = 0.15 if flicker else 1.0
+	_lamp.light_energy = 0.1 if flicker else 0.65
 
 func _walls() -> void:
 	B.box(self, Vector3(-4.1, -0.012, 9.0), Vector3(5.8, 0.02, 8.0), B.mat("beton", Color.WHITE, 0.6))
@@ -43,7 +43,7 @@ func _walls() -> void:
 	# lampa na ścianie
 	B.box(self, Vector3(-6.86, 2.45, 7.0), Vector3(0.16, 0.14, 0.3), B.mat("metal_ciemny"))
 	B.box(self, Vector3(-6.76, 2.4, 7.0), Vector3(0.05, 0.08, 0.2), B.glow(Color(1, 0.82, 0.45)))
-	_lamp = B.light(self, Vector3(-6.4, 2.4, 7.0), Color(1, 0.75, 0.4), 1.0, 4.5)
+	_lamp = B.light(self, Vector3(-6.4, 2.4, 7.0), Color(1, 0.75, 0.4), 0.65, 4.5)
 
 # Zamknięta brama z krat: widać ulicę, nie da się wyjść.
 func _gate() -> void:
