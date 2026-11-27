@@ -226,15 +226,6 @@
 				]
 			},
 			{
-				"klient": "U was też ostatnio prąd wariuje?",
-				"co": "W całej dzielnicy mrugają światła.",
-				"odpowiedzi": [
-					{"gracz": "Stara instalacja.", "klient": "To nie włączaj wszystkiego naraz.", "cierpliwosc": 5},
-					{"gracz": "U nas wszystko gra.", "klient": "Odpukaj."},
-					{"gracz": "Jedz szybko, póki świeci.", "klient": "Ha, dobre.", "napiwek": 1}
-				]
-			},
-			{
 				"klient": "Miała być dieta od poniedziałku. A jestem tutaj.",
 				"co": "Dieta mi nie wyszła, o to chodzi.",
 				"odpowiedzi": [
@@ -384,7 +375,7 @@
 				{"klient": "Czynne to w ogóle? Bo ciemno jak w piwnicy.", "co": "Mówię, że z ulicy wygląda na zamknięte.",
 					"odpowiedzi": [
 						{"gracz": "Czynne, zapraszam.", "klient": "To żarówkę wkręćcie.", "cierpliwosc": 5},
-						{"gracz": "Oszczędzam na prądzie.", "klient": "Byle nie na mięsie."}
+						{"gracz": "Taki nastrój.", "klient": "Byle nie na mięsie."}
 					]},
 				{"klient": "Tylko nie mów mi, że mięso się skończyło.", "co": "Pytam, czy masz z czego zrobić kebaba.",
 					"odpowiedzi": [
@@ -756,12 +747,6 @@
 						{"gracz": "Z okna.", "klient": "Okno. Najstarszy system nadzoru.", "cierpliwosc": 8},
 						{"gracz": "Może ma lornetkę.", "klient": "Ma! Widziałem szkło!", "cierpliwosc": 10, "napiwek": 1},
 						{"gracz": "Może się po prostu martwi.", "klient": "Naiwność. Zazdroszczę."}
-					]},
-				{"klient": "Zauważ, że prąd siada zawsze, gdy jest coś ważnego.", "co": "Awarie. Dzieją się w podejrzanych momentach.",
-					"odpowiedzi": [
-						{"gracz": "Bezpieczniki stare.", "klient": "Albo ktoś je rusza.", "cierpliwosc": 3},
-						{"gracz": "Coś w tym jest.", "klient": "Trzymaj zapas. Radzę po przyjacielsku.", "cierpliwosc": 10, "napiwek": 1},
-						{"gracz": "Opowiadasz bajki.", "klient": "Jak zgaśnie, przypomnisz sobie.", "cierpliwosc": -8}
 					]}
 			]
 		},
@@ -1569,27 +1554,27 @@
 						{"gracz": "U mnie się pan nie zanudzi.", "klient": "Liczę na to.", "cierpliwosc": 10},
 						{"gracz": "Kurczak też dobry.", "klient": "Dla amatorów, drogi panie."}
 					]},
-				{"klient": "Przysłał mnie znajomy. Mówił: proś o wkładkę.", "co": "Wkładka. To hasło, prawda?",
+				{"klient": "Przysłał mnie znajomy. Mówił, że macie coś spod lady.", "co": "Coś ze szczurem. Po cichu.",
 					"odpowiedzi": [
 						{"gracz": "Znajomy dobrze mówił.", "klient": "Wyśmienicie.", "cierpliwosc": 10, "napiwek": 1},
 						{"gracz": "Jaki znajomy?", "klient": "Taki, co nie podaje nazwisk. Słusznie pytasz."}
 					]}
 			],
-			"zamowienie": ["Z wkładką! Płacę podwójnie: {lista}.", "Degustacja nocna: {lista}.", "Po królewsku: {lista}."],
+			"zamowienie": ["Po cichu, płacę podwójnie: {lista}.","Degustacja nocna: {lista}.", "Po królewsku: {lista}."],
 			"imie": ["{imie}. Dla stałych dostawców po imieniu.", "{imie}, koneser.", "Proszę mówić {imie}."],
 			"po_zamowieniu": ["Usiądę i przygotuję podniebienie.", "Poczekam. Dobre rzeczy trzeba złapać.", "Rozkładam serwetkę."],
-			"ponaglenia": ["Wkładka ucieka? Poczekam, ale krótko.", "Kubki smakowe mi stygną.", "Ileż można polować!"],
+			"ponaglenia": ["Szczur uciekł? Poczekam, ale krótko.","Kubki smakowe mi stygną.", "Ileż można polować!"],
 			"zawolany": ["Idę, idę, już widelec ostrzę.", "To ja, ten od specjału."],
 			"dzieki": ["Ach! Ten ogonek! Brawo, maestro!", "Poezja. Czuć wolny wybieg.", "Wybornie, wybornie."],
-			"pomylka": ["Wkładka jest, ale kompozycja szwankuje.", "Niedokładnie, maestro."],
-			"brak_wkladki": ["A gdzie moja wkładka?!", "Pusto w środku! Znaczy się, banalnie."],
+			"pomylka": ["Szczur jest, ale kompozycja szwankuje.", "Niedokładnie, maestro."],
+			"brak_szczura": ["A gdzie mój szczur?!","Pusto w środku! Znaczy się, banalnie."],
 			"surowy_szczur": ["Surowy?! Ja chcę w kebabie!", "Nie na rękę, tylko w tortilli!"],
 			"wyproszony": ["Co za brak kultury kulinarnej. Żegnam.", "Znajdę ambitniejszą kuchnię."],
-			"opinie_super": ["Wkładka świeża, jeszcze protestowała. Polecam.", "Trzy gwiazdki w moim prywatnym przewodniku."],
-			"opinia_brak_wkladki": ["Zero wkładki. Nuda.", "Zwykły kebab. Rozczarowanie."],
-			"opinia_surowy_szczur": ["Podali mi wkładkę bez kebaba. Barbarzyństwo."],
+			"opinie_super": ["Świeży, jeszcze protestował. Polecam.", "Trzy gwiazdki w moim prywatnym przewodniku."],
+			"opinia_brak_szczura": ["Zero szczura. Nuda.", "Zwykły kebab. Rozczarowanie."],
+			"opinia_surowy_szczur": ["Podali mi szczura bez kebaba. Barbarzyństwo."],
 			"rozmowy": [
-				{"klient": "Który rocznik poleca dziś kuchnia?", "co": "Pytam o świeżość i pochodzenie wkładki.",
+				{"klient": "Który rocznik poleca dziś kuchnia?", "co": "Pytam o świeżość i pochodzenie mięsa.",
 					"odpowiedzi": [
 						{"gracz": "Spod kontenera, tegoroczny.", "klient": "Wybornie. Z nutą kartonu.", "napiwek": 5},
 						{"gracz": "Mamy tylko wołowinę.", "klient": "Proszę mnie nie obrażać.", "cierpliwosc": -10},
@@ -1623,7 +1608,7 @@
 					"odpowiedzi": [
 						{"gracz": "To nie dziczyzna. To miejskie.", "klient": "Czyli wolno! Świetna interpretacja.", "napiwek": 3},
 						{"gracz": "Lekarki warto słuchać.", "klient": "Od jutra. Dziś jeszcze szaleję.", "cierpliwosc": 5},
-						{"gracz": "Może dziś surówka?", "klient": "Surówka obok, wkładka w środku.", "cierpliwosc": 5}
+						{"gracz": "Może dziś surówka?", "klient": "Surówka obok, szczur w środku.", "cierpliwosc": 5}
 					]}
 			]
 		},

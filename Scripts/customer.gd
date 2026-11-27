@@ -30,7 +30,7 @@ const DOUBLE_MEAT_PRICE := 5
 const MISTAKE_COST := 8
 const COUNTED: Array[StringName] = [&"meat", &"rat", &"salad", &"sauce", &"tortilla"]
 const SPRITE_Y := 0.88
-const SEATED_SPRITE_Y := 0.68
+const SEAT_HEIGHT := 0.52 # siedzisko krzesła; dół zdjęcia siedzącego klienta
 const FOOD_PATIENCE := 1.8 # po przyjęciu zamówienia czeka dłużej
 const REPEAT_COST := 8.0 # sekundy cierpliwości za prośbę o powtórzenie
 const MAX_CHATS := 2
@@ -64,7 +64,6 @@ var talking := false # w trakcie rozmowy cierpliwość stoi
 var chats := 0
 var speech := Speech.new() # wypowiedzi nad głową
 var _greeting := {}
-var drain := 1.0 # tempo utraty cierpliwości (radio uspokaja, ciemność denerwuje)
 var order: Array[StringName] = [] # warstwy od dołu
 var strict := false # czy liczy się kolejność
 var time_left := 0.0
@@ -402,8 +401,8 @@ func _rate(contents: Array[StringName]) -> void:
 		payment *= 2
 	var reaction := ""
 	if gourmet and not &"rat" in contents:
-		reaction = _line("brak_wkladki")
-		_opinion = _line("opinia_brak_wkladki")
+		reaction = _line("brak_szczura")
+		_opinion = _line("opinia_brak_szczura")
 		_stars = 2
 	elif wrong_order:
 		reaction = _line("zla_kolejnosc")
@@ -463,11 +462,18 @@ func _arrive() -> void:
 		say(str(_greeting.get("klient", "...")))
 	collision_layer = _layer
 	if seat >= 0:
-		sprite.position.y = SEATED_SPRITE_Y
+		sprite.position.y = _seated_y()
 	if fed:
 		_start_eating()
 	else:
 		state = State.WAITING
+
+# Wysokość sprite'a, przy której dół zdjęcia leży na siedzisku.
+func _seated_y() -> float:
+	if not sprite.texture:
+		return SPRITE_Y
+	var bottom := (sprite.offset.y - sprite.texture.get_height() / 2.0) * sprite.pixel_size
+	return SEAT_HEIGHT - global_position.y - bottom
 
 func _start_eating() -> void:
 	state = State.EATING
@@ -475,7 +481,7 @@ func _start_eating() -> void:
 	say(_line("smacznego"))
 
 func _wait(delta: float) -> void:
-	time_left -= delta * drain
+	time_left -= delta
 	if time_left <= 0.0:
 		_leave(_line("rezygnacja"), 2 if kind == &"owner" else 1, _line("opinia_rezygnacja"))
 	elif not _complained and time_left <= _max_time * 0.4:

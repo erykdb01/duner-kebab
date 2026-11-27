@@ -3,7 +3,6 @@ extends Control
 
 const Game = preload("res://Scripts/game.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
-const Night = preload("res://Scripts/night.gd")
 const Settings = preload("res://Scripts/settings.gd")
 const GAME_SCENE := "res://Scenes/game.tscn"
 const RAT_SIZE := Vector2(144, 78)
@@ -15,7 +14,6 @@ var _settings := Settings.new()
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	Night.dark = false
 	%Play.pressed.connect(_new_game)
 	%Continue.pressed.connect(get_tree().change_scene_to_file.bind(GAME_SCENE))
 	%Controls.pressed.connect(func(): %Help.visible = not %Help.visible)

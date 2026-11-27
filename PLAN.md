@@ -1,84 +1,77 @@
 # Rat Kebab – plan i postęp
 
-Po każdym etapie zaktualizuj ten plik (krótko).
+Po każdym etapie zaktualizuj ten plik (krótko). Wersja 1 projektu: tag `v1.0` (2026-11-27).
 
-## Postęp
-- [x] 0–6: gracz, interakcje, kebab, klienci, szczury i maszynka, noc, menu i pauza
-- [x] 7: dźwięk, sprite'y, klienci specjalni, 3 noce, czynsz, finał, 3 niespodzianki
-- [x] 8: rozmowy, imiona, notatnik i wołanie; awaria prądu; tekstury, detale, podwórko, otoczenie, menu
-- [x] 9: poprawki po testach (dialogi i dymki, czcionka, ustawienia ekranu), porządki i optymalizacja
-  (do sprawdzenia w grze)
+## Postęp (do wersji 1)
+- [x] 0–9: gracz, kebab, klienci, szczury i maszynka, 3 noce i finał, rozmowy i notatnik, detale, menu, ustawienia
+
+## Wersja 2 – etapy (po każdym stop i test użytkownika)
+- [x] **E1 Drobne poprawki** (sprawdzone w grze; potem deska przeniesiona sama na dół): dłuższe noce (480 s, 11/13/15 klientów, czynsz 500);
+  bez „wkładki”; usunięta awaria prądu i bezpieczniki; radio bez wpływu na klientów; szare okna; deska
+  na niższej części blatu (pojemniki na górze); klienci siedzą wyżej; rzadsze wejścia szczurów (co 140–240 s);
+  usunięte rysunki `Textures/postacie`; naprawione przypadkowe przesunięcie węzła `rest` w `game.tscn`.
+- [ ] **E2 Ulica i radio:** ciemniej na zewnątrz; kilka wolno jeżdżących aut z widocznymi światłami;
+  więcej piosenek w radiu i pokrętło zmiany kanału.
+- [ ] **E3 Dymki i dialogi od zera:** mniejsze dymki bez tła, nadal wyraźne (obrys tekstu); usunąć
+  `Data/dialogi.json` i napisać nowy, poprawną polszczyzną; jedyna stała odpowiedź to wyproszenie
+  z lokalu, losowana lub dopasowana do kwestii klienta. Format pliku od razu pod E4.
+- [ ] **E4 Klienci od zera:** ok. 20 zwykłych (wspólna pula dialogów, losowe zdjęcia) i kilku
+  charakterystycznych (np. babcia) z własnymi kwestiami; zdjęcia użytkownika z `Textures/zdjecia/`,
+  przycinane do kwadratu i lekko pikselizowane (mogą się powtarzać); dłuższa cierpliwość w kolejce,
+  narzekanie przy długim czekaniu; po zbyt wielu pytaniach lub utracie cierpliwości wychodzą.
+  **Sanepid:** losowy zwykły klient bez żadnych oznak; mandat, gdy będąc w lokalu zobaczy szczura
+  (choćby na chwilę) albo dostanie żywego szczura w kebabie.
+- [ ] **E5 Przygotowanie przed otwarciem:** lokal zamknięty, zero mięsa, odliczanie; gracz otwiera sam
+  albo lokal otwiera się po czasie i wchodzi więcej klientów naraz. Można otworzyć bez składników.
+- [ ] **E6 Kanały i walka:** [E] na włazie w altanie → kanały, nóż w ręce, turowa walka jak w starych
+  Pokemonach; truchła do ekwipunku (zwykły licznik); gracz niesie je do maszynki; 1 truchło = 1 porcja.
+  Zastępuje łapanie na podwórku. Restauracja działa dalej, klienci mogą wyjść.
+- [ ] **E7 Żywy szczur:** minigra QTE (sekwencja klawiszy), trudniejsza od walki; worek; Pimpek;
+  klient po cichu prosi o żywego szczura w kebabie.
+- [ ] **E8 Porządki i balans:** audyt nieużywanych plików, optymalizacja, czynsz i liczby po testach,
+  aktualizacja menu „Sterowanie”, `README.md`, `Data/JAK_EDYTOWAC.md`.
+
+## Ustalone (2026-11-27)
+- E5: na przygotowanie 4 min realnego czasu (stała w kodzie).
+- E6: walka 10–20 s, w jednej walce 1–3 szczury, niezużyte mięso przechodzi na następną noc.
+  **Przypomnij użytkownikowi po teście E6**, że to wersja próbna: ocenić tempo (ok. 20 szczurów na noc
+  przy 11–15 klientach) i ewentualnie zmienić.
+- E6/E7: szczury nadal rzadko wchodzą na salę i da się je złapać ręką.
+- E7: zamiast awarii prądu maszynka czasem się zacina i trzeba ją odetkać krótkim QTE (na próbę).
+- Gra jest tylko dla użytkownika – prawami do zdjęć się nie zajmujemy.
+- `diagramy/` – nigdy nie ruszać.
 
 ## Tryby gry (na później – nie zaczynać bez prośby)
-Obecne 3 noce to zalążek trybu **Fabuła**. Obok niego powstanie tryb **Endless**. W menu: wybór trybu.
-- [ ] 10: wybór trybu w menu; skład nocy, czynsz i trudność zależne od trybu (dziś stałe w `game.gd`)
-- [ ] 11: Endless
-- [ ] 12: Fabuła (5 nocy)
-
-### Endless
-Noce bez końca, każda trudniejsza od poprzedniej. Koniec, gdy nie uzbierasz czynszu.
-Propozycja skalowania (do ustalenia): co noc więcej klientów i krótsze przerwy, mniej cierpliwości,
-wyższy czynsz (płacony co noc), częstsze awarie, szczury i sanepid, częściej ważna kolejność.
-Z limitem, żeby noc dało się jeszcze przejść. Wynik: liczba nocy i zarobek, rekord zapisany na dysku.
-
-### Fabuła (5 nocy)
-Pomysł do akceptacji – **„Poprzedni sprzedawca”**. Zaczynasz po Mietku, który zniknął bez wypowiedzenia.
-Co noc znajdujesz jego kartkę (w kuchni, przy bezpiecznikach, w altanie).
-1. Pierwsza zmiana: nauka kebaba i notatnika. Kartka: „Nie włączaj radia przy maszynce”.
-2. Pani od Pimpka wiesza plakat. Pierwsza awaria: kabel przegryziony zbyt równo.
-3. Sanepid w przebraniu; sąsiadka Krystyna notuje każdy twój krok. Kartka: „Oni liczą szczury”.
-4. Smakosz przyprowadza klub: duże pieniądze za wkładkę, ale Krystyna i sanepid są coraz bliżej.
-   Wybór: szybki czynsz albo czyste ręce.
-5. Noc kontroli: przychodzą wszyscy naraz i właściciel kamienicy po czynsz. Wychodzi na jaw, że Pimpek
-   przewodzi szczurom z podwórka, a Mietek prowadzi teraz „konkurencję” za rogiem.
-
-Finał zależy od czynszu, losu Pimpka, mandatów i podanych szczurów (rozbudowa obecnych zakończeń,
-w tym sekretnego).
-
-## Otwarte
-- Klienci to całe zdjęcia z tłem, rozpikselowane (`Textures/zdjecia/<postać>.*`, `customer.gd`);
-  użytkownik dodał 10 (do sprawdzenia w grze). Na razie każdy klient dostaje losowe zdjęcie swojej płci.
-  Jedyne kobiece to `babcia`, więc `klientka` i `krystyna` nie przychodzą (`NIGHTS`, `DISABLED`
-  w `game.gd`), a w nocach 2–3 jedyną kobietą jest pani od Pimpka (bez babci).
-  Zdjęcia są rozciągnięte w górę (`STRETCH` w `customer.gd`).
-  Rysunki `Textures/postacie` wyłączone (do usunięcia po akceptacji).
-- **Przed publikacją gry:** zdjęcia mają znaki wodne banków zdjęć i brak do nich licencji – podmienić.
-- Poziom trudności w ustawieniach (czeka na decyzję; może zastąpi go Endless).
+Obecne 3 noce to zalążek trybu **Fabuła**. Obok niego powstanie **Endless**; w menu wybór trybu.
+- Endless: noce bez końca, każda trudniejsza (więcej klientów, mniej cierpliwości, wyższy czynsz co noc,
+  częstsze szczury i sanepid); koniec, gdy nie uzbierasz czynszu; rekord na dysku.
+- Fabuła (5 nocy), pomysł **„Poprzedni sprzedawca”** (do akceptacji): zaczynasz po Mietku, który zniknął;
+  co noc znajdujesz jego kartkę (np. „Oni liczą szczury”). Pani od Pimpka, sanepid, klub smakosza
+  i wybór: szybki czynsz albo czyste ręce. Finał: Pimpek przewodzi szczurom, Mietek prowadzi konkurencję.
 
 ## Stan kodu
-- Start: `Scenes/menu.tscn`. Gra: `Scenes/game.tscn`; stan i reguły w `Scripts/game.gd` (stałe na górze:
-  skład nocy, czynsz, mandat, nagrody, awaria). Stan między nocami w `static var save` (do wyłączenia gry),
-  nowa noc = przeładowanie sceny.
-- Kuchnia: x od -3.95 do -2.3; blat x ≈ -1.35; sala: x > -0.9; podwórko: x -7..-1.2, z 5..13.
-- Interakcja: warstwa kolizji 2; obiekt ma `get_prompt(player)` i `interact(player)`.
-- Gracz: `held`, `hold(item)`, `discard()`, `busy` (rozmowa/notatnik); przedmioty: `Scripts/item.gd`.
+- Start: `Scenes/menu.tscn`. Gra: `Scenes/game.tscn`; stan i reguły w `Scripts/game.gd` (stałe na górze).
+  Stan między nocami w `static var save`, nowa noc = przeładowanie sceny.
+- Kuchnia: x od -3.95 do -2.3; blat: góra (lada) x ≈ -1.35, niższa część y 0.827, x ≈ -2.06
+  (deska `prep_station`, maszynka); sala: x > -0.9; podwórko: x -7..-1.2, z 5..13.
+- Interakcja: warstwa kolizji 2; `get_prompt(player)` i `interact(player)`.
+- Gracz: `held`, `hold(item)`, `discard()`, `busy`; latarka [F].
 - Kebab: `contents` = warstwy od dołu (`meat`, `salad`, `sauce`, `tortilla`, `rat`; max 10).
-- Klient: `Scripts/customer.gd` (`ENTERING → WAITING ⇄ WALKING → EATING → FAREWELL → LEAVING`);
-  rodzaje, cierpliwość i napiwek w stałej `TYPES`. Max 5 w środku, 3 miejsca przy ladzie + `pickup`, 4 krzesła.
-  Zamówień nie ma w HUD ani nad głową – gracz zapisuje je w notatniku.
-- Teksty, imiona i postacie: `Data/dialogi.json` (`Scripts/dialogs.gd`, opis `Data/JAK_EDYTOWAC.md`).
-  Użytkownik sam edytuje plik – nie nadpisywać jego zmian.
-- UI: `dialog_box` (odpowiedzi), `speech.gd` (kwestie nad głową, 2D), `notebook`, `hud`, `overlay`, `settings.gd`.
-- Szczur: `Objects/rat.tscn` (strefy `yard`/`kitchen`/`sala`, markery `rat_areas`); max 2, inwazje na salę.
-  Maszynka pod blatem uzupełnia `prep_station/source_meat`.
-- Awaria: `Objects/fuse_box.tscn` + `fuse_shelf.tscn`; przyczyny: kabel (noce 2–3) albo radio + maszynka.
-- Wystrój i otoczenie budowane w kodzie (`@tool`): `build.gd` (klocki, wspólne siatki), `decor.gd`,
-  `outdoors.gd`, `backyard.gd`, `dumpster.gd`.
-- Obraz: `night.gd` (barwa sprite'ów, awaria), filtr `Scenes/pixel_filter.tscn` (`pixel_size`, `levels`),
-  niebo `Materials/night_env.tres`, czcionka `Materials/serif.tres`.
+- Klient: `Scripts/customer.gd` (`ENTERING → WAITING ⇄ WALKING → EATING → FAREWELL → LEAVING`), stała
+  `TYPES`. Max 5 w środku, 3 miejsca przy ladzie + `pickup`, 4 krzesła. Zamówienia gracz zapisuje sam.
+- Zdjęcia: `Textures/zdjecia/<postać>.*`, losowane według płci; jedyne kobiece to `babcia`
+  (`klientka` i `krystyna` nie przychodzą). Do przerobienia w E4.
+- Teksty: `Data/dialogi.json` (`Scripts/dialogs.gd`).
+- Szczur: `Objects/rat.tscn`; max 2, wejścia na salę. Maszynka daje 3 porcje (E6: 1).
+- Wystrój i otoczenie w kodzie (`@tool`): `build.gd`, `decor.gd`, `outdoors.gd`, `backyard.gd`.
+- Obraz: `night.gd` (barwa sprite'ów), `Scenes/pixel_filter.tscn`, `Materials/night_env.tres`.
 - Generatory grafik i dźwięków (tylko lokalnie): `.godot/claude_test/gen_world.py`, `gen_assets.py`.
 
-## Projekt rozgrywki
+## Zasady rozgrywki
 Bez autoloadów i managerów; sygnały w górę, wywołania w dół.
 Ocena: 20 zł (+5 za podwójne mięso), −8 zł za błąd, bez mięsa 0; napiwek za bezbłędne i szybkie.
-**Nie robić:** ekwipunek, rozbudowana ekonomia, zapis w środku nocy.
+Ekwipunek tylko jako licznik truchł i worek (E6–E7). Nie robić: rozbudowana ekonomia, zapis w środku nocy.
 
-## Z dawnej listy „Później” – niezrobione
-- Skale stołów i krzeseł; mipmapy dla tekstur restauracji.
-- Sprawdzanie miejsca nad głową przy wstawaniu z kucek.
-- Zaplecze jako kryjówka szczura (stara scena `zapl` usunięta; w razie potrzeby zbudować od nowa).
-
-## Spoilery (niespodzianki)
-1. Radio w kuchni (muzyka i wiadomości); muzyka gra też w menu.
-2. Złoty szczur od 2. nocy: szybszy, po zmieleniu +50 zł.
-3. Sekretny finał „Złoty Kebab”: czynsz, oddany Pimpek, zero mandatów i zero niezamówionych szczurów.
+## Niespodzianki (spoilery)
+1. Radio w kuchni (muzyka i wiadomości). 2. Złoty szczur od 2. nocy: po zmieleniu +50 zł.
+3. Finał „Złoty Kebab”: czynsz, oddany Pimpek, zero mandatów i niezamówionych szczurów.

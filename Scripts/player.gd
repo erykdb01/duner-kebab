@@ -2,7 +2,6 @@ extends CharacterBody3D
 
 signal prompt_changed(text: String)
 
-const Night = preload("res://Scripts/night.gd")
 const Sfx = preload("res://Scripts/sfx.gd")
 
 var torch := SpotLight3D.new()
@@ -40,7 +39,6 @@ func _ready():
 	torch.position = Vector3(0.2, -0.15, 0)
 	torch.visible = false
 	cam.add_child(torch)
-	Night.torch = torch
 
 func _unhandled_input(e):
 	if busy:

@@ -1,10 +1,8 @@
 @tool
 extends Node3D
 # Detale wnętrza: brud, grzyb, ścierki, wyposażenie blatu, ekrany z menu, okna i drobiazgi.
-# Węzły z grupy "powered" gasną podczas awarii prądu.
 
 const B = preload("res://Scripts/build.gd")
-const Night = preload("res://Scripts/night.gd")
 const COUNTER_Y := 1.095
 const FLOOR := 0.053
 
@@ -21,15 +19,12 @@ func _ready() -> void:
 	_windows()
 
 func _process(delta: float) -> void:
-	if Engine.is_editor_hint() or Night.dark:
+	if Engine.is_editor_hint():
 		return
 	_time += delta
 	_spit.rotate_y(delta * 0.8)
 	# Zmęczona świetlówka w kuchni co jakiś czas mruga.
 	_tube.visible = fmod(_time, 7.0) > 0.35 or fmod(_time, 0.12) > 0.06
-
-func _powered(node: Node) -> void:
-	node.add_to_group("powered")
 
 func _dirt() -> void:
 	# podłoga
@@ -78,8 +73,8 @@ func _counter() -> void:
 		for column in 4:
 			B.box(register, Vector3(0.0 + row * 0.055, 0.148, -0.12 + column * 0.075),
 				Vector3(0.035, 0.016, 0.045), cream if (row + column) % 3 else red)
-	_powered(B.label(register, Vector3(-0.185, 0.2, 0), "20.00", 40, Color(0.4, 1, 0.5), -90, 0.0016))
-	_powered(B.label(register, Vector3(-0.02, 0.215, 0), "20.00", 40, Color(0.4, 1, 0.5), 90, 0.0014))
+	B.label(register, Vector3(-0.185, 0.2, 0), "20.00", 40, Color(0.4, 1, 0.5), -90, 0.0016)
+	B.label(register, Vector3(-0.02, 0.215, 0), "20.00", 40, Color(0.4, 1, 0.5), 90, 0.0014)
 	# serwetnik
 	B.box(self, Vector3(-1.1, COUNTER_Y + 0.07, 2.65), Vector3(0.09, 0.14, 0.18), metal)
 	B.box(self, Vector3(-1.1, COUNTER_Y + 0.16, 2.65), Vector3(0.05, 0.05, 0.14), B.mat("", Color(0.85, 0.83, 0.78)))
@@ -122,15 +117,15 @@ func _doner(at: Vector3) -> void:
 	B.ball(_spit, Vector3(0.03, 0.69, 0), Vector3(0.1, 0.08, 0.1), B.mat("surowka", Color(1, 0.5, 0.4), 6.0))
 	B.box(self, at + Vector3(-0.25, 0.38, 0), Vector3(0.05, 0.66, 0.46), metal)
 	for i in 6:
-		_powered(B.box(self, at + Vector3(-0.22, 0.14 + i * 0.1, 0), Vector3(0.012, 0.025, 0.4),
-			B.glow(Color(1, 0.35, 0.08))))
-	_powered(B.light(self, at + Vector3(-0.1, 0.4, 0), Color(1, 0.45, 0.15), 0.5, 1.4))
+		B.box(self, at + Vector3(-0.22, 0.14 + i * 0.1, 0), Vector3(0.012, 0.025, 0.4),
+			B.glow(Color(1, 0.35, 0.08)))
+	B.light(self, at + Vector3(-0.1, 0.4, 0), Color(1, 0.45, 0.15), 0.5, 1.4)
 
 # Podświetlane ekrany z menu pod sufitem.
 func _screens() -> void:
 	var menus := [
 		"KEBAB ......... 20 zł\nPodwójne mięso . +5 zł\nSurówka ........ gratis\nSos ............ gratis\nTortilla x2 .... gratis",
-		"PROMOCJA NOCNA\nMięso 100% mięsne\nZ wkładką?\nZapytaj szeptem.\nReklamacji brak"]
+		"PROMOCJA NOCNA\nMięso 100% mięsne\nZawsze świeże\nReklamacji brak"]
 	var places := [-1.15, 3.15]
 	for i in 2:
 		var screen := B.group(self, Vector3(-1.35, 2.78, places[i]))
@@ -138,10 +133,10 @@ func _screens() -> void:
 		for z in [-0.5, 0.5]:
 			B.cyl(screen, Vector3(0, 0.75, z), 0.012, 0.76, B.mat("metal_ciemny"))
 		for side in [1, -1]:
-			_powered(B.quad(screen, Vector3(0.037 * side, 0, 0), Vector2(1.24, 0.66),
-				B.picture("ekran", Color.WHITE, true), Vector3(0, 90 * side, 0)))
-			_powered(B.label(screen, Vector3(0.042 * side, 0, 0), menus[i], 36,
-				Color(1, 0.85, 0.45), 90 * side, 0.0023))
+			B.quad(screen, Vector3(0.037 * side, 0, 0), Vector2(1.24, 0.66),
+				B.picture("ekran", Color.WHITE, true), Vector3(0, 90 * side, 0))
+			B.label(screen, Vector3(0.042 * side, 0, 0), menus[i], 36,
+				Color(1, 0.85, 0.45), 90 * side, 0.0023)
 
 func _kitchen() -> void:
 	var metal := B.mat("metal_ciemny", Color(1.5, 1.5, 1.6), 2.0)
@@ -177,11 +172,10 @@ func _kitchen() -> void:
 	# kartki na ścianie
 	B.box(self, Vector3(-3.935, 1.95, 0.75), Vector3(0.01, 0.36, 0.5), B.mat("", Color(0.82, 0.8, 0.7)))
 	B.label(self, Vector3(-3.925, 1.95, 0.75), "UMYJ RĘCE\n(czasem)", 36, Color(0.15, 0.1, 0.2), 90, 0.0017)
-	B.label(self, Vector3(-3.925, 2.35, -2.6), "BEZPIECZNIKI", 32, Color(1, 0.85, 0.3), 90, 0.0017)
 	# świetlówka
 	B.box(self, Vector3(-3.0, 3.84, -0.5), Vector3(0.22, 0.05, 1.5), metal)
 	_tube = B.group(self, Vector3(-3.0, 3.8, -0.5))
-	_powered(B.box(_tube, Vector3.ZERO, Vector3(0.08, 0.04, 1.35), B.glow(Color(0.75, 1, 0.85))))
+	B.box(_tube, Vector3.ZERO, Vector3(0.08, 0.04, 1.35), B.glow(Color(0.75, 1, 0.85)))
 
 func _hall() -> void:
 	var metal := B.mat("metal_ciemny", Color(1.3, 1.3, 1.4), 2.0)
@@ -191,9 +185,9 @@ func _hall() -> void:
 		B.box(self, Vector3(side, 1.05, -4.93), Vector3(0.09, 2.1, 0.08), wood)
 	B.box(self, Vector3(0, 2.1, -4.93), Vector3(2.4, 0.1, 0.08), wood)
 	# neon
-	_powered(B.label(self, Vector3(2.55, 2.75, 4.92), "KEBAB 24H", 96, Color(1, 0.3, 0.65), 180, 0.003))
-	_powered(B.label(self, Vector3(2.55, 2.42, 4.92), "prawie zawsze świeży", 40, Color(0.35, 0.9, 1), 180))
-	_powered(B.light(self, Vector3(2.5, 2.6, 4.5), Color(1, 0.25, 0.6), 0.7, 3.0))
+	B.label(self, Vector3(2.55, 2.75, 4.92), "KEBAB 24H", 96, Color(1, 0.3, 0.65), 180, 0.003)
+	B.label(self, Vector3(2.55, 2.42, 4.92), "prawie zawsze świeży", 40, Color(0.35, 0.9, 1), 180)
+	B.light(self, Vector3(2.5, 2.6, 4.5), Color(1, 0.25, 0.6), 0.7, 3.0)
 	# tabliczki i gaśnica
 	B.box(self, Vector3(-2.3, 1.9, -4.935), Vector3(0.75, 0.34, 0.01), B.mat("", Color(0.82, 0.8, 0.7)))
 	B.label(self, Vector3(-2.3, 1.9, -4.925), "NIE KARMIĆ\nSZCZURÓW", 36, Color(0.6, 0.05, 0.03), 0, 0.0018)
@@ -220,5 +214,5 @@ func _windows() -> void:
 		for offset in [-1.34, -0.45, 0.45, 1.34]:
 			B.box(self, Vector3(4.0, 1.97, z + offset), Vector3(0.07, 2.0, 0.06), frame)
 		B.box(self, Vector3(4.0, 2.35, z), Vector3(0.07, 0.05, 2.7), frame)
-		B.quad(self, Vector3(4.01, 1.97, z), Vector2(2.66, 2.0), B.glow(Color(0.25, 0.4, 0.7, 0.08)), Vector3(0, -90, 0))
+		B.quad(self, Vector3(4.01, 1.97, z), Vector2(2.66, 2.0), B.glow(Color(0.45, 0.45, 0.46, 0.12)), Vector3(0, -90, 0))
 		B.solid(self, Vector3(4.0, 1.97, z), Vector3(0.1, 2.0, 2.7))

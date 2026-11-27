@@ -1,29 +1,29 @@
 extends Node3D
-# Stan gry: trzy noce, kasa, klienci (miejsca przy ladzie i przy stolikach), szczury,
-# awaria prądu i finał.
+# Stan gry: trzy noce, kasa, klienci (miejsca przy ladzie i przy stolikach), szczury i finał.
 
 const Customer = preload("res://Objects/customer.tscn")
 const Rat = preload("res://Objects/rat.tscn")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
-const Night = preload("res://Scripts/night.gd")
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
-	[&"regular", &"regular", &"regular", &"regular", &"student", &"babcia", &"smakosz"],
-	[&"regular", &"regular", &"regular", &"regular", &"student", &"smakosz", &"sanepid",
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
+		&"regular", &"student", &"babcia", &"smakosz"],
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
+		&"regular", &"regular", &"student", &"smakosz", &"sanepid", &"wlasciciel"],
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"regular",
+		&"regular", &"regular", &"regular", &"regular", &"student", &"smakosz", &"sanepid",
 		&"wlasciciel"],
-	[&"regular", &"regular", &"regular", &"regular", &"regular", &"student", &"smakosz",
-		&"sanepid", &"wlasciciel"],
 ]
 # Postacie z dialogi.json, które na razie nie przychodzą (babcia to jedyna "babcia").
 const DISABLED: Array[String] = ["krystyna"]
 const SPECIALS: Array[StringName] = [&"smakosz", &"sanepid", &"wlasciciel"]
-const RENT := 300
+const RENT := 500
 const FINE := 40
 const PIMPEK_REWARD := 60
 const GOLD_BONUS := 50
 const GOLD_CHANCE := 0.2 # od 2. nocy, przy każdym nowym szczurze
-const NIGHT_LENGTH := 270.0 # tyle sekund zajmuje zegarowi dojście do 04:00
+const NIGHT_LENGTH := 480.0 # tyle sekund zajmuje zegarowi dojście do 04:00
 const CLOCK_START := 22 * 60 # minuty
 const CLOCK_SPAN := 6 * 60
 const FIRST_DELAY := 3.0
@@ -35,15 +35,8 @@ const MAX_INSIDE := 5
 const SIT_CHANCE := 0.6
 const MAX_RATS := 2
 const RAT_DELAY := 20.0
-const MIN_INVASION_DELAY := 45.0
-const MAX_INVASION_DELAY := 90.0
-const MIN_BLACKOUT_DELAY := 50.0
-const MAX_BLACKOUT_DELAY := 140.0
-const DARK_DRAIN := 2.0 # po ciemku klienci tracą cierpliwość dwa razy szybciej
-const RADIO_DRAIN := 0.7 # przy muzyce wolniej
-const SPOIL_FIRST := 25.0 # po tylu sekundach bez lodówki psuje się mięso
-const SPOIL_NEXT := 10.0
-const OVERLOAD_DELAY := 1.2
+const MIN_INVASION_DELAY := 140.0
+const MAX_INVASION_DELAY := 240.0
 const SNEAK_MIN_DISTANCE := 4.0 # szczur nie zakrada się przy graczu
 const SALA_X := -1.0 # na prawo od tej linii jest sala
 const REVIEWS_SHOWN := 3
@@ -59,9 +52,6 @@ var rat_kebabs := 0 # kebaby ze szczurem podane komukolwiek poza smakoszem
 var _gold_seen := false
 var _rat_pending := false
 var _night_running := false
-var _blackout := false
-var _spoil := SPOIL_FIRST
-var _ambient := 0.4
 var _elapsed := 0.0
 var _queue: Array[StringName] = [] # klienci, którzy jeszcze nie przyszli
 var _expected := 0 # płacący klienci tej nocy (bez właścicielki Pimpka)
@@ -78,17 +68,9 @@ static func new_game() -> void:
 
 @onready var hud = $hud
 @onready var overlay = $overlay
-@onready var environment: Environment = $WorldEnvironment.environment.duplicate()
 
 func _ready() -> void:
 	Dialogs.reload()
-	Night.dark = false
-	$WorldEnvironment.environment = environment
-	_ambient = environment.ambient_light_energy
-	# Wszystko z grupy "powered" gaśnie podczas awarii.
-	for light in [$rest/OmniLight3D, $rest/lightCounter, $rest/lightKitchen]:
-		light.add_to_group("powered")
-	$grinder.started.connect(_on_grinder_started)
 	_load_state()
 	_build_queue()
 	$dialog_box.player = $player
@@ -103,7 +85,6 @@ func _ready() -> void:
 	$grinder.meat_ground.connect(func(_portions): _rats_ground += 1)
 	$grinder.gold_found.connect(_on_gold_found)
 	$open_sign.opened.connect(_start_night)
-	$fuse_box.restored.connect(_end_blackout)
 	Sfx.make_loop($ambient, "night")
 	$ambient.play()
 	_refresh_poster()
@@ -122,9 +103,6 @@ func _process(delta: float) -> void:
 		get_tree().create_timer(RAT_DELAY, false).timeout.connect(_spawn_rat)
 	_watch_held_rat()
 	_watch_sala_rats(delta)
-	_apply_mood()
-	if _blackout and _night_running:
-		_spoil_meat(delta)
 	if _night_running:
 		_run_night(delta)
 
@@ -170,10 +148,6 @@ func _start_night() -> void:
 	_night_running = true
 	_schedule_customers(FIRST_DELAY)
 	_schedule_invasion()
-	if night > 1:
-		var delay := randf_range(MIN_BLACKOUT_DELAY, MAX_BLACKOUT_DELAY)
-		get_tree().create_timer(delay, false).timeout.connect(
-			_start_blackout.bind("Coś przegryzło kabel!"))
 
 # Zegar jest dekoracyjny; noc kończy się, gdy ostatni klient zniknie.
 func _run_night(delta: float) -> void:
@@ -191,8 +165,6 @@ func _end_night() -> void:
 	_night_running = false
 	$dialog_box.close()
 	$notebook.close()
-	if _blackout:
-		_end_blackout()
 	var text := "Zarobek tej nocy: %d zł\nKasa: %d zł (czynsz: %d zł)\nZapłacili: %d z %d\nZmielone szczury: %d" % [
 		_earned, money, RENT, _paid, _expected, _rats_ground]
 	if _night_fines > 0:
@@ -335,13 +307,8 @@ func _watch_held_rat() -> void:
 		if customer.kind == &"sanepid" and customer.can_see_rat():
 			customer.see_rat()
 
-# Klienci zauważają szczura na sali po chwili i wychodzą. Po ciemku nic nie widzą.
+# Klienci zauważają szczura na sali po chwili i wychodzą.
 func _watch_sala_rats(delta: float) -> void:
-	if _blackout:
-		var has_fuse: bool = $player.held != null and $player.held.is_in_group("fuse")
-		hud.show_warning("Brak prądu! Włóż bezpiecznik do skrzynki na podwórku" if has_fuse
-			else "Brak prądu! Weź bezpiecznik z kuchni (latarka [F])")
-		return
 	var witnesses := get_tree().get_nodes_in_group("customers").filter(
 		func(customer): return customer.can_see_rat())
 	var warning := ""
@@ -363,59 +330,6 @@ func _watch_sala_rats(delta: float) -> void:
 
 func _front_exit() -> Array[Vector3]:
 	return [$customer_route/door.global_position, $customer_route/street.global_position]
-
-# --- Awaria prądu ---
-
-# Skutki: ciemno, grill i maszynka stoją, mięso się psuje, klienci się niecierpliwią,
-# a szczury wchodzą na salę.
-func _start_blackout(reason: String) -> void:
-	if _blackout:
-		return
-	_spoil = SPOIL_FIRST
-	_set_blackout(true)
-	$radio.shut_down()
-	$fuse_box.trip()
-	$player.torch.visible = true
-	Sfx.play($player, "power_down")
-	hud.show_message(reason + "\nGrill stoi, mięso w lodówce zaczyna się psuć.", 6.0)
-	_invade() # szczury korzystają
-
-# Stara instalacja nie ciągnie radia i maszynki naraz.
-func _on_grinder_started() -> void:
-	if $radio.is_playing():
-		get_tree().create_timer(OVERLOAD_DELAY, false).timeout.connect(
-			_start_blackout.bind("Radio i maszynka naraz: wywaliło korki!"))
-
-func _spoil_meat(delta: float) -> void:
-	_spoil -= delta
-	if _spoil > 0.0:
-		return
-	_spoil = SPOIL_NEXT
-	var meat = $prep_station/source_meat
-	if meat.stock > 0:
-		meat.set_stock(meat.stock - 1)
-		hud.show_message("Porcja mięsa się zepsuła! Zostało: %d" % meat.stock, 4.0)
-
-# Tempo, w jakim klienci tracą cierpliwość.
-func _apply_mood() -> void:
-	var drain := 1.0
-	if _blackout:
-		drain = DARK_DRAIN
-	elif $radio.is_playing():
-		drain = RADIO_DRAIN
-	for customer in get_tree().get_nodes_in_group("customers"):
-		customer.drain = drain
-
-func _end_blackout() -> void:
-	_set_blackout(false)
-	Sfx.play($player, "power_up")
-
-func _set_blackout(dark: bool) -> void:
-	_blackout = dark
-	Night.dark = dark
-	environment.ambient_light_energy = _ambient * (0.2 if dark else 1.0)
-	for node in get_tree().get_nodes_in_group("powered"):
-		node.visible = not dark
 
 # --- Klienci ---
 

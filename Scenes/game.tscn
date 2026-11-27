@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" path="res://Objects/backyard.tscn" id="8_yard"]
 [ext_resource type="PackedScene" path="res://Objects/open_sign.tscn" id="9_sign"]
 [ext_resource type="PackedScene" path="res://Scenes/overlay.tscn" id="10_overlay"]
-[ext_resource type="PackedScene" path="res://Objects/fuse_box.tscn" id="11_fuse"]
 [ext_resource type="PackedScene" path="res://Objects/radio.tscn" id="12_radio"]
 [ext_resource type="PackedScene" path="res://Objects/poster.tscn" id="13_poster"]
 [ext_resource type="PackedScene" path="res://Scenes/dialog_box.tscn" id="14_dialog"]
@@ -19,13 +18,11 @@
 [ext_resource type="Script" uid="uid://bmnyr5pt8726b" path="res://Scripts/decor.gd" id="17_decor"]
 [ext_resource type="Script" uid="uid://bgiu7vl3jt7o0" path="res://Scripts/outdoors.gd" id="18_outdoors"]
 [ext_resource type="PackedScene" path="res://Scenes/pixel_filter.tscn" id="19_pixel"]
-[ext_resource type="PackedScene" path="res://Objects/fuse_shelf.tscn" id="20_shelf"]
 
 [node name="game" type="Node3D" unique_id=1248679954]
 script = ExtResource("6_game")
 
 [node name="rest" parent="." unique_id=1604944046 instance=ExtResource("1_e2o6t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2273686, -0.39198112, -1.8762903)
 
 [node name="player" parent="." unique_id=678003766 instance=ExtResource("2_feb5d")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
@@ -40,9 +37,6 @@ script = ExtResource("17_decor")
 script = ExtResource("18_outdoors")
 
 [node name="pixel_filter" parent="." unique_id=1118811594 instance=ExtResource("19_pixel")]
-
-[node name="fuse_shelf" parent="." unique_id=323107821 instance=ExtResource("20_shelf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.82, 1.4, -2.6)
 
 [node name="prep_station" parent="." unique_id=681415286 instance=ExtResource("4_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.095, 0)
@@ -59,9 +53,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.06, 0.827, 0.7)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.5, -4.91)
 
 [node name="overlay" parent="." unique_id=64093445 instance=ExtResource("10_overlay")]
-
-[node name="fuse_box" parent="." unique_id=1208862183 instance=ExtResource("11_fuse")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.05, 1.35, 5.11)
 
 [node name="radio" parent="." unique_id=1080803100 instance=ExtResource("12_radio")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.82, 1.45, 1.8)

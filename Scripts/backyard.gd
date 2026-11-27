@@ -4,7 +4,6 @@ extends Node3D
 # x od -7 do -1.2, z od 5 do 13. Wschodnie kubły i róg z kontenerem omijają trasę szczura.
 
 const B = preload("res://Scripts/build.gd")
-const Night = preload("res://Scripts/night.gd")
 
 var _lamp: OmniLight3D
 var _time := 0.0
@@ -23,7 +22,7 @@ func _process(delta: float) -> void:
 		return
 	_time += delta
 	var flicker := fmod(_time, 5.3) < 0.4 and fmod(_time, 0.16) < 0.08
-	_lamp.light_energy = 0.15 if flicker else (0.45 if Night.dark else 1.0)
+	_lamp.light_energy = 0.15 if flicker else 1.0
 
 func _walls() -> void:
 	B.box(self, Vector3(-4.1, -0.012, 9.0), Vector3(5.8, 0.02, 8.0), B.mat("beton", Color.WHITE, 0.6))

@@ -3,10 +3,8 @@ extends StaticBody3D
 
 signal meat_ground(portions: int)
 signal gold_found
-signal started
 
 const Sfx = preload("res://Scripts/sfx.gd")
-const Night = preload("res://Scripts/night.gd")
 const PORTIONS := 3
 const GRIND_TIME := 2.5
 const SHAKES := 20
@@ -20,14 +18,12 @@ var _golden := false
 func get_prompt(player) -> String:
 	if _busy:
 		return "Maszynka mieli..."
-	if Night.dark:
-		return "Maszynka stoi: nie ma prądu"
 	if _has_rat(player):
 		return "[E] Wrzuć szczura do maszynki"
 	return "Maszynka: potrzebny szczur"
 
 func interact(player) -> void:
-	if _busy or Night.dark or not _has_rat(player):
+	if _busy or not _has_rat(player):
 		return
 	_golden = player.held.is_in_group("zloty")
 	player.discard()
@@ -43,7 +39,6 @@ func interact(player) -> void:
 	tween.tween_callback(_finish)
 	tween.tween_interval(1.5)
 	tween.tween_callback(bubble.set_text.bind(""))
-	started.emit()
 
 func _has_rat(player) -> bool:
 	return player.held != null and player.held.is_in_group("rat")

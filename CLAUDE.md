@@ -26,6 +26,7 @@ Godot. Check actual engine version in project.godot.
 ## Development rules
 - Inspect existing code before changing it.
 - Modify only relevant files.
+- Never touch `diagramy/` (no edits, moves or deletion, also during cleanup).
 - Avoid unnecessary refactoring.
 - Do not add dependencies without approval.
 - Test only relevant functionality.

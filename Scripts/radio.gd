@@ -2,7 +2,6 @@ extends Area3D
 # Radio w kuchni: muzyka i nocne wiadomości.
 
 const Sfx = preload("res://Scripts/sfx.gd")
-const Night = preload("res://Scripts/night.gd")
 const NEWS_TIME := 7.0
 const NEWS: Array[String] = [
 	"Radio Kebab 66,6 FM",
@@ -10,8 +9,7 @@ const NEWS: Array[String] = [
 	"Ceny wołowiny w górę.\nEksperci: są alternatywy.",
 	"Właścicielka szczura:\n\"Pimpek reaguje na imię\".",
 	"Pogoda: noc. Potem dalej noc.",
-	"Energetycy: radio i maszynka\nnaraz to za dużo prądu!",
-	"Smakosz roku: \"Liczy się\nświeżość wkładki\".",
+	"Smakosz roku: \"Liczy się\nświeżość\".",
 	"Pozdrowienia dla kucharza.\nWiemy, co robisz.",
 ]
 
@@ -35,23 +33,9 @@ func _process(delta: float) -> void:
 		_news = (_news + 1) % NEWS.size()
 
 func get_prompt(_player) -> String:
-	if Night.dark:
-		return "Radio milczy: nie ma prądu"
-	return "[E] Wyłącz radio" if _on else "[E] Włącz radio\n(klienci czekają spokojniej)"
-
-func is_playing() -> bool:
-	return _on
-
-# Awaria prądu wyłącza radio.
-func shut_down() -> void:
-	if _on:
-		_toggle()
+	return "[E] Wyłącz radio" if _on else "[E] Włącz radio"
 
 func interact(_player) -> void:
-	if not Night.dark:
-		_toggle()
-
-func _toggle() -> void:
 	_on = not _on
 	_time = 0.0
 	Sfx.play_at(self, "switch")
