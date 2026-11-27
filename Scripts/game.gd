@@ -22,6 +22,7 @@ const NIGHTS: Array = [
 		&"wlasciciel"],
 ]
 const SPECIALS: Array[StringName] = [&"smakosz", &"sanepid", &"wlasciciel"]
+const KASEKO_TWICE_CHANCE := 0.5 # Kaseko przychodzi co noc, czasem dwa razy
 const RENT := 500
 const FINE := 40
 const PIMPEK_REWARD := 60
@@ -173,6 +174,10 @@ func _build_queue() -> void:
 			_queue[0] = _queue[i]
 			_queue[i] = first
 			break
+	# Kaseko w pierwszej połowie nocy (nie jako pierwszy), drugi raz pod koniec.
+	_queue.insert(randi_range(1, _queue.size() / 2), &"kaseko")
+	if randf() < KASEKO_TWICE_CHANCE:
+		_queue.insert(randi_range(_queue.size() - 3, _queue.size()), &"kaseko")
 	_expected = _queue.size() - _queue.count(&"wlasciciel")
 
 func _run_prep(delta: float) -> void:
@@ -494,6 +499,12 @@ func _spawn_customer(place_in_group: int, crowd: bool) -> void:
 	if slot < 0 or (slot >= COUNTER_PLACES and not crowd) or _customers_inside() >= MAX_INSIDE \
 			or _queue.is_empty():
 		return
+	# Kaseko jest jeden: dopóki jest w lokalu, jego druga wizyta czeka na końcu kolejki.
+	if _queue[0] == &"kaseko" and get_tree().get_nodes_in_group("customers").any(
+			func(other): return other.giant):
+		_queue.push_back(_queue.pop_front())
+		if _queue[0] == &"kaseko":
+			return
 	var customer = Customer.instantiate()
 	add_child(customer)
 	customer.served.connect(_on_served)
@@ -509,7 +520,9 @@ func _spawn_customer(place_in_group: int, crowd: bool) -> void:
 	var character: String = _pick_unused(
 		Dialogs.characters_of(type_id), _used_characters, type_id)
 	var gender: String = Dialogs.character(character).get("plec", _regular_gender())
-	var first_name: String = _pick_unused(Dialogs.names(gender), _used_names, "Alex")
+	var first_name: String = Dialogs.character(character).get("stale_imie", "")
+	if first_name.is_empty():
+		first_name = _pick_unused(Dialogs.names(gender), _used_names, "Alex")
 	customer.start(type_id, character, gender, first_name, slot, street,
 		$customer_route/door.global_position, $counter_slots.get_child(slot).global_position)
 	Sfx.play_at($open_sign, "bell")

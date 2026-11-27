@@ -30,7 +30,18 @@ const PHOTO_PIXELS := 64 # bok zdjęcia po rozpikselowaniu; mniej = większe pik
 const PHOTO_SIZE := 1.3 # bok kwadratu w metrach
 const PHOTO_TOP := 1.95 # wysokość górnej krawędzi stojącego klienta
 const HEAD_ROOM := 0.15 # z pionowego zdjęcia ucinana jest ta część nadmiaru u góry, reszta u dołu
-const SECRET_CHANCE := 0.12 # zwykły klient po cichu zamawia żywego szczura
+# Ruchome zdjęcie: poziomy pasek kwadratowych klatek "nazwa_anim.png";
+# opcjonalny "nazwa_anim.ogg" gra w pętli i idzie za klientem.
+const ANIM_SUFFIX := "_anim"
+const ANIM_FPS := 10.0
+const MUSIC_VOLUME := -6.0 # w dB
+const MUSIC_DISTANCE := 14.0 # dalej niż tyle metrów jej nie słychać
+const MUSIC_GROUP := &"customer_music" # po tej grupie radio wie, kiedy się przyciszyć
+# Postacie z własnym zdjęciem (nikt inny go nie dostaje).
+const CHARACTER_LOOKS := {"kaseko": "res://Textures/zdjecia/kaseko_anim.png"}
+const GIANT_LAYERS := 10 # tyle składników ma gigant (najwyżej MAX_LAYERS z prep_board.gd)
+const GIANT_PRICE := 35 # zamiast BASE_PRICE
+const SECRET_CHANCE := 0.12# zwykły klient po cichu zamawia żywego szczura
 const DEFAULT_NERVES := 3 # po tylu irytacjach wychodzi ("nerwy" w dialogi.json)
 const QUEUE_DRAIN := 0.5 # w kolejce cierpliwość ubywa wolniej
 const QUEUE_COMPLAINT := 40.0 # co tyle sekund w kolejce narzeka
@@ -55,9 +66,10 @@ const TYPES := {
 	&"sanepid": [&"sanepid", 75.0, 5],
 	&"smakosz": [&"gourmet", 90.0, 10],
 	&"wlasciciel": [&"owner", 110.0, 0],
+	&"kaseko": [&"regular", 150.0, 15],
 }
 
-static var _photos := {} # gotowe zdjęcia, żeby nie przerabiać ich przy każdym wejściu
+static var _photos := {} # gotowe klatki zdjęć, żeby nie przerabiać ich przy każdym wejściu
 
 var kind := &"regular" # regular, sanepid, gourmet, owner
 var patience := 75.0
@@ -73,9 +85,13 @@ var fed := false
 var called := false # zawołany po imieniu, czeka przy ladzie
 var talking := false # w trakcie rozmowy cierpliwość stoi
 var secret := false # chce po cichu żywego szczura w kebabie
+var giant := false # zamawia gigantycznego kebaba
 var queued := false # ktoś, kto przyszedł wcześniej, jeszcze czeka (ustawia game.gd)
 var gender := "m"
 var look := "" # ścieżka wylosowanego zdjęcia
+var _frames: Array = [] # tekstury zdjęcia; więcej niż jedna = animacja
+var _anim_time := 0.0
+var _music: AudioStreamPlayer3D
 var _annoyance := 0
 var _queue_time := 0.0
 var chats := 0
@@ -110,6 +126,7 @@ func start(type_id: StringName, new_character: String, new_gender: String, new_n
 		new_slot: int, street: Vector3, door: Vector3, counter: Vector3) -> void:
 	var stats: Array = TYPES[type_id]
 	kind = stats[0]
+	giant = type_id == &"kaseko"
 	patience = stats[1]
 	tip = stats[2]
 	character = new_character
@@ -127,6 +144,7 @@ func start(type_id: StringName, new_character: String, new_gender: String, new_n
 
 func _process(delta: float) -> void:
 	sprite.modulate = Night.tint(global_position)
+	_animate(delta)
 	speech.height = sprite.position.y + PHOTO_TOP - SPRITE_Y + 0.12
 	speech.pinned = talking
 	match state:
@@ -315,6 +333,9 @@ static func extra_photos(of_gender: String) -> Array[String]:
 # Wygląd: chodzące kwadratowe zdjęcie. Nie jest przypisane do osoby: losowe spośród zdjęć
 # jej płci, w miarę możliwości inne niż u klientów, którzy już są.
 func _set_look() -> void:
+	if CHARACTER_LOOKS.has(character):
+		_show_look(CHARACTER_LOOKS[character])
+		return
 	var paths := extra_photos(gender)
 	for id in PHOTOS[gender]:
 		for extension in PHOTO_TYPES:
@@ -326,23 +347,65 @@ func _set_look() -> void:
 	var taken := get_tree().get_nodes_in_group("customers").map(
 		func(other): return other.look)
 	var fresh := paths.filter(func(path): return not path in taken)
-	look = (fresh if fresh else paths).pick_random()
-	sprite.texture = _photo(look)
+	_show_look((fresh if fresh else paths).pick_random())
+
+func _show_look(path: String) -> void:
+	look = path
+	_frames = _photo(look)
+	sprite.texture = _frames[0]
 	sprite.pixel_size = PHOTO_SIZE / PHOTO_PIXELS
 	sprite.offset.y = (PHOTO_TOP - PHOTO_SIZE / 2.0 - SPRITE_Y) / sprite.pixel_size
+	_start_music(look.get_basename() + ".ogg")
 
-# Przycina zdjęcie do kwadratu i zmniejsza, żeby było widać piksele.
-func _photo(path: String) -> Texture2D:
+# Klatki zdjęcia: zwykłe daje jedną, pasek "_anim" wszystkie po kolei.
+func _photo(path: String) -> Array:
 	if not _photos.has(path):
 		var image: Image = load(path).get_image()
 		if image.is_compressed():
 			image.decompress()
-		var side := mini(image.get_width(), image.get_height())
-		image = image.get_region(Rect2i((image.get_width() - side) / 2,
-			int((image.get_height() - side) * HEAD_ROOM), side, side))
-		image.resize(PHOTO_PIXELS, PHOTO_PIXELS, Image.INTERPOLATE_LANCZOS)
-		_photos[path] = ImageTexture.create_from_image(image)
+		var frames: Array = []
+		if path.get_basename().ends_with(ANIM_SUFFIX):
+			var side := image.get_height()
+			for index in image.get_width() / side:
+				frames.append(_square(image, Rect2i(index * side, 0, side, side)))
+		else:
+			var side := mini(image.get_width(), image.get_height())
+			frames.append(_square(image, Rect2i((image.get_width() - side) / 2,
+				int((image.get_height() - side) * HEAD_ROOM), side, side)))
+		_photos[path] = frames
 	return _photos[path]
+
+# Wycina kwadrat i zmniejsza, żeby było widać piksele.
+func _square(image: Image, region: Rect2i) -> Texture2D:
+	var part := image.get_region(region)
+	part.resize(PHOTO_PIXELS, PHOTO_PIXELS, Image.INTERPOLATE_LANCZOS)
+	return ImageTexture.create_from_image(part)
+
+# Muzyka należąca do zdjęcia: dziecko klienta, więc chodzi razem z nim i znika, gdy wyjdzie.
+func _start_music(path: String) -> void:
+	if not ResourceLoader.exists(path):
+		return
+	var stream: AudioStreamOggVorbis = load(path)
+	stream.loop = true
+	_music = AudioStreamPlayer3D.new()
+	_music.stream = stream
+	_music.volume_db = MUSIC_VOLUME
+	_music.unit_size = 2.5
+	_music.max_distance = MUSIC_DISTANCE
+	_music.position.y = 1.4
+	_music.bus = &"Muzyka"
+	_music.add_to_group(MUSIC_GROUP)
+	add_child(_music)
+	_music.play()
+
+# Przy muzyce klatka wynika z miejsca w nagraniu, żeby obraz się nie rozjeżdżał z dźwiękiem.
+func _animate(delta: float) -> void:
+	if _frames.size() < 2:
+		return
+	_anim_time += delta
+	if _music and _music.playing:
+		_anim_time = _music.get_playback_position()
+	sprite.texture = _frames[int(_anim_time * ANIM_FPS) % _frames.size()]
 
 func _line(key: String, values := {}) -> String:
 	return Dialogs.line(character, key, values)
@@ -370,6 +433,9 @@ func _owner_takes(player) -> void:
 func _make_order() -> void:
 	if kind == &"owner":
 		return
+	if giant:
+		_make_giant_order()
+		return
 	order = [&"meat"]
 	# Tylko zwykli klienci bez własnej postaci; sanepid nigdy o to nie prosi.
 	secret = kind == &"regular" and Dialogs.character(character).is_empty() \
@@ -388,6 +454,17 @@ func _make_order() -> void:
 	if strict:
 		order.shuffle()
 
+# Gigant: 2-3 porcje mięsa, reszta to surówka, sos i najwyżej 2 dodatkowe tortille.
+# Kolejność się nie liczy.
+func _make_giant_order() -> void:
+	order = [&"meat", &"meat", &"salad", &"sauce"]
+	if randf() < 0.5:
+		order.append(&"meat")
+	while order.size() < GIANT_LAYERS:
+		var extra: StringName = [&"salad", &"sauce", &"tortilla"].pick_random()
+		if extra != &"tortilla" or order.count(extra) < 2:
+			order.append(extra)
+
 # Zamówienie powiedziane słowami postaci.
 func _order_text() -> String:
 	var words: Array[String] = []
@@ -398,7 +475,10 @@ func _order_text() -> String:
 	# Tylko to, co ma być w środku: "mięso, surówka i sos".
 	for id in COUNTED:
 		var amount := order.count(id)
-		if id == &"meat" and amount > 1:
+		if giant and amount > 1:
+			# U giganta liczy się dokładna liczba: "3× mięso".
+			words.append("%d× %s" % [amount, Kebab.NAMES[id]])
+		elif id == &"meat" and amount > 1:
 			words.append(Dialogs.ingredient("meat_2"))
 		elif amount > 0:
 			words.append(Dialogs.ingredient(id))
@@ -427,7 +507,8 @@ func _rate(contents: Array[StringName]) -> void:
 	var wrong_order := strict and mistakes == 0 and contents != order
 	if wrong_order:
 		mistakes = 1
-	var price := BASE_PRICE + DOUBLE_MEAT_PRICE * (order.count(&"meat") - 1)
+	var base := GIANT_PRICE if giant else BASE_PRICE
+	var price := base + DOUBLE_MEAT_PRICE * (order.count(&"meat") - 1)
 	var payment := maxi(price - mistakes * MISTAKE_COST, 0)
 	if wanted_rat and &"rat" in contents:
 		payment *= 2

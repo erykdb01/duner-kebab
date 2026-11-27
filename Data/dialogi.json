@@ -281,6 +281,38 @@
 	},
 
 	"postacie": {
+		"kaseko": {
+			"typ": "kaseko", "plec": "m", "tytul": "Tancerz", "stale_imie": "Kaseko", "nerwy": 4,
+			"powitania": ["Siema! Kaseko wpada na parkiet.", "Dobry wieczór! Słyszysz ten bit?",
+				"Głodny jestem jak po całej nocy tańca."],
+			"zamowienie": ["Gigant, dziesięć pięter: {lista}.", "Dzisiaj na bogato: {lista}."],
+			"imie": ["{imie}! Zapamiętaj, bo będę wracał.", "{imie}. Cała dzielnica zna."],
+			"po_zamowieniu": ["Czekam i trenuję.", "Spoko, mam co robić."],
+			"zawolany": ["Już sunę!", "Idę, idę, w rytmie."],
+			"ponaglenia": ["Bit leci, a kebaba nie ma.", "Spalam więcej, niż zjem!"],
+			"ponaglenia_kolejka": ["Kolejka stoi, ja nie umiem.", "Szybciej, bo zacznę tu obroty."],
+			"dzieki": ["To jest paliwo! Dzięki!", "Gigant jak się patrzy!"],
+			"pomylka": ["Coś się nie zgadza w piętrach, szefie.", "Prawie. Policz następnym razem."],
+			"smacznego": ["Mmm... aż nogi same chodzą."],
+			"rezygnacja": ["Zatańczę gdzie indziej."],
+			"wyproszony": ["Parkiet zamknięty? Szkoda."],
+			"opinie_super": ["Giganty tak dobre, że robię salto."],
+			"rozmowy": [
+				{"klient": "Nowy układ ćwiczę. Chcesz ocenić?",
+					"odpowiedzi": [
+						{"gracz": "Dziesięć na dziesięć.", "klient": "Wiedziałem! Masz oko.", "cierpliwosc": 20, "napiwek": 3},
+						{"gracz": "Tylko nie przy surówce.", "klient": "Dobra, trzymam dystans.", "cierpliwosc": 5},
+						{"gracz": "Widziałem lepsze.", "klient": "Auć. Gdzie niby?", "cierpliwosc": -15}
+					],
+					"wypros": {"gracz": "Układ proszę ćwiczyć na ulicy.", "klient": "Ulica doceni."}},
+				{"klient": "Po takim gigancie tańczę do rana.",
+					"odpowiedzi": [
+						{"gracz": "To dam porządną porcję.", "klient": "I to rozumiem!", "cierpliwosc": 20},
+						{"gracz": "A żołądek nie protestuje?", "klient": "Żołądek też tańczy.", "cierpliwosc": 8}
+					]}
+			]
+		},
+
 		"babcia": {
 			"typ": "babcia", "plec": "k", "tytul": "Babcia z torebką", "nerwy": 4,
 			"ponaglenia_kolejka": ["Kochanieńcy, starszej osobie to by się ustąpiło.", "Nogi mi w tej kolejce puchną."],

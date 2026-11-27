@@ -4,6 +4,12 @@ extends Area3D
 const Sfx = preload("res://Scripts/sfx.gd")
 const NEWS_TIME := 7.0
 const KNOB_STEP := TAU / 8.0
+# Gdy gra muzyka klienta, radio cichnie: w pełni do DUCK_NEAR metrów od gracza,
+# wcale od DUCK_FAR.
+const DUCK_DB := -22.0
+const DUCK_NEAR := 6.0
+const DUCK_FAR := 12.0
+const DUCK_SPEED := 30.0 # dB na sekundę
 # [nazwa stacji, plik z folderu Sounds]
 const STATIONS: Array = [
 	["Radio Kebab 66,6 FM", "radio"],
@@ -28,11 +34,13 @@ var _time := 0.0
 @onready var music: AudioStreamPlayer3D = $music
 @onready var label: Label3D = $Label
 @onready var dial: Node3D = $knob/dial
+@onready var _volume := music.volume_db
 
 func _ready() -> void:
 	Sfx.make_loop(music, STATIONS[_station][1])
 
 func _process(delta: float) -> void:
+	music.volume_db = move_toward(music.volume_db, _volume + _duck(), DUCK_SPEED * delta)
 	if not _on:
 		return
 	_time -= delta
@@ -63,6 +71,17 @@ func next_station() -> void:
 
 func station_name() -> String:
 	return STATIONS[_station][0]
+
+# O ile przyciszyć radio przez muzykę klienta w pobliżu gracza.
+func _duck() -> float:
+	var camera := get_viewport().get_camera_3d()
+	if not camera:
+		return 0.0
+	var duck := 0.0
+	for source in get_tree().get_nodes_in_group(&"customer_music"):
+		var distance: float = camera.global_position.distance_to(source.global_position)
+		duck = minf(duck, DUCK_DB * clampf(inverse_lerp(DUCK_FAR, DUCK_NEAR, distance), 0.0, 1.0))
+	return duck
 
 # Najpierw na chwilę nazwa stacji, potem wiadomości.
 func _play() -> void:

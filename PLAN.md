@@ -22,6 +22,12 @@ Po każdym etapie zaktualizuj ten plik (krótko). Zasady pracy są w `CLAUDE.md`
   tag `v2.0` = wersja 2 (commit agenta, 2026-11-27). Tagów agent nie wypychał.
 
 ## 3. Do zrobienia
+- [ ] **Test ruchomych zdjęć:** `zwykli/m/mammon_anim.png` (losowe, z GIF-a). Obsługa w
+  `customer.gd` (`ANIM_*`, `MUSIC_*`). Oryginalne GIF i MP4 usunięte na prośbę użytkownika.
+- [ ] **Test Kaseko:** postać `kaseko` (`Textures/zdjecia/kaseko_anim.png` + `.ogg`), co noc,
+  50% szans na drugą wizytę (`game.gd`), gigant 10 składników, 35 zł + 5 za mięso ponad 1,
+  cierpliwość 150 s, napiwek 15 zł. Radio cichnie przy jego muzyce (`radio.gd`, `DUCK_*`).
+- [ ] **Test dźwięku:** suwaki w ustawieniach (ogólna, muzyka); szyny w `default_bus_layout.tres`.
 - [ ] **Test:** zdrowie przez całą noc, leczenie kebabem [G], pasek postępu; najlepiej pełne 3 noce.
 - [x] Usunięte za zgodą stare pliki robocze z `.godot/claude_test/` (zostały tylko generatory).
 - [ ] Użytkownik ma zgłosić poprawki **kwestii w dialogach** (po grze z nowymi dialogami).

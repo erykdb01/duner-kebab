@@ -27,13 +27,17 @@ Skopiuj dowolną w `postacie`, zmień nazwę i teksty. Wymagane:
 - `tytul`: podpis, dopóki nie znasz imienia.
 
 Opcjonalnie `gracz` (twoje własne kwestie do tej postaci, np. na „pani”) i `nerwy`
-(po ilu irytacjach wychodzi; domyślnie 3). Irytują: niemiła odpowiedź, powtórne pytanie
+(po ilu irytacjach wychodzi; domyślnie 3), a także `stale_imie` (zamiast losowego).
+Kaseko (typ `kaseko`) przychodzi co noc, czasem dwa razy, i zamawia giganty; jego zdjęcie
+ustawia `CHARACTER_LOOKS` w `Scripts/customer.gd`. Irytują: niemiła odpowiedź, powtórne pytanie
 o zamówienie lub imię i trzecie „Co słychać?”.
 
 ## Zdjęcia
 Są przycinane do kwadratu i losowane według płci, nie są przypisane do osób.
 - Nowe wrzucaj do `Textures/zdjecia/zwykli/m` lub `zwykli/k` (dowolne nazwy: png, jpg, webp).
 - Zdjęcia z głównego folderu są wymienione na liście `PHOTOS` w `Scripts/customer.gd`.
+- Ruchome zdjęcie: poziomy pasek kwadratowych klatek `nazwa_anim.png` (10 klatek na sekundę;
+  gra nie czyta GIF ani MP4). Plik `nazwa_anim.ogg` obok to muzyka, która idzie za klientem.
 - Zwykłe klientki przychodzą dopiero, gdy w `zwykli/k` jest choć jedno zdjęcie.
 
 ## Rozmowa i powitanie

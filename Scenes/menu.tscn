@@ -93,6 +93,7 @@ current = true
 
 [node name="radio" type="AudioStreamPlayer" parent="."]
 volume_db = -14.0
+bus = &"Muzyka"
 
 [node name="Shade" type="TextureRect" parent="."]
 layout_mode = 1

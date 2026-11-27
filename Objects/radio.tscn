@@ -102,6 +102,7 @@ outline_size = 12
 volume_db = -6.0
 unit_size = 2.5
 max_distance = 14.0
+bus = &"Muzyka"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
