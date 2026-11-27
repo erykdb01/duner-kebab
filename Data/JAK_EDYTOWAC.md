@@ -23,10 +23,10 @@ Skopiuj dowolną w `postacie`, zmień nazwę i teksty. Wymagane:
 - `plec`: `m` lub `k` (z tej listy losowane jest imię),
 - `tytul`: podpis, dopóki nie znasz imienia.
 
-Wygląd to zdjęcie `Textures/zdjecia/<nazwa postaci>.png`, `.jpg` albo `.webp`. Gra pokazuje je w całości,
+Zdjęcia leżą w `Textures/zdjecia/<nazwa postaci>.png`, `.jpg` albo `.webp`. Gra pokazuje je w całości,
 jako rozpikselowany prostokąt (`PHOTO_PIXELS` w `Scripts/customer.gd`: mniej = większe piksele).
-Zamiana wyglądu = zmiana nazwy pliku. Postać może też wskazać cudze, np. `"wyglad": "gbur"`.
-Postać bez zdjęcia pożycza losowe zdjęcie osoby tej samej płci.
+Zdjęcia nie są na razie przypisane do osób: każdy klient dostaje losowe zdjęcie swojej płci
+(płeć zdjęcia = `plec` postaci o tej nazwie). Pole `"wyglad"` nie działa.
 
 ## Powitania
 Zwykły napis (`"Dobry wieczór."`), gdy nie wymaga odpowiedzi. Jeśli klient o coś pyta albo mówi coś

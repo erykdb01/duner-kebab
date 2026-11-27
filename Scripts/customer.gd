@@ -98,7 +98,7 @@ func start(type_id: StringName, new_character: String, new_name: String, new_slo
 	tip = stats[2]
 	character = new_character
 	first_name = new_name
-	_set_look(str(Dialogs.character(character).get("wyglad", character)))
+	_set_look()
 	slot = new_slot
 	_street = street
 	_door = door
@@ -273,11 +273,9 @@ func see_rat() -> void:
 
 # --- Wewnętrzne ---
 
-# Wygląd: chodzące zdjęcie. Bez własnego pożycza cudze.
-func _set_look(look: String) -> void:
-	var texture := _photo(look)
-	if not texture:
-		texture = _borrowed_photo()
+# Wygląd: chodzące zdjęcie, losowe dla płci postaci.
+func _set_look() -> void:
+	var texture := _random_photo()
 	if not texture:
 		return
 	sprite.texture = texture
@@ -285,19 +283,17 @@ func _set_look(look: String) -> void:
 	# Niższe (poziome) zdjęcia mają górę na wysokości głowy, żeby było je widać zza lady.
 	sprite.offset.y = roundi(PHOTO_PIXELS * STRETCH) - PHOTO_PIXELS / 2.0 - texture.get_height() / 2.0
 
-# Losowe zdjęcie postaci tej samej płci, a gdy takiego nie ma, dowolne.
-func _borrowed_photo() -> Texture2D:
+# Zdjęcia nie są przypisane do osób: każdy dostaje losowe spośród zdjęć swojej płci
+# (płeć zdjęcia wynika z postaci o tej samej nazwie).
+func _random_photo() -> Texture2D:
 	var gender := str(Dialogs.character(character).get("plec", "m"))
-	var same: Array[Texture2D] = []
-	var everyone: Array[Texture2D] = []
+	var choice: Array[Texture2D] = []
 	for id in Dialogs.section("postacie"):
-		var texture := _photo(id)
-		if not texture:
+		if Dialogs.character(id).get("plec", "m") != gender:
 			continue
-		everyone.append(texture)
-		if Dialogs.character(id).get("plec", "m") == gender:
-			same.append(texture)
-	var choice := same if same else everyone
+		var texture := _photo(id)
+		if texture:
+			choice.append(texture)
 	return choice.pick_random() if choice else null
 
 # Rozpikselowane zdjęcie postaci albo null, gdy go nie ma.

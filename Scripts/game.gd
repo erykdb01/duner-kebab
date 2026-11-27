@@ -9,12 +9,14 @@ const Dialogs = preload("res://Scripts/dialogs.gd")
 const Night = preload("res://Scripts/night.gd")
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
-	[&"regular", &"regular", &"klientka", &"klientka", &"student", &"babcia", &"smakosz"],
-	[&"regular", &"regular", &"klientka", &"student", &"babcia", &"smakosz", &"sanepid",
+	[&"regular", &"regular", &"regular", &"regular", &"student", &"babcia", &"smakosz"],
+	[&"regular", &"regular", &"regular", &"regular", &"student", &"smakosz", &"sanepid",
 		&"wlasciciel"],
-	[&"regular", &"regular", &"klientka", &"klientka", &"student", &"babcia", &"smakosz",
+	[&"regular", &"regular", &"regular", &"regular", &"regular", &"student", &"smakosz",
 		&"sanepid", &"wlasciciel"],
 ]
+# Postacie z dialogi.json, które na razie nie przychodzą (babcia to jedyna "babcia").
+const DISABLED: Array[String] = ["krystyna"]
 const SPECIALS: Array[StringName] = [&"smakosz", &"sanepid", &"wlasciciel"]
 const RENT := 300
 const FINE := 40
@@ -443,7 +445,9 @@ func _spawn_customer(place_in_group: int) -> void:
 	var street: Vector3 = $customer_route/street.global_position + Vector3(0, 0, -0.9 * place_in_group)
 	customer.talk_requested.connect($dialog_box.open)
 	var type_id: StringName = _queue.pop_front()
-	var character: String = _pick_unused(Dialogs.characters_of(type_id), _used_characters, type_id)
+	var options := Dialogs.characters_of(type_id).filter(
+		func(id): return not id in DISABLED)
+	var character: String = _pick_unused(options, _used_characters, type_id)
 	var gender: String = Dialogs.character(character).get("plec", "m")
 	var first_name: String = _pick_unused(Dialogs.names(gender), _used_names, "Alex")
 	customer.start(type_id, character, first_name, slot, street,

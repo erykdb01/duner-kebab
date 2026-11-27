@@ -37,8 +37,9 @@ w tym sekretnego).
 
 ## Otwarte
 - Klienci to całe zdjęcia z tłem, rozpikselowane (`Textures/zdjecia/<postać>.*`, `customer.gd`);
-  użytkownik dodał 10 (do sprawdzenia w grze). Bez zdjęć (pożyczają cudze tej samej płci): zwykla,
-  influencerka, pielegniarka, korpo, punkowa, krystyna, wlascicielka, taksowkarz.
+  użytkownik dodał 10 (do sprawdzenia w grze). Na razie każdy klient dostaje losowe zdjęcie swojej płci.
+  Jedyne kobiece to `babcia`, więc `klientka` i `krystyna` nie przychodzą (`NIGHTS`, `DISABLED`
+  w `game.gd`), a w nocach 2–3 jedyną kobietą jest pani od Pimpka (bez babci).
   Zdjęcia są rozciągnięte w górę (`STRETCH` w `customer.gd`).
   Rysunki `Textures/postacie` wyłączone (do usunięcia po akceptacji).
 - **Przed publikacją gry:** zdjęcia mają znaki wodne banków zdjęć i brak do nich licencji – podmienić.
