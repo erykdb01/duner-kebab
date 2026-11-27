@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 signal prompt_changed(text: String)
-signal carcasses_changed(count: int)
+signal sack_used # [R]: wyjęcie szczura z worka albo schowanie
 
 const Sfx = preload("res://Scripts/sfx.gd")
 
@@ -15,12 +15,15 @@ var torch := SpotLight3D.new()
 var held: Area3D = null
 var _held_layer := 0
 var _prompt := ""
-var busy := false # rozmowa, notatnik, wołanie albo walka: gracz stoi, mysz jest wolna
+var busy := false # rozmowa, notatnik, wołanie, walka albo minigra: gracz stoi
 var carcasses := 0 # truchła szczurów w torbie (z kanałów)
+var sack := &"" # żywy szczur w worku ("szczur" albo "pimpek"); pusty = wolny worek
 
 func add_carcasses(count: int) -> void:
 	carcasses = maxi(carcasses + count, 0)
-	carcasses_changed.emit(carcasses)
+
+func set_sack(variant: StringName) -> void:
+	sack = variant
 
 func set_busy(value: bool) -> void:
 	busy = value
@@ -54,6 +57,8 @@ func _unhandled_input(e):
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif e.is_action_pressed("interact"):
 		_interact()
+	elif e.is_action_pressed("sack"):
+		sack_used.emit()
 	elif e.is_action_pressed("flashlight"):
 		torch.visible = not torch.visible
 		Sfx.play(self, "switch", -8.0)

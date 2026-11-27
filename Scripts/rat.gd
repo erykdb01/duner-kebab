@@ -3,6 +3,7 @@ extends Area3D
 # i daje się złapać w przerwach. Wypuszczony zostaje tam, gdzie wylądował.
 
 signal consumed # zmielony, wyrzucony, zawinięty...
+signal catch_requested(rat: Node) # Pimpka trzeba złapać w minigrze (game.gd)
 
 enum State { WANDER, FLEE, HELD, TRAVEL }
 
@@ -30,6 +31,8 @@ const BOUNDS := {
 var state := State.WANDER
 var zone := &"yard" # pusta w ręce i w drodze
 var notice_left := 0.0
+var variant := &"szczur"
+var frozen := false # stoi, gdy trwa łapanie
 var _areas := {} # strefa -> punkty, po których szczur biega
 var _path: Array[Vector3] = []
 var _destination := &"" # strefa po dojściu; pusta = szczur znika
@@ -49,7 +52,8 @@ func start(areas: Dictionary, player: Node3D) -> void:
 	_target = global_position
 
 # &"szczur" albo &"pimpek". Wywołać po dodaniu do sceny.
-func set_variant(variant: StringName) -> void:
+func set_variant(new_variant: StringName) -> void:
+	variant = new_variant
 	_frames = [
 		load("res://Textures/szczury/%s_0.png" % variant),
 		load("res://Textures/szczury/%s_1.png" % variant)]
@@ -74,6 +78,9 @@ func _process(delta: float) -> void:
 	$Shadow.visible = state != State.HELD
 	if state == State.HELD:
 		_animate(delta * 0.5) # wierzga w ręce
+		return
+	if frozen:
+		_animate(delta)
 		return
 	if state == State.TRAVEL or not global_position.is_equal_approx(_target):
 		_animate(delta)
@@ -102,12 +109,23 @@ func get_prompt(player) -> String:
 	if player.held:
 		return "Masz zajęte ręce"
 	if is_in_group("pimpek"):
-		return "[E] Złap szczura (ma czerwoną kokardkę)"
+		return "[E] Złap do worka (ma czerwoną kokardkę)"
 	return "[E] Złap szczura"
 
 func interact(player) -> void:
 	if player.held:
 		return
+	if is_in_group("pimpek"):
+		catch_requested.emit(self)
+	else:
+		grab(player)
+
+# Nieudane łapanie: ucieka.
+func scare() -> void:
+	_flee()
+
+# Szczur trafia do ręki gracza.
+func grab(player) -> void:
 	state = State.HELD
 	zone = &""
 	sprite.scale = Vector3.ONE * HELD_SCALE

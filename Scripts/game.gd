@@ -6,6 +6,7 @@ const CustomerScript = preload("res://Scripts/customer.gd")
 const Rat = preload("res://Objects/rat.tscn")
 const Sfx = preload("res://Scripts/sfx.gd")
 const Dialogs = preload("res://Scripts/dialogs.gd")
+const Qte = preload("res://Scripts/qte.gd")
 # Kto przychodzi w kolejnych nocach (kolejność jest losowana).
 const NIGHTS: Array = [
 	[&"regular", &"regular", &"regular", &"regular", &"regular", &"regular", &"charakter",
@@ -39,8 +40,18 @@ const PICKUP_SLOT := 5 # miejsce odbioru dla zawołanych (poza miejscami w count
 const PAIR_CHANCE := 0.3
 const MAX_INSIDE := 5
 const SIT_CHANCE := 0.6
-const MAX_RATS := 2 # żywe szczury na górze (w tym Pimpek); mięso zdobywa się w kanałach
-const RAT_DELAY := 90.0
+const CATCH_KEYS := 5 # łapanie Pimpka do worka
+const CATCH_KEY_TIME := 0.85
+const INTRO := """Uzbieraj %d zł na czynsz do końca %d. nocy.
+
+Nie masz mięsa. Właz w altanie śmietnikowej prowadzi do kanałów:
+ubij szczury i zmiel truchła w maszynce (1 szczur = 1 porcja).
+Żywego szczura złapiesz do worka ([R] wyjmuje go i chowa).
+
+Obróć tabliczkę przy drzwiach, żeby otworzyć lokal.
+Po %d min otworzy się sam i wpadnie tłum.
+
+Pytaj klientów o zamówienie i imię, zapisuj je w notatniku [Tab]."""
 const MIN_INVASION_DELAY := 140.0
 const MAX_INVASION_DELAY := 240.0
 const SNEAK_MIN_DISTANCE := 4.0 # szczur nie zakrada się przy graczu
@@ -56,7 +67,6 @@ var pimpek := "free" # free, returned, dead
 var fines := 0
 var rat_kebabs := 0 # kebaby ze szczurem podane komukolwiek poza smakoszem
 var _gold_seen := false
-var _rat_pending := false
 var _night_running := false
 var _prep_left := PREP_TIME
 var _rush_left := 0 # ile tłocznych grup jeszcze przyjdzie
@@ -91,8 +101,9 @@ func _ready() -> void:
 	_show_prep_clock()
 	$grinder.meat_ground.connect($prep_station/source_meat.refill)
 	$grinder.meat_ground.connect(func(portions): _rats_ground += portions)
-	$player.carcasses_changed.connect(hud.show_carcasses)
+	$player.sack_used.connect(_on_sack_used)
 	$player.add_carcasses(save.get("carcasses", 0))
+	$player.set_sack(save.get("sack", &""))
 	$sewer.message.connect(hud.show_message.bind(5.0))
 	$sewer.gold_taken.connect(_on_gold_found)
 	$sewer.gold_chance = GOLD_CHANCE if night > 1 and not _gold_seen else 0.0
@@ -101,19 +112,14 @@ func _ready() -> void:
 	Sfx.make_loop($ambient, "night")
 	$ambient.play()
 	_refresh_poster()
-	for i in MAX_RATS:
-		_spawn_rat()
+	# Na górze mieszka tylko Pimpek (o ile jest wolny i nie siedzi w worku).
+	if pimpek == "free" and $player.sack != &"pimpek":
+		_spawn_rat(&"pimpek")
 	if night == 1:
-		hud.show_message(
-			("Uzbieraj %d zł na czynsz do końca %d. nocy.\nNie ma mięsa: zejdź włazem w altanie "
-			+ "do kanałów, ubij szczury\ni zmiel truchła. Po %d min lokal otworzy się sam.")
-			% [RENT, NIGHTS.size(), int(PREP_TIME / 60.0)], 14.0)
+		overlay.show_intro("Pierwsza noc", INTRO % [RENT, NIGHTS.size(), int(PREP_TIME / 60.0)])
 
 func _process(delta: float) -> void:
-	# Gdy szczurów ubędzie, po chwili przy śmietniku pojawia się nowy.
-	if not _rat_pending and get_tree().get_nodes_in_group("rat").size() < MAX_RATS:
-		_rat_pending = true
-		get_tree().create_timer(RAT_DELAY, false).timeout.connect(_spawn_rat)
+	_show_inventory()
 	_watch_sanepid()
 	_watch_sala_rats(delta)
 	_update_queue()
@@ -139,6 +145,7 @@ func _next_state() -> Dictionary:
 		"night": night + 1, "money": money, "pimpek": pimpek, "fines": fines,
 		"rat_kebabs": rat_kebabs, "gold_seen": _gold_seen,
 		"meat": $prep_station/source_meat.stock, "carcasses": $player.carcasses,
+		"sack": $player.sack,
 	}
 
 # --- Noc ---
@@ -273,19 +280,65 @@ func _show_finale() -> void:
 
 # --- Szczury ---
 
-func _spawn_rat() -> void:
-	_rat_pending = false
+func _spawn_rat(variant: StringName):
 	var rat = Rat.instantiate()
 	add_child(rat)
 	var areas := {}
 	for area in $rat_areas.get_children():
 		areas[StringName(area.name)] = _marker_positions(area)
 	rat.start(areas, $player)
-	var variant := &"szczur"
-	if pimpek == "free" and get_tree().get_nodes_in_group("pimpek").is_empty():
-		variant = &"pimpek"
-		rat.consumed.connect(_on_pimpek_consumed)
 	rat.set_variant(variant)
+	if variant == &"pimpek":
+		rat.consumed.connect(_on_pimpek_consumed)
+		rat.catch_requested.connect(_on_catch_requested)
+	return rat
+
+# Pimpka łapie się do worka w minigrze na refleks.
+func _on_catch_requested(rat) -> void: # rat.gd
+	if $player.sack != &"":
+		hud.show_message("Worek jest zajęty.", 3.0)
+		return
+	$player.set_busy(true)
+	rat.frozen = true
+	var qte := Qte.new()
+	add_child(qte)
+	qte.done.connect(func(success: bool):
+		$player.set_busy(false)
+		rat.frozen = false
+		if success:
+			$player.set_sack(&"pimpek")
+			rat.queue_free()
+			Sfx.play($player, "squeak")
+		else:
+			rat.scare())
+	qte.start("Zagoń go do worka!", CATCH_KEYS, CATCH_KEY_TIME)
+
+# [R]: szczur z worka do ręki albo z ręki do worka.
+func _on_sack_used() -> void:
+	var player = $player
+	if player.held and player.held.is_in_group("rat") and player.sack == &"":
+		player.set_sack(player.held.variant)
+		# Bez discard(): schowany szczur nie jest stracony.
+		player.held.queue_free()
+		player.held = null
+	elif not player.held and player.sack != &"":
+		var rat = _spawn_rat(player.sack)
+		player.set_sack(&"")
+		rat.grab(player)
+	else:
+		return
+	Sfx.play(player, "squeak")
+
+func _show_inventory() -> void:
+	var player = $player
+	var lines: Array[String] = []
+	if player.carcasses > 0:
+		lines.append("Truchła szczurów: %d" % player.carcasses)
+	if player.sack != &"":
+		lines.append("W worku: %s  [R] wyjmij" % ("Pimpek" if player.sack == &"pimpek" else "żywy szczur"))
+	elif player.held and player.held.is_in_group("rat"):
+		lines.append("[R] schowaj szczura do worka")
+	hud.show_inventory("\n".join(lines))
 
 func _on_pimpek_consumed() -> void:
 	if pimpek != "free":
@@ -317,19 +370,18 @@ func _on_invasion_time() -> void:
 	_schedule_invasion()
 	_invade()
 
-# Szczur z podwórka zakrada się przez kuchnię na salę (najwyżej jeden naraz).
+# Obcy szczur zakrada się z zewnątrz przez kuchnię na salę (najwyżej jeden naraz).
 func _invade() -> void:
-	var candidates := []
 	for rat in get_tree().get_nodes_in_group("rat"):
 		if rat.zone == &"sala" or rat.state == rat.State.TRAVEL:
 			return
-		if rat.zone == &"yard" \
-				and rat.global_position.distance_to($player.global_position) > SNEAK_MIN_DISTANCE:
-			candidates.append(rat)
-	if candidates:
-		var intruder = candidates.pick_random()
-		intruder.invade(_marker_positions($invasion_route))
-		Sfx.play_at(intruder, "squeak")
+	var route := _marker_positions($invasion_route)
+	if route[0].distance_to($player.global_position) <= SNEAK_MIN_DISTANCE:
+		return
+	var intruder = _spawn_rat(&"szczur")
+	intruder.global_position = route[0]
+	intruder.invade(route)
+	Sfx.play_at(intruder, "squeak")
 
 # Sanepidowi w lokalu wystarczy chwila: mandat od razu, gdy w środku jest szczur.
 func _watch_sanepid() -> void:
@@ -450,8 +502,13 @@ func _on_talk_closed(customer: Node) -> void:
 		_seat_customer(customer)
 
 func _seat_customer(customer: Node) -> void:
-	var seat := _free_index($seats, &"seat")
-	if seat >= 0:
+	# Losowe wolne krzesło, żeby klienci siadali przy różnych stolikach.
+	var taken := get_tree().get_nodes_in_group("customers").map(
+		func(other): return other.seat)
+	var empty := range($seats.get_child_count()).filter(
+		func(index): return not index in taken)
+	if empty:
+		var seat: int = empty.pick_random()
 		customer.sit(seat, $seats.get_child(seat).global_position)
 
 # --- Wołanie po imieniu ---

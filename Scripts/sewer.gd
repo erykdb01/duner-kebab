@@ -21,7 +21,7 @@ const NESTS: Array[Vector3] = [Vector3(-1.2, 0, 6), Vector3(1.2, 0, 11), Vector3
 const MAX_GROUP := 3
 const RESPAWN_TIME := 40.0 # po tylu sekundach w pustym gnieździe są nowe szczury
 const FAT_CHANCE := 0.2
-const HEAL_AFTER_WIN := 10
+const HEAL_AFTER_WIN := 5
 const FRAME_TIME := 0.25
 
 var occupied := false # gracz jest w kanałach
@@ -41,6 +41,7 @@ func _ready() -> void:
 	_build_manhole()
 	add_child(_battle)
 	_battle.killed.connect(_on_killed)
+	_battle.bagged.connect(_on_bagged)
 	_battle.finished.connect(_on_finished)
 
 # Wywołać raz na początku nocy.
@@ -154,12 +155,20 @@ func _nest_prompt(_who, nest: Dictionary) -> String:
 func _fight(_who, nest: Dictionary) -> void:
 	_fighting = nest
 	_player.set_busy(true)
+	_battle.bag_free = _player.sack == &""
 	_battle.start(nest["rats"], _hp)
 
 func _on_killed(kind: StringName) -> void:
 	_fighting["rats"].erase(kind)
 	_trip_kills += 1
 	_player.add_carcasses(1)
+	if kind == &"zloty":
+		gold_taken.emit()
+
+# Żywy szczur ląduje w worku gracza (złoty i tak oddaje ząb).
+func _on_bagged(kind: StringName) -> void:
+	_fighting["rats"].erase(kind)
+	_player.set_sack(&"szczur")
 	if kind == &"zloty":
 		gold_taken.emit()
 

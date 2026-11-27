@@ -25,8 +25,9 @@ func show_message(text: String, time: float) -> void:
 func show_clock(text: String) -> void:
 	$Clock.text = text
 
-func show_carcasses(count: int) -> void:
-	$Carcasses.text = "Truchła szczurów: %d" % count if count > 0 else ""
+# Truchła w torbie i worek z żywym szczurem (pod zegarem).
+func show_inventory(text: String) -> void:
+	$Inventory.text = text
 
 func show_warning(text: String) -> void:
 	$Warning.text = text

@@ -4,10 +4,15 @@ extends StaticBody3D
 signal meat_ground(portions: int)
 
 const Sfx = preload("res://Scripts/sfx.gd")
+const Qte = preload("res://Scripts/qte.gd")
 const GRIND_TIME := 2.5
 const SHAKES := 20
+const JAM_CHANCE := 0.25 # szansa, że przy mieleniu się zatnie
+const JAM_KEYS := 4
+const JAM_KEY_TIME := 1.0
 
 var _busy := false
+var _jammed := 0 # tyle porcji utknęło w zaciętej maszynce
 
 @onready var model: Node3D = $model
 @onready var bubble: Label3D = $Bubble
@@ -15,6 +20,8 @@ var _busy := false
 func get_prompt(player) -> String:
 	if _busy:
 		return "Maszynka mieli..."
+	if _jammed:
+		return "[E] Odetkaj maszynkę"
 	if _has_rat(player):
 		return "[E] Wrzuć szczura do maszynki"
 	if player.carcasses > 0:
@@ -23,6 +30,9 @@ func get_prompt(player) -> String:
 
 func interact(player) -> void:
 	if _busy:
+		return
+	if _jammed:
+		_unclog(player)
 		return
 	var portions := 0
 	if _has_rat(player):
@@ -33,18 +43,47 @@ func interact(player) -> void:
 		player.add_carcasses(-portions)
 	else:
 		return
-	_busy = true
 	Sfx.play_at(self, "squeak")
+	_grind(portions, randf() < JAM_CHANCE)
+
+# "jams": w połowie się zatnie i trzeba ją odetkać.
+func _grind(portions: int, jams: bool) -> void:
+	_busy = true
 	Sfx.play_at(self, "grind")
 	bubble.text = "PIIISK!"
+	var shakes := int(SHAKES / 2.0) if jams else SHAKES
 	var tween := create_tween()
-	for i in SHAKES:
+	for i in shakes:
 		if i == 6:
 			tween.tween_callback(bubble.set_text.bind("BRRRUM... CHRUP"))
 		tween.tween_property(model, "rotation:x", 0.09 if i % 2 == 0 else -0.09, GRIND_TIME / SHAKES)
+	if jams:
+		tween.tween_callback(_jam.bind(portions))
+		return
 	tween.tween_callback(_finish.bind(portions))
 	tween.tween_interval(1.5)
 	tween.tween_callback(bubble.set_text.bind(""))
+
+func _jam(portions: int) -> void:
+	model.rotation.x = 0.0
+	_busy = false
+	_jammed = portions
+	bubble.text = "ZGRZYT! Zacięła się!"
+	Sfx.play_at(self, "angry")
+
+func _unclog(player) -> void:
+	player.set_busy(true)
+	var qte := Qte.new()
+	add_child(qte)
+	qte.done.connect(func(success: bool):
+		player.set_busy(false)
+		if success:
+			var portions := _jammed
+			_jammed = 0
+			_grind(portions, false)
+		else:
+			bubble.text = "Nadal zacięta!")
+	qte.start("Odetkaj maszynkę!", JAM_KEYS, JAM_KEY_TIME)
 
 func _has_rat(player) -> bool:
 	return player.held != null and player.held.is_in_group("rat")

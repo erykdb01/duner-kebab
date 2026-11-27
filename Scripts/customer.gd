@@ -30,6 +30,7 @@ const PHOTO_PIXELS := 64 # bok zdjęcia po rozpikselowaniu; mniej = większe pik
 const PHOTO_SIZE := 1.3 # bok kwadratu w metrach
 const PHOTO_TOP := 1.95 # wysokość górnej krawędzi stojącego klienta
 const HEAD_ROOM := 0.15 # z pionowego zdjęcia ucinana jest ta część nadmiaru u góry, reszta u dołu
+const SECRET_CHANCE := 0.12 # zwykły klient po cichu zamawia żywego szczura
 const DEFAULT_NERVES := 3 # po tylu irytacjach wychodzi ("nerwy" w dialogi.json)
 const QUEUE_DRAIN := 0.5 # w kolejce cierpliwość ubywa wolniej
 const QUEUE_COMPLAINT := 40.0 # co tyle sekund w kolejce narzeka
@@ -71,6 +72,7 @@ var ordered := false
 var fed := false
 var called := false # zawołany po imieniu, czeka przy ladzie
 var talking := false # w trakcie rozmowy cierpliwość stoi
+var secret := false # chce po cichu żywego szczura w kebabie
 var queued := false # ktoś, kto przyszedł wcześniej, jeszcze czeka (ustawia game.gd)
 var gender := "m"
 var look := "" # ścieżka wylosowanego zdjęcia
@@ -165,7 +167,7 @@ func interact(player) -> void:
 	elif player.held.is_in_group("rat"):
 		player.discard()
 		served.emit(self, 0, false)
-		if kind == &"gourmet":
+		if wants_rat():
 			_leave(_line("surowy_szczur"), 2, _line("opinia_surowy_szczur"))
 		elif kind == &"sanepid":
 			_fine()
@@ -286,9 +288,12 @@ func is_hungry() -> bool:
 
 # Czy klient jest w lokalu i może się przejąć szczurem.
 func can_see_rat() -> bool:
-	if kind == &"gourmet" or kind == &"owner":
+	if wants_rat() or kind == &"owner":
 		return false
 	return state != State.FAREWELL and state != State.LEAVING and global_position.z > FRONT_WALL_Z
+
+func wants_rat() -> bool:
+	return kind == &"gourmet" or secret
 
 func see_rat() -> void:
 	if kind == &"sanepid":
@@ -366,7 +371,10 @@ func _make_order() -> void:
 	if kind == &"owner":
 		return
 	order = [&"meat"]
-	if kind == &"gourmet":
+	# Tylko zwykli klienci bez własnej postaci; sanepid nigdy o to nie prosi.
+	secret = kind == &"regular" and Dialogs.character(character).is_empty() \
+		and randf() < SECRET_CHANCE
+	if wants_rat():
 		order.append(&"rat")
 	if randf() < 0.3:
 		order.append(&"meat")
@@ -376,7 +384,7 @@ func _make_order() -> void:
 		order.append(&"sauce")
 	if randf() < 0.15:
 		order.append(&"tortilla")
-	strict = kind != &"gourmet" and order.size() > 1 and randf() < 0.3
+	strict = not wants_rat() and order.size() > 1 and randf() < 0.3
 	if strict:
 		order.shuffle()
 
@@ -396,11 +404,11 @@ func _order_text() -> String:
 			words.append(Dialogs.ingredient(id))
 	var last: String = words.pop_back()
 	var list := "%s i %s" % [", ".join(words), last] if words else last
-	return _line("zamowienie", {"lista": list})
+	return _line("zamowienie_po_cichu" if secret else "zamowienie", {"lista": list})
 
 func _rate(contents: Array[StringName]) -> void:
-	var gourmet := kind == &"gourmet"
-	if &"rat" in contents and not gourmet:
+	var wanted_rat := wants_rat()
+	if &"rat" in contents and not wanted_rat:
 		rat_served.emit()
 		served.emit(self, 0, false)
 		if kind == &"sanepid":
@@ -421,10 +429,10 @@ func _rate(contents: Array[StringName]) -> void:
 		mistakes = 1
 	var price := BASE_PRICE + DOUBLE_MEAT_PRICE * (order.count(&"meat") - 1)
 	var payment := maxi(price - mistakes * MISTAKE_COST, 0)
-	if gourmet and &"rat" in contents:
+	if wanted_rat and &"rat" in contents:
 		payment *= 2
 	var reaction := ""
-	if gourmet and not &"rat" in contents:
+	if wanted_rat and not &"rat" in contents:
 		reaction = _line("brak_szczura")
 		_opinion = _line("opinia_brak_szczura")
 		_stars = 2

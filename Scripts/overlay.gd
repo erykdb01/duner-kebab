@@ -6,6 +6,7 @@ const Settings = preload("res://Scripts/settings.gd")
 const MENU_SCENE := "res://Scenes/menu.tscn"
 
 var _summary := false
+var _intro := false
 var _next_action := Callable()
 var _new_game_on_restart := false
 var _settings := Settings.new()
@@ -36,6 +37,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		_settings.close()
 		return
+	if _intro:
+		get_viewport().set_input_as_handled()
+		_close_intro()
+		return
 	if _summary:
 		return
 	get_viewport().set_input_as_handled()
@@ -43,6 +48,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		_resume()
 	else:
 		_open("Pauza", "")
+
+# Wstęp przed grą: gra stoi, aż gracz go pominie (przycisk, Enter albo Esc).
+func show_intro(heading: String, text: String) -> void:
+	_intro = true
+	_next_action = _close_intro
+	_open(heading, text)
+	for button in [resume_button, %Restart, %Settings, %Menu, %Quit]:
+		button.hide()
+	%Next.text = "Pomiń i graj"
+	%Next.show()
+	%Next.grab_focus()
+
+func _close_intro() -> void:
+	_intro = false
+	%Next.hide()
+	for button in [resume_button, %Restart, %Settings, %Menu, %Quit]:
+		button.show()
+	_resume()
 
 # Podsumowanie nocy; przycisk "next_label" prowadzi dalej.
 func show_summary(heading: String, text: String, next_label: String, next_action: Callable) -> void:

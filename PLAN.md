@@ -34,8 +34,12 @@ Po każdym etapie zaktualizuj ten plik (krótko). Wersja 1 projektu: tag `v1.0` 
   1 porcja; złoty szczur tylko w kanałach. Po tłoku: +2 klientów (`RUSH_EXTRA`, miejsca c3, c4).
   Na podwórku zostają Pimpek i 1 żywy szczur (odnawia się po 90 s) – do decyzji w E7.
   **Przypomnij użytkownikowi o ocenie tempa** (ok. 20 szczurów na noc).
-- [ ] **E7 Żywy szczur:** minigra QTE (sekwencja klawiszy), trudniejsza od walki; worek; Pimpek;
-  klient po cichu prosi o żywego szczura w kebabie.
+- [x] **Poprawki po E6** (do sprawdzenia): walka trudniejsza (zamiary szczura, siły, kontra) i nowy
+  wygląd; losowe krzesła; na górze mieszka tylko Pimpek (obce szczury pojawiają się tylko przy
+  wejściach na salę); wstęp przed 1. nocą z pominięciem (`overlay.show_intro`).
+- [x] **E7 Żywy szczur** (do sprawdzenia): `qte.gd` (WASD/strzałki); w walce „Worek”, Pimpka łapie się
+  tą samą minigrą; worek na 1 szczura, [R] wyjmuje i chowa; zwykli klienci czasem po cichu chcą
+  żywego szczura (`SECRET_CHANCE`, płacą podwójnie); maszynka czasem się zacina (`JAM_CHANCE`).
 - [ ] **E8 Porządki i balans:** audyt nieużywanych plików, optymalizacja, czynsz i liczby po testach,
   aktualizacja menu „Sterowanie”, `README.md`, `Data/JAK_EDYTOWAC.md`.
 
